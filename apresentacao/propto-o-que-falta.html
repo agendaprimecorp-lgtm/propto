@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O Que Falta no Propto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --red:#CC1B1B; --red-l:#E8443F; --graphite:#12100F;
+  --sand:#FAF8F5; --surface:#FFFFFF; --surface-2:#F2EEE9;
+  --line:#DFDCDD; --line-strong:#C9C4C3; --muted:#6E6867; --ink:#1A1615;
+  --ok:#0F9D63; --warn:#C77700; --ai:#8B5CF6;
+  --display:'Sora',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --sand:#12100F; --surface:#1B1716; --surface-2:#241F1D;
+    --line:#332C2A; --line-strong:#463D3A; --muted:#A79C95; --ink:#F3EFEC;
+    --red:#E8443F;
+  }
+}
+:root[data-theme="dark"]{
+  --sand:#12100F; --surface:#1B1716; --surface-2:#241F1D;
+  --line:#332C2A; --line-strong:#463D3A; --muted:#A79C95; --ink:#F3EFEC;
+  --red:#E8443F;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--sand); color:var(--ink);
+  font-family:var(--body); font-size:16px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--display); margin:0; letter-spacing:-.028em; text-wrap:balance}
+p{margin:0}
+a{color:var(--red)}
+strong{font-weight:600; color:var(--ink)}
+
+.wrap{max-width:860px; margin:0 auto; padding:0 24px}
+
+/* cabeçalho */
+header{border-bottom:1px solid var(--line); background:var(--surface)}
+header .wrap{padding-top:34px; padding-bottom:34px}
+.mark{display:flex; align-items:center; gap:10px; margin-bottom:26px}
+.mark svg{width:28px; height:28px; color:var(--red)}
+.mark .wm{font-family:var(--display); font-weight:700; font-size:20px; letter-spacing:-.04em}
+.mark .wm i{font-style:normal; color:var(--red)}
+h1{font-size:clamp(30px,5vw,46px); font-weight:700; line-height:1.06}
+.deck{font-size:17px; color:var(--muted); margin-top:16px; max-width:60ch}
+.meta{
+  display:flex; gap:22px; flex-wrap:wrap; margin-top:24px;
+  font-family:var(--mono); font-size:12px; color:var(--muted);
+}
+
+main{padding:8px 0 90px}
+section{padding:44px 0; border-bottom:1px solid var(--line)}
+section:last-child{border-bottom:0}
+.kicker{
+  font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--red); margin-bottom:12px;
+}
+h2{font-size:clamp(21px,3vw,29px); font-weight:700}
+h2 + p{margin-top:14px; color:var(--muted); max-width:62ch}
+h3{font-size:17px; font-weight:600; margin-top:30px}
+h3 + p{margin-top:8px}
+
+/* placar de números */
+.placar{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:18px; margin-top:26px}
+.placar div{display:flex; flex-direction:column; gap:2px}
+.placar b{font-family:var(--display); font-size:34px; font-weight:700; letter-spacing:-.04em; color:var(--red); line-height:1}
+.placar span{font-size:13px; color:var(--muted); line-height:1.4}
+
+/* itens do plano */
+.item{
+  border:1px solid var(--line); border-radius:12px; background:var(--surface);
+  padding:20px 22px; margin-top:14px;
+}
+.item .top{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+.item .id{font-family:var(--mono); font-size:12px; color:var(--muted); flex:none}
+.item h4{font-size:16.5px; font-weight:600; flex:1; min-width:200px}
+.item p{margin-top:9px; font-size:14.5px; color:var(--muted); line-height:1.6}
+.item .por{
+  margin-top:10px; font-size:13.5px; color:var(--ink); border-top:1px solid var(--line);
+  padding-top:10px;
+}
+.item .por b{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:500; display:block; margin-bottom:3px}
+
+.pill{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase;
+  border-radius:999px; padding:3px 10px; border:1px solid var(--line-strong); color:var(--muted);
+  white-space:nowrap; flex:none;
+}
+.pill.p0{border-color:rgba(204,27,27,.4); color:var(--red); background:rgba(204,27,27,.07)}
+.pill.p1{border-color:rgba(199,119,0,.4); color:var(--warn); background:rgba(199,119,0,.07)}
+.pill.p2{}
+.pill.ok{border-color:rgba(15,157,99,.4); color:var(--ok); background:rgba(15,157,99,.08)}
+
+/* tabelas */
+.scroll{overflow-x:auto; margin-top:22px}
+table{width:100%; border-collapse:collapse; font-size:14.5px; min-width:520px}
+th,td{text-align:left; padding:11px 13px; border-bottom:1px solid var(--line); vertical-align:top}
+th{
+  font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--muted); font-weight:500;
+}
+td.n{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+/* riscos */
+.risco{border-left:3px solid var(--red); padding:2px 0 2px 16px; margin-top:22px}
+.risco h4{font-size:16px; font-weight:600}
+.risco p{margin-top:6px; font-size:14.5px; color:var(--muted)}
+
+/* sequência */
+.seq{counter-reset:passo; margin-top:24px; display:flex; flex-direction:column; gap:0}
+.seq .p{
+  position:relative; padding:0 0 26px 42px; border-left:2px solid var(--line);
+}
+.seq .p:last-child{border-left-color:transparent; padding-bottom:0}
+.seq .p::before{
+  counter-increment:passo; content:counter(passo);
+  position:absolute; left:-15px; top:-2px; width:28px; height:28px; border-radius:50%;
+  background:var(--red); color:#fff; font-family:var(--mono); font-size:12px;
+  display:flex; align-items:center; justify-content:center;
+}
+.seq h4{font-size:17px; font-weight:600; margin-top:-2px}
+.seq p{margin-top:7px; font-size:14.5px; color:var(--muted)}
+.seq .q{margin-top:8px; font-size:13.5px; color:var(--ink); background:var(--surface-2); border-radius:8px; padding:9px 12px}
+
+.aviso{
+  border:1px solid var(--line); border-left:3px solid var(--red); border-radius:0 10px 10px 0;
+  background:var(--surface); padding:18px 20px; margin-top:26px; font-size:14.5px; line-height:1.6;
+}
+.aviso b{display:block; font-family:var(--display); font-size:15.5px; margin-bottom:6px; color:var(--ink)}
+
+footer{border-top:1px solid var(--line); background:var(--surface); padding:30px 0 46px}
+footer p{font-size:13px; color:var(--muted)}
+
+@media (max-width:640px){
+  body{font-size:15.5px}
+  section{padding:34px 0}
+  .item{padding:16px 17px}
+  .seq .p{padding-left:32px}
+}
+</style>
+
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="mark">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M9 31.5 32 11l23 20.5" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="currentColor"/><rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="currentColor"/><rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="currentColor"/></svg>
+      <span class="wm">Pr<i>o</i>pto</span>
+    </div>
+    <h1>O que falta para o Propto ser um produto vendável em escala</h1>
+    <p class="deck">
+      Inventário honesto do que existe, do que falta e em que ordem. Escrito para ser lido por
+      quem vai decidir onde colocar dinheiro e tempo — não para impressionar ninguém.
+    </p>
+    <div class="meta">
+      <span>02 de setembro de 2026</span>
+      <span>PrimeCorp Brokers</span>
+      <span>documento de trabalho</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section>
+  <p class="kicker">Ponto de partida</p>
+  <h2>O que já está construído e verificado</h2>
+  <p>
+    Nada aqui é estimativa: cada número abaixo corresponde a código que roda e a teste que foi
+    executado contra um banco de dados real.
+  </p>
+  <div class="placar">
+    <div><b>242</b><span>verificações automáticas, todas verdes</span></div>
+    <div><b>7</b><span>migrações de banco aplicadas</span></div>
+    <div><b>16</b><span>tabelas com isolamento provado por teste</span></div>
+    <div><b>2</b><span>serviços prontos: gateway de IA e tratamento de imagem</span></div>
+  </div>
+  <p style="margin-top:26px">
+    Em produto isso significa: o banco inteiro do MVP, a fila de processamento assíncrono, o
+    roteamento de inteligência artificial com controle de orçamento, o borrão de rosto e placa
+    conferido pixel a pixel, a identidade visual completa, o site de vendas e a página pública do
+    imóvel em Next.js lendo do banco de verdade.
+  </p>
+  <div class="aviso">
+    <b>O que isso não significa</b>
+    Nenhum corretor consegue usar o Propto sozinho hoje. Não existe tela para gravar, para
+    fotografar, para revisar ou para publicar. A fundação está pronta; a casa não.
+  </div>
+</section>
+
+<section>
+  <p class="kicker">Bloco 1 · funcionar</p>
+  <h2>Para um corretor usar sozinho, de ponta a ponta</h2>
+  <p>
+    Estes cinco itens são a diferença entre uma fundação bem construída e um produto. Nenhum deles
+    é opcional, e a ordem entre eles importa.
+  </p>
+
+  <div class="item">
+    <div class="top"><span class="id">1.1</span><h4>Aplicativo de captura por voz e foto</h4><span class="pill p0">bloqueia tudo</span></div>
+    <p>
+      A tela onde o corretor grava falando e fotografa. Precisa gravar com o celular no bolso e a
+      tela bloqueada, funcionar sem internet, e retomar o envio quando a rede voltar. É o coração do
+      produto: sem isso, o Propto é um cadastro bonito.
+    </p>
+    <div class="por"><b>Por que primeiro</b>
+      É o que o Piloto Zero mede em dezembro. Todo o resto do plano depende de descobrir se o
+      corretor realmente prefere falar a digitar.</div>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">1.2</span><h4>Painel do corretor no navegador</h4><span class="pill p0">bloqueia tudo</span></div>
+    <p>
+      Entrar com o próprio login, ver a carteira, revisar o rascunho que a inteligência artificial
+      montou, corrigir campo, escolher a capa, publicar e ver os leads que chegaram. Hoje isso só
+      existe como comando de banco de dados.
+    </p>
+    <div class="por"><b>Decisão que vale registrar</b>
+      Fazer o painel no navegador antes do aplicativo nativo. A loja da Apple leva semanas para
+      aprovar; o navegador do celular grava áudio e acessa a câmera hoje. O aplicativo nativo entra
+      depois, quando já houver o que instalar.</div>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">1.3</span><h4>Os nove prompts de inteligência artificial</h4><span class="pill p0">bloqueia tudo</span></div>
+    <p>
+      O gateway está pronto e roteia. O que falta é o conteúdo: os prompts do transcritor, do
+      extrator, do curador de fotos, do redator, do fiscal de compliance, da faixa de preço, do
+      perfilador, do matcher e do assistente de follow-up. Cada um entra com sua suíte de teste no
+      mesmo pacote — prompt sem teste de regressão é prompt que vai alucinar em silêncio.
+    </p>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">1.4</span><h4>Os processadores rodando em produção</h4><span class="pill p1">custa dinheiro</span></div>
+    <p>
+      O tratamento de imagem e o gateway de IA são processos que ficam ligados o tempo todo. Não
+      rodam na Netlify. Precisam de um servidor pequeno — Railway, Fly ou equivalente — com
+      reinício automático e alerta quando morrem.
+    </p>
+    <div class="por"><b>Custo</b> Da ordem de US$ 5 a 20 por mês no começo. Sobe com o volume de fotos.</div>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">1.5</span><h4>Banco: CRM, matching e assinaturas</h4><span class="pill p2">depois do portão</span></div>
+    <p>
+      Três migrações que ainda não existem: funil de negócios com atividades e tarefas; busca de
+      compatibilidade comprador × imóvel com vetores; e o controle de assinatura, plano e limite.
+      As duas primeiras só devem ser construídas <strong>depois</strong> que o Piloto Zero aprovar a
+      captura. A terceira é pré-requisito para cobrar.
+    </p>
+  </div>
+</section>
+
+<section>
+  <p class="kicker">Bloco 2 · vender</p>
+  <h2>Para transformar uso em receita</h2>
+  <p>
+    Um produto que funciona e não sabe cobrar é um custo. Estes itens não aparecem em demonstração,
+    mas são o que separa um piloto de uma empresa.
+  </p>
+
+  <div class="item">
+    <div class="top"><span class="id">2.1</span><h4>Cobrança com PIX e cartão</h4><span class="pill p0">sem isso não há receita</span></div>
+    <p>
+      Escolher o meio de pagamento — Asaas, Pagar.me, Stripe ou equivalente — e ligar assinatura
+      recorrente, primeira cobrança, falha de pagamento, retentativa e cancelamento. No Brasil, PIX
+      não é opcional. A escolha está registrada como decisão pendente desde o início do projeto e
+      precisa ser tomada antes de dezembro.
+    </p>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">2.2</span><h4>Planos aplicados de verdade</h4><span class="pill p0">sem isso não há receita</span></div>
+    <p>
+      Hoje os planos existem como texto num documento. Precisam existir como regra: quantos imóveis
+      ativos, quantas capturas por mês, o que acontece quando o limite estoura, como o corretor sobe
+      de plano. O gateway já sabe cortar por orçamento — falta ligar o corte ao plano contratado.
+    </p>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">2.3</span><h4>Verificação de CRECI</h4><span class="pill p1">exigência legal</span></div>
+    <p>
+      A página pública só publica imóvel de corretor com CRECI informado. Falta a tela de
+      back-office onde alguém confere o comprovante enviado e muda o status para verificado — e o
+      aviso ao corretor quando isso acontece.
+    </p>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">2.4</span><h4>Termos de uso, política de privacidade e contrato</h4><span class="pill p1">exigência legal</span></div>
+    <p>
+      Três documentos que precisam de revisão de advogado, não de gerador de texto: os termos do
+      serviço, a política de privacidade conforme a LGPD (o Propto trata dado de terceiros — o
+      proprietário do imóvel e o interessado) e o contrato de assinatura. O produto já grava
+      consentimento versionado; falta o texto que dá lastro a ele.
+    </p>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">2.5</span><h4>Emissão de nota e enquadramento tributário</h4><span class="pill p1">exigência legal</span></div>
+    <p>
+      Software como serviço vendido por assinatura recorrente. Decidir o CNPJ que fatura, o regime,
+      a alíquota de ISS do município e como a nota é emitida a cada cobrança. Conversa de contador,
+      não de programador — mas trava o primeiro pagamento se ficar para depois.
+    </p>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">2.6</span><h4>Suporte e ajuda</h4><span class="pill p2">antes de escalar</span></div>
+    <p>
+      Um canal de contato que não seja o WhatsApp pessoal do Rodrigo, uma base de ajuda com as dez
+      dúvidas que todo corretor vai ter, e um tempo de resposta prometido. Com três corretores dá
+      para improvisar. Com trinta, não.
+    </p>
+  </div>
+</section>
+
+<section>
+  <p class="kicker">Bloco 3 · escalar</p>
+  <h2>Para aguentar centenas de corretores</h2>
+  <p>
+    O produto já nasceu com a arquitetura certa para isso — cada corretor isolado no banco, fila
+    assíncrona, custo medido por organização. O que falta é a operação em volta.
+  </p>
+
+  <div class="item">
+    <div class="top"><span class="id">3.1</span><h4>Enxergar o que está acontecendo</h4><span class="pill p0">antes do primeiro cliente pagante</span></div>
+    <p>
+      Registro de erro com alerta (Sentry ou equivalente), painel de custo de IA por organização, e
+      aviso quando a fila trava ou um processador morre. Sem isso, o primeiro corretor que tiver
+      problema vai ser a sua única fonte de informação — e ele vai cancelar antes de reclamar.
+    </p>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">3.2</span><h4>Backup com restauração testada</h4><span class="pill p0">antes do primeiro cliente pagante</span></div>
+    <p>
+      O plano pago do Supabase faz backup diário. Backup que nunca foi restaurado não é backup: é
+      esperança. Restaurar uma vez, em ambiente separado, e anotar quanto tempo levou.
+    </p>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">3.3</span><h4>Limite de taxa distribuído</h4><span class="pill p1">quando houver mais de um servidor</span></div>
+    <p>
+      O limitador de robôs do formulário público hoje vive na memória do servidor. Com uma instância
+      funciona; com várias, cada uma tem seu próprio balde e o limite deixa de valer. Está anotado
+      no código, para não virar surpresa.
+    </p>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">3.4</span><h4>Cache semântico ligado</h4><span class="pill p1">afeta a margem</span></div>
+    <p>
+      Está previsto no gateway e ainda não está ligado. A meta é reduzir em pelo menos um quinto o
+      custo de IA nas tarefas repetitivas. Não é otimização de vaidade: com margem de 42%, cada
+      ponto de custo economizado é ponto de margem.
+    </p>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">3.5</span><h4>Perfil imobiliária, com equipe</h4><span class="pill p2">segunda versão</span></div>
+    <p>
+      Multiusuário, carteira compartilhada e divisão de comissão. O modelo de dados já nasceu
+      preparado — a decisão de arquitetura está registrada desde o começo. É onde está o ticket
+      maior, e é o passo natural depois que o autônomo validar o produto.
+    </p>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">3.6</span><h4>Publicação automática nos portais</h4><span class="pill p2">segunda versão</span></div>
+    <p>
+      VivaReal, ZAP e OLX. Não é problema técnico: depende de contrato comercial com cada portal.
+      Vale começar a conversa cedo, porque o prazo é deles, não seu.
+    </p>
+  </div>
+
+  <div class="item">
+    <div class="top"><span class="id">3.7</span><h4>Aplicativos nas lojas</h4><span class="pill p1">prazo longo, comece já</span></div>
+    <p>
+      Conta de desenvolvedor da Apple e do Google, mais a revisão de cada loja. A aprovação leva
+      semanas e não depende de esforço — depende de fila. Abrir as contas agora custa pouco e
+      remove um bloqueio que só aparece no fim.
+    </p>
+  </div>
+</section>
+
+<section>
+  <p class="kicker">Bloco 4 · só você</p>
+  <h2>O que ninguém pode fazer no seu lugar</h2>
+  <p>
+    Estes itens não são construídos: são providenciados. Cada um deles trava alguma coisa mais
+    adiante, e alguns têm prazo próprio que não acelera.
+  </p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Item</th><th>Por que trava</th><th>Quando</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Registro da marca no INPI</strong></td><td>Nome bom sem registro é nome de outra pessoa esperando acontecer. Classes 42 e 36.</td><td class="n">agora</td></tr>
+        <tr><td><strong>Conta Apple Developer e Google Play</strong></td><td>A aprovação leva semanas e não acelera com esforço.</td><td class="n">agora</td></tr>
+        <tr><td><strong>30 áudios reais da sua carteira</strong></td><td>Sem eles, a precisão da extração nunca foi medida — só estimada.</td><td class="n">antes do piloto</td></tr>
+        <tr><td><strong>100 fotos reais com pessoas e carros</strong></td><td>A meta de 95% de acerto no borrão é a única meta com risco jurídico. Nunca foi medida.</td><td class="n">antes do piloto</td></tr>
+        <tr><td><strong>Decisão de preço</strong></td><td>A margem no teto do plano é 23%. Ou o preço sobe, ou o limite cai.</td><td class="n">até dezembro</td></tr>
+        <tr><td><strong>CNPJ e contador</strong></td><td>Sem nota, não há primeira cobrança.</td><td class="n">até dezembro</td></tr>
+        <tr><td><strong>Advogado para os três documentos</strong></td><td>Termos, privacidade e contrato de assinatura.</td><td class="n">até dezembro</td></tr>
+        <tr><td><strong>Chaves de IA e Supabase pago</strong></td><td>Nada com dado real de cliente roda sem isso.</td><td class="n">quando ligar a IA</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <p class="kicker">Bloco 5 · riscos</p>
+  <h2>O que pode matar o negócio</h2>
+  <p>
+    Riscos que já estão documentados no projeto, com a mitigação que existe hoje. Vale reler antes
+    de qualquer decisão grande.
+  </p>
+
+  <div class="risco">
+    <h4>A margem não fecha</h4>
+    <p>
+      No plano de R$ 97 com 40 capturas, o custo de inteligência artificial come 77% da receita. No
+      uso típico de 30 capturas, 58%. A meta de 80% de margem é de longo prazo, não do primeiro ano.
+      <strong>Mitigação:</strong> limite de capturas por plano, corte rígido de orçamento no gateway,
+      cache semântico e escolha de modelo por tarefa. <strong>Decisão pendente:</strong> preço.
+    </p>
+  </div>
+
+  <div class="risco">
+    <h4>A inteligência artificial inventa característica que o imóvel não tem</h4>
+    <p>
+      É o risco de maior gravidade do projeto, porque é jurídico e não técnico: anúncio que promete o
+      que o imóvel não entrega. <strong>Mitigação já construída:</strong> o fiscal de compliance
+      confere todo número contra o cadastro antes de qualquer leitura por modelo, campo não dito vira
+      vazio em vez de estimativa, e nada é publicado sem confirmação humana. <strong>O que
+      falta:</strong> medir com material real. A meta é zero, e uma regressão aqui deve parar a venda
+      até ser resolvida.
+    </p>
+  </div>
+
+  <div class="risco">
+    <h4>O borrão de rosto e placa deixa passar</h4>
+    <p>
+      É a única meta do produto fixada em 95%, porque falso negativo aqui é exposição jurídica.
+      <strong>Mitigação já construída:</strong> o banco recusa publicar foto não tratada — não é
+      configuração, é restrição. <strong>O que falta:</strong> as 100 fotos reais para medir o
+      acerto. Hoje o número é desconhecido.
+    </p>
+  </div>
+
+  <div class="risco">
+    <h4>Dez sprints antes de qualquer receita</h4>
+    <p>
+      <strong>Mitigação já decidida:</strong> o Piloto Zero em dezembro antecipa a validação
+      comercial em dois meses. Três corretores, duas semanas, cobrança simbólica. Se ninguém pagar
+      pela captura, o CRM não salva o produto — e não se constrói o CRM.
+    </p>
+  </div>
+
+  <div class="risco">
+    <h4>Não há folga no cronograma</h4>
+    <p>
+      O plano do MVP soma 488 pontos contra 495 de capacidade em onze sprints. Folga de 1,4% — na
+      prática, zero. <strong>Consequência prática:</strong> escopo novo só entra cortando outro item.
+      Não existe "aproveitar e fazer também".
+    </p>
+  </div>
+</section>
+
+<section>
+  <p class="kicker">Bloco 6 · ordem</p>
+  <h2>A sequência que eu recomendo</h2>
+  <p>
+    Cada passo destrava o seguinte. A ordem foi escolhida para colocar a pergunta comercial mais
+    cedo possível — antes de gastar o dinheiro caro.
+  </p>
+
+  <div class="seq">
+    <div class="p">
+      <h4>Colocar no ar o que já existe</h4>
+      <p>Site de vendas, banco em produção e a página pública com imóveis reais seus. Custa R$ 0 e já
+      dá para medir se o anúncio converte e se o lead chega.</p>
+      <div class="q">Destrava: conversa com corretor tendo algo para mostrar.</div>
+    </div>
+    <div class="p">
+      <h4>Painel do corretor no navegador</h4>
+      <p>Login, revisar, publicar, ver leads. É o que permite você e sua esposa usarem sem depender
+      de mim para cada imóvel.</p>
+      <div class="q">Destrava: uso real, todo dia, na carteira de verdade.</div>
+    </div>
+    <div class="p">
+      <h4>Captura por voz, com a IA ligada</h4>
+      <p>Gravação, transcrição, extração com confiança e áudio-âncora. Aqui entram as chaves de IA e
+      o servidor dos processadores. É o item mais caro e mais importante.</p>
+      <div class="q">Destrava: a pergunta que o Piloto Zero responde.</div>
+    </div>
+    <div class="p">
+      <h4>Tratamento de foto e redação do anúncio</h4>
+      <p>Anonimização rodando de verdade, mais o redator e o fiscal de compliance. Aqui as 100 fotos
+      e os 30 áudios reais saem do papel e viram medição.</p>
+      <div class="q">Destrava: publicar sem trabalho manual.</div>
+    </div>
+    <div class="p">
+      <h4>Cobrança e os documentos legais</h4>
+      <p>Meio de pagamento, planos aplicados, termos, privacidade, contrato e nota fiscal. Precisa
+      estar pronto <em>antes</em> do Piloto Zero, porque o piloto cobra.</p>
+      <div class="q">Destrava: receber dinheiro.</div>
+    </div>
+    <div class="p">
+      <h4>Piloto Zero — o portão</h4>
+      <p>Três corretores reais, duas semanas, valor simbólico. Critério objetivo: 70% dos imóveis por
+      voz, mediana abaixo de 15 minutos, edição leve na maioria dos anúncios e ao menos um pagando
+      por vontade própria.</p>
+      <div class="q">Passou: constrói CRM e matching. Não passou: corrige a captura, e só.</div>
+    </div>
+    <div class="p">
+      <h4>CRM, matching e escala</h4>
+      <p>Funil, busca comprador × imóvel, painel de custo, aplicativos nas lojas, observabilidade e
+      backup testado. Só depois do portão.</p>
+      <div class="q">Destrava: vender para além do círculo conhecido.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p class="kicker">Bloco 7 · custo</p>
+  <h2>O que custa manter isso ligado</h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Fase</th><th>O que está ligado</th><th>Custo mensal</th></tr></thead>
+      <tbody>
+        <tr><td>Hoje</td><td>Site e página pública, plano gratuito</td><td class="n">R$ 0</td></tr>
+        <tr><td>Com painel</td><td>Mesma coisa, ainda sem IA</td><td class="n">R$ 0</td></tr>
+        <tr><td>Com IA ligada</td><td>Chaves de IA e servidor dos processadores</td><td class="n">US$ 10–40</td></tr>
+        <tr><td>Com cliente pagando</td><td>Supabase pago, com backup diário</td><td class="n">+ US$ 25</td></tr>
+        <tr><td>Por corretor ativo</td><td>Custo de IA, no uso típico de 30 capturas</td><td class="n">R$ 56</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="aviso">
+    <b>A conta que decide o negócio</b>
+    Cada corretor no plano de R$ 97 gera R$ 41 de margem no uso típico e R$ 22 no teto do plano.
+    Dez corretores pagando cobrem a infraestrutura e sobra pouco. O produto só fica interessante
+    acima de algumas dezenas de assinantes — ou com o preço revisto. Esta é a conversa que o Piloto
+    Zero existe para informar, e ela é de dado, não de opinião.
+  </div>
+</section>
+
+<section>
+  <p class="kicker">Resumo</p>
+  <h2>Em uma frase</h2>
+  <p style="font-family:var(--display); font-size:clamp(19px,2.6vw,25px); font-weight:600; color:var(--ink); letter-spacing:-.025em; line-height:1.3; max-width:26ch; margin-top:16px">
+    A fundação está pronta e verificada. Falta a captura, o painel, a cobrança e a medição com
+    material real.
+  </p>
+  <p style="margin-top:18px; max-width:62ch; color:var(--muted)">
+    O caminho até um produto vendível em escala passa por seis itens que travam tudo — aplicativo de
+    captura, painel do corretor, prompts de IA, processadores em produção, cobrança e os documentos
+    legais — e por quatro providências que só você pode tomar, das quais duas têm prazo próprio e
+    devem começar hoje: o registro da marca e as contas das lojas.
+  </p>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Propto · um produto PrimeCorp Brokers · propto.com.br · documento de trabalho, revisto a cada sprint.</p>
+  </div>
+</footer>
+
+</body>
+</html>

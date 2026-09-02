@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 118" role="img" aria-label="Propto">
+  <title>Propto</title>
+  <g transform="translate(68 0)" color="#CC1B1B">
+    <path d="M9 31.5 32 11l23 20.5" fill="none" stroke="currentColor" stroke-width="6.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="currentColor"/>
+    <rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="currentColor"/>
+    <rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="currentColor"/>
+  </g>
+  <text x="100" y="93" text-anchor="middle" font-family="Sora, 'Segoe UI', system-ui, sans-serif"
+        font-size="32" font-weight="700" letter-spacing="-1" fill="#0F1720">Prop<tspan fill="#CC1B1B">to</tspan></text>
+  <text x="100" y="110" text-anchor="middle" font-family="Inter, system-ui, sans-serif"
+        font-size="9" letter-spacing="2.6" fill="#6B7684">SISTEMA DO CORRETOR</text>
+</svg>

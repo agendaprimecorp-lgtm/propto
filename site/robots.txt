@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /marca.html
+
+Sitemap: https://propto.com.br/sitemap.xml

@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demonstração — Propto</title>
+<meta name="description" content="Veja como o Propto transforma três minutos de voz em cadastro, fotos tratadas e anúncio publicado.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Propto">
+<meta property="og:title" content="Demonstração do Propto">
+<meta property="og:description" content="O corretor fala. O Propto entende, trata as fotos, escreve o anúncio e publica.">
+<meta property="og:image" content="https://propto.com.br/og-image.png">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#CC1B1B">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* ============================================================
+     Propto — demonstração
+     Tokens de docs/DESIGN_SYSTEM.md. Vermelho é acento (herança
+     PrimeCorp); violeta é vocabulário: marca conteúdo proposto por IA
+     e não aparece em mais nada.
+     ============================================================ */
+
+  :root {
+    --g50:#F7F8F9; --g100:#EDEFF2; --g200:#DDE1E7; --g300:#C2C9D2;
+    --g400:#939DAB; --g500:#6B7684; --g600:#4B5563; --g700:#374151;
+    --g800:#1F2937; --g900:#0F1720;
+
+    --brand:#CC1B1B; --brand-700:#A81616; --brand-50:#FEF2F2;
+    --ai:#8B5CF6; --ai-50:#F5F3FF; --ai-200:#DDD6FE;
+    --gold:#C79430;
+    --ok:#10B981; --ok-700:#047857; --warn:#F59E0B; --danger:#EF4444;
+
+    --bg:var(--g50); --surface:#FFFFFF; --surface-2:var(--g100);
+    --line:var(--g200); --line-strong:var(--g300);
+    --text:var(--g900); --muted:var(--g500); --faint:var(--g400);
+    --primary:var(--brand); --shadow:0 4px 16px rgba(15,23,32,.07);
+    --shadow-lg:0 16px 40px rgba(15,23,32,.13);
+    --focus:0 0 0 3px rgba(204,27,27,.3);
+
+    --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --display:'Sora',var(--sans);
+    --mono:'JetBrains Mono',ui-monospace,'SF Mono',monospace;
+
+    --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:20px;
+    --maxw:1180px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:var(--g900); --surface:#161E28; --surface-2:#1C2632;
+      --line:#2A3644; --line-strong:#3A4757;
+      --text:var(--g50); --muted:var(--g400); --faint:var(--g500);
+      --primary:#E03B3B; --brand-50:#2A1618; --ai-50:#221C3A; --ai-200:#4C3D8A;
+      --shadow:0 4px 16px rgba(0,0,0,.4); --shadow-lg:0 16px 40px rgba(0,0,0,.5);
+      --focus:0 0 0 3px rgba(224,59,59,.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:var(--g900); --surface:#161E28; --surface-2:#1C2632;
+    --line:#2A3644; --line-strong:#3A4757;
+    --text:var(--g50); --muted:var(--g400); --faint:var(--g500);
+    --primary:#E03B3B; --brand-50:#2A1618; --ai-50:#221C3A; --ai-200:#4C3D8A;
+    --shadow:0 4px 16px rgba(0,0,0,.4); --shadow-lg:0 16px 40px rgba(0,0,0,.5);
+    --focus:0 0 0 3px rgba(224,59,59,.4);
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:var(--sans); font-size:16px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:var(--display); text-wrap:balance; margin:0}
+  p{margin:0}
+  :focus-visible{outline:none; box-shadow:var(--focus); border-radius:var(--r-sm)}
+
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 20px}
+
+  /* ---------- cabeçalho ---------- */
+  header{border-bottom:1px solid var(--line); background:var(--surface)}
+  .head{display:flex; align-items:center; gap:16px; padding:16px 0; flex-wrap:wrap}
+  .mark{display:flex; align-items:center; gap:10px}
+  .hex{width:32px; height:32px; flex:none; color:var(--primary)}
+  .word{font-family:var(--display); font-weight:700; font-size:21px; letter-spacing:-.02em}
+  .word span{color:var(--primary)}
+  .tag{
+    font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted);
+    border:1px solid var(--line); border-radius:999px; padding:3px 9px;
+  }
+  .head-note{margin-left:auto; font-size:13px; color:var(--muted); text-align:right}
+
+  /* ---------- pitch ---------- */
+  .pitch{padding:34px 0 26px; border-bottom:1px solid var(--line)}
+  .pitch h1{font-size:clamp(26px,3.6vw,40px); line-height:1.15; font-weight:600; max-width:19ch}
+  .pitch h1 em{font-style:normal; color:var(--primary)}
+  .pitch p{margin-top:12px; color:var(--muted); max-width:62ch; font-size:16.5px}
+  .flow{
+    display:flex; flex-wrap:wrap; gap:6px; margin-top:20px;
+    font-family:var(--mono); font-size:12px; color:var(--muted);
+  }
+  .flow b{color:var(--text); font-weight:500}
+  .flow i{font-style:normal; color:var(--faint)}
+
+  /* ---------- passos ---------- */
+  .steps{
+    display:flex; gap:4px; padding:14px 0; overflow-x:auto;
+    border-bottom:1px solid var(--line); background:var(--surface);
+    position:sticky; top:0; z-index:20;
+  }
+  .step{
+    display:flex; align-items:center; gap:9px; flex:none;
+    border:1px solid transparent; background:none; cursor:pointer;
+    padding:8px 13px; border-radius:999px; color:var(--muted);
+    font-family:var(--sans); font-size:14px; font-weight:500;
+  }
+  .step:hover{background:var(--surface-2); color:var(--text)}
+  .step[aria-selected="true"]{
+    background:var(--brand-50); border-color:var(--primary); color:var(--primary);
+  }
+  .step .n{
+    font-family:var(--mono); font-size:11px; width:20px; height:20px; flex:none;
+    display:grid; place-items:center; border-radius:50%;
+    background:var(--surface-2); color:var(--muted);
+  }
+  .step[aria-selected="true"] .n{background:var(--primary); color:#fff}
+
+  /* ---------- painel ---------- */
+  .panel{display:none; padding:30px 0 56px}
+  .panel.on{display:block}
+  .split{display:grid; grid-template-columns:minmax(0,300px) minmax(0,1fr); gap:32px; align-items:start}
+  @media (max-width:860px){ .split{grid-template-columns:1fr} }
+
+  .side h2{font-size:19px; font-weight:600; margin-bottom:6px}
+  .side p{color:var(--muted); font-size:14.5px}
+  .side ul{margin:16px 0 0; padding:0; list-style:none; display:grid; gap:11px}
+  .side li{position:relative; padding-left:15px; font-size:14px; color:var(--muted); line-height:1.5}
+  .side li b{color:var(--text); font-weight:600}
+  .side li::before{
+    content:''; position:absolute; left:0; top:8px;
+    width:5px; height:5px; border-radius:50%; background:var(--line-strong);
+  }
+
+  /* ---------- celular ---------- */
+  .phone{
+    width:290px; margin:0 auto; border:9px solid var(--g800); border-radius:34px;
+    background:var(--surface); box-shadow:var(--shadow-lg); overflow:hidden;
+  }
+  :root[data-theme="dark"] .phone{border-color:#000}
+  .phone-bar{
+    background:var(--g900); color:var(--g300); font-size:10px; font-family:var(--mono);
+    padding:5px 16px; display:flex; justify-content:space-between;
+  }
+  .phone-body{padding:18px 16px 22px; min-height:392px; display:flex; flex-direction:column}
+  .phone-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px}
+  .phone-top .who{font-size:12px; color:var(--muted)}
+  .phone-top .ref{font-family:var(--mono); font-size:11px; color:var(--faint)}
+
+  /* botão de gravar */
+  .rec-area{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px}
+  .rec{
+    width:104px; height:104px; border-radius:50%; border:none; cursor:pointer;
+    background:var(--primary); color:#fff; display:grid; place-items:center;
+    box-shadow:0 6px 20px rgba(204,27,27,.34); transition:transform .15s;
+  }
+  .rec:hover{transform:scale(1.03)}
+  .rec.live{animation:pulse 1.8s ease-out infinite}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(204,27,27,.45)}
+    70%{box-shadow:0 0 0 22px rgba(204,27,27,0)}
+    100%{box-shadow:0 0 0 0 rgba(204,27,27,0)}
+  }
+  @media (prefers-reduced-motion:reduce){ .rec.live{animation:none} }
+  .rec svg{width:34px; height:34px}
+  .rec-label{font-size:13.5px; color:var(--muted); text-align:center; line-height:1.4}
+  .timer{font-family:var(--mono); font-size:26px; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+
+  .wave{display:flex; align-items:flex-end; gap:2px; height:34px}
+  .wave i{width:3px; background:var(--line-strong); border-radius:2px; transition:height .12s, background .12s}
+  .wave i.hot{background:var(--primary)}
+
+  /* ---------- cartões ---------- */
+  .card{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--r-lg); padding:18px;
+  }
+  .card + .card{margin-top:14px}
+  .card h3{font-size:15px; font-weight:600; margin-bottom:3px}
+  .card .sub{font-size:13px; color:var(--muted)}
+
+  .badge{
+    display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600;
+    padding:3px 8px; border-radius:999px; letter-spacing:.02em;
+  }
+  .badge.ai{background:var(--ai-50); color:var(--ai); border:1px solid var(--ai-200)}
+  .badge.ok{background:rgba(16,185,129,.12); color:var(--ok-700)}
+  .badge.warn{background:rgba(245,158,11,.14); color:#946200}
+  .badge.pub{background:rgba(16,185,129,.12); color:var(--ok-700)}
+  .badge.draft{background:var(--surface-2); color:var(--muted)}
+  :root[data-theme="dark"] .badge.ok,:root[data-theme="dark"] .badge.pub{color:#34D399}
+  :root[data-theme="dark"] .badge.warn{color:#FCD34D}
+
+  /* transcrição */
+  .transcript{
+    font-size:14.5px; line-height:1.75; color:var(--muted);
+    background:var(--surface-2); border-radius:var(--r-md); padding:14px;
+  }
+  .transcript mark{
+    background:transparent; color:var(--text); padding:1px 2px; border-radius:3px;
+    transition:background .2s;
+  }
+  .transcript mark.lit{background:var(--ai-50); color:var(--ai); font-weight:500}
+
+  /* campo em revisão — o coração do produto */
+  .fields{display:grid; gap:11px}
+  .field{
+    border:1px solid var(--ai-200); border-radius:var(--r-md);
+    padding:13px 14px; background:var(--surface); transition:border-color .2s, background .2s;
+  }
+  .field.done{border-color:var(--line); background:var(--surface)}
+  .field-top{display:flex; align-items:center; gap:9px; margin-bottom:7px}
+  .field-name{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--muted)}
+  .field-meta{margin-left:auto; display:flex; align-items:center; gap:9px}
+  .conf{display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:11.5px; color:var(--muted)}
+  .conf .bar{width:44px; height:5px; border-radius:3px; background:var(--surface-2); overflow:hidden}
+  .conf .bar i{display:block; height:100%; border-radius:3px}
+  .field-value{
+    font-family:var(--display); font-size:19px; font-weight:600; letter-spacing:-.01em;
+    font-variant-numeric:tabular-nums;
+  }
+  .field-foot{display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap}
+  .anchor{
+    display:inline-flex; align-items:center; gap:6px; cursor:pointer;
+    border:1px solid var(--line); background:var(--surface-2); color:var(--muted);
+    border-radius:999px; padding:4px 10px; font-family:var(--mono); font-size:11.5px;
+  }
+  .anchor:hover{border-color:var(--ai); color:var(--ai)}
+  .anchor svg{width:11px; height:11px}
+  .btn{
+    border:1px solid var(--line-strong); background:var(--surface); color:var(--text);
+    border-radius:var(--r-sm); padding:5px 12px; font-size:13px; font-weight:500;
+    cursor:pointer; font-family:var(--sans);
+  }
+  .btn:hover{border-color:var(--text)}
+  .btn.go{background:var(--text); color:var(--bg); border-color:var(--text)}
+  .btn.brand{background:var(--primary); color:#fff; border-color:var(--primary)}
+  .btn.brand:hover{background:var(--brand-700); border-color:var(--brand-700)}
+  .btn[disabled]{opacity:.45; cursor:not-allowed}
+  .must{font-size:12px; color:var(--warn); font-weight:600}
+
+  .progress{
+    display:flex; align-items:center; gap:11px; margin-top:16px; padding-top:14px;
+    border-top:1px solid var(--line); font-size:13.5px; color:var(--muted);
+  }
+  .progress .track{flex:1; height:6px; border-radius:3px; background:var(--surface-2); overflow:hidden}
+  .progress .track i{display:block; height:100%; background:var(--ok); transition:width .3s}
+
+  /* fotos */
+  .grid-photos{display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:12px}
+  .photo{border:1px solid var(--line); border-radius:var(--r-md); overflow:hidden; background:var(--surface)}
+  .photo .img{height:104px; position:relative; display:grid; place-items:center}
+  .photo .img span{
+    font-family:var(--mono); font-size:10.5px; color:rgba(255,255,255,.92);
+    background:rgba(15,23,32,.42); padding:2px 7px; border-radius:999px;
+  }
+  .blob{position:absolute; border-radius:50%}
+  .photo .cap{padding:9px 10px; font-size:12px; color:var(--muted); line-height:1.4}
+  .photo .cap b{display:block; color:var(--text); font-weight:600; font-size:12.5px; margin-bottom:2px}
+  .face{
+    position:absolute; width:30px; height:30px; border-radius:50%;
+    background:#D9A87C; left:16px; top:22px;
+  }
+  .face.blurred{filter:blur(9px)}
+  .plate{
+    position:absolute; right:14px; bottom:20px; width:44px; height:16px; border-radius:3px;
+    background:#EDEFF2; color:#1F2937; font-family:var(--mono); font-size:8px;
+    display:grid; place-items:center; letter-spacing:.04em;
+  }
+  .plate.blurred{filter:blur(5px)}
+  .toggle-row{display:flex; align-items:center; gap:10px; margin-top:13px; flex-wrap:wrap}
+
+  /* página pública */
+  .browser{border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--shadow)}
+  .browser-bar{
+    display:flex; align-items:center; gap:8px; padding:9px 12px;
+    background:var(--surface-2); border-bottom:1px solid var(--line);
+  }
+  .dot{width:9px; height:9px; border-radius:50%; background:var(--line-strong)}
+  .url{
+    flex:1; background:var(--surface); border:1px solid var(--line); border-radius:999px;
+    padding:4px 12px; font-family:var(--mono); font-size:11px; color:var(--muted);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .pub{background:var(--surface)}
+  .hero{height:210px; position:relative; overflow:hidden; padding:16px;
+        display:flex; align-items:flex-end; justify-content:space-between}
+  .hero .illus{
+    position:absolute; inset:0; opacity:.5;
+    background:
+      linear-gradient(115deg, rgba(255,255,255,.16) 0 42%, transparent 42%),
+      radial-gradient(circle at 74% 26%, rgba(255,255,255,.22), transparent 46%),
+      linear-gradient(0deg, rgba(15,23,32,.34), transparent 55%);
+  }
+  .hero .count, .hero .ilabel{position:relative}
+  .hero .ilabel{
+    font-family:var(--mono); font-size:10px; color:rgba(255,255,255,.86);
+    background:rgba(15,23,32,.42); padding:3px 9px; border-radius:999px;
+  }
+  .hero .count{
+    font-family:var(--mono); font-size:11px; color:#fff; background:rgba(15,23,32,.5);
+    padding:3px 9px; border-radius:999px;
+  }
+  .pub-body{padding:20px}
+  .price{font-family:var(--display); font-size:34px; font-weight:700; letter-spacing:-.025em; font-variant-numeric:tabular-nums}
+  .pub-title{font-family:var(--display); font-size:18px; font-weight:600; margin-top:5px}
+  .pub-loc{color:var(--muted); font-size:14px; margin-top:2px}
+  .specs{
+    display:flex; flex-wrap:wrap; gap:20px; margin:18px 0; padding:15px 0;
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  .spec{display:flex; flex-direction:column; gap:1px}
+  .spec b{font-family:var(--display); font-size:17px; font-weight:600; font-variant-numeric:tabular-nums}
+  .spec span{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
+  .pub-desc{font-size:14.5px; line-height:1.65; color:var(--muted); max-width:62ch}
+  .facts{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:18px; }
+  @media (max-width:620px){ .facts{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  .fact{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
+    padding:11px 13px; font-size:13.5px;
+    display:flex; flex-direction:column; gap:2px; min-width:0;
+  }
+  .fact span{color:var(--muted)}
+  .fact b{font-weight:600; font-variant-numeric:tabular-nums}
+  .broker{display:flex; align-items:center; gap:12px; margin-top:20px; padding-top:18px; border-top:1px solid var(--line)}
+  .avatar{width:42px; height:42px; border-radius:50%; background:var(--g800); color:#fff; display:grid; place-items:center; font-family:var(--display); font-weight:600; font-size:15px}
+  .broker .nm{font-weight:600; font-size:14.5px}
+  .broker .cr{font-family:var(--mono); font-size:12px; color:var(--muted)}
+  .legal{margin-top:18px; font-size:12px; line-height:1.6; color:var(--muted); border-top:1px solid var(--line); padding-top:14px}
+  .cta{
+    position:sticky; bottom:0; display:flex; align-items:center; justify-content:center; gap:9px;
+    background:#12A150; color:#fff; padding:13px; font-weight:600; font-size:15px;
+  }
+
+  /* estado / construído */
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(168px,1fr)); gap:14px; margin-top:20px}
+  .stat{border:1px solid var(--line); border-radius:var(--r-md); padding:14px; background:var(--surface)}
+  .stat b{display:block; font-family:var(--display); font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+  .stat span{font-size:12.5px; color:var(--muted)}
+  table{width:100%; border-collapse:collapse; font-size:14px; margin-top:8px}
+  th,td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:600}
+  td.n{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .scroll{overflow-x:auto}
+
+  footer{border-top:1px solid var(--line); padding:22px 0 40px; font-size:13px; color:var(--muted)}
+  .note{
+    font-size:12.5px; color:var(--muted); background:var(--surface-2);
+    border-left:2px solid var(--line-strong); padding:9px 13px; border-radius:0 var(--r-sm) var(--r-sm) 0;
+  }
+
+  /* barra do site sobre a demonstração */
+  .site-top{
+    display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+    max-width:1180px; margin:0 auto; padding:12px 20px;
+    border-bottom:1px solid var(--line);
+  }
+  .site-top .logo{display:inline-flex; align-items:center; gap:9px; text-decoration:none; color:inherit}
+  .site-top .logo svg{width:27px; height:27px; color:var(--primary)}
+  .site-top .wm{font-family:var(--display); font-weight:700; font-size:19px; letter-spacing:-.03em}
+  .site-top .wm i{font-style:normal; color:var(--primary)}
+  .site-top nav{display:flex; gap:16px; align-items:center; margin-left:auto; flex-wrap:wrap}
+  .site-top nav a{color:var(--muted); text-decoration:none; font-size:14px; font-weight:500}
+  .site-top nav a:hover{color:var(--text)}
+  .site-top nav a.cta{
+    background:var(--primary); color:#fff; padding:7px 14px; border-radius:6px; font-weight:600;
+  }
+
+</style>
+</head>
+<body>
+<header class="site-top">
+  <a class="logo" href="/" aria-label="Propto, início">
+    <svg viewBox="0 0 64 64" aria-hidden="true">
+      <path d="M9 31.5 32 11l23 20.5" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="currentColor"/>
+      <rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="currentColor"/>
+      <rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="currentColor"/>
+    </svg>
+    <span class="wm">Prop<i>to</i></span>
+  </a>
+  <nav>
+    <a href="/">Início</a>
+    <a href="/imovel.html">Exemplo de anúncio</a>
+    <a class="cta" href="/#falar">Entrar no piloto</a>
+  </nav>
+</header>
+
+
+<header>
+  <div class="wrap head">
+    <div class="mark">
+      <svg class="hex" viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M9 31.5 32 11l23 20.5" fill="none" stroke="currentColor" stroke-width="6.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="currentColor"/>
+        <rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="currentColor"/>
+        <rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="currentColor"/>
+      </svg>
+      <div>
+        <div class="word">Prop<span>to</span></div>
+      </div>
+    </div>
+    <span class="tag">Demonstração</span>
+    <div class="head-note">
+      PrimeCorp Brokers<br>Campinas · Sumaré / SP
+    </div>
+  </div>
+</header>
+
+<section class="wrap pitch">
+  <h1>O corretor fala. O <em>Propto</em> faz o resto.</h1>
+  <p>
+    Três minutos de voz na porta do imóvel viram cadastro, fotos tratadas, anúncio escrito
+    e página pública. O corretor confirma o que a máquina propôs — e é só isso que ele faz.
+  </p>
+  <div class="flow">
+    <b>fala</b><i>→</i><b>entende</b><i>→</i><b>organiza</b><i>→</i><b>trata</b><i>→</i>
+    <b>escreve</b><i>→</i><b>apresenta</b><i>→</i><b>publica</b><i>→</i><b>acompanha</b>
+  </div>
+</section>
+
+<nav class="wrap steps" role="tablist" aria-label="Etapas da captura">
+  <button class="step" role="tab" aria-selected="true" data-panel="p1"><span class="n">1</span>Gravar</button>
+  <button class="step" role="tab" aria-selected="false" data-panel="p2"><span class="n">2</span>Revisar</button>
+  <button class="step" role="tab" aria-selected="false" data-panel="p3"><span class="n">3</span>Tratar fotos</button>
+  <button class="step" role="tab" aria-selected="false" data-panel="p4"><span class="n">4</span>Publicar</button>
+  <button class="step" role="tab" aria-selected="false" data-panel="p5"><span class="n">5</span>O que existe hoje</button>
+</nav>
+
+<!-- ============ 1. GRAVAR ============ -->
+<main class="wrap panel on" id="p1" role="tabpanel">
+  <div class="split">
+    <div class="side">
+      <h2>Um botão, três minutos</h2>
+      <p>O corretor chega, aperta e fala como falaria com um colega. Nada de formulário em pé, no corredor do prédio.</p>
+      <ul>
+        <li><b>Grava com a tela apagada</b> e o celular no bolso.</li>
+        <li><b>Funciona sem internet.</b> O áudio entra numa fila local e sobe sozinho quando a rede volta.</li>
+        <li><b>Ligação recebida não perde nada</b> — o trecho já falado fica salvo.</li>
+      </ul>
+      <p class="note" style="margin-top:16px">Toque no botão para simular a gravação.</p>
+    </div>
+
+    <div>
+      <div class="phone">
+        <div class="phone-bar"><span>9:41</span><span>4G · 12%</span></div>
+        <div class="phone-body">
+          <div class="phone-top">
+            <span class="who">Rodrigo · Cambuí</span>
+            <span class="ref">PRP-000001</span>
+          </div>
+          <div class="rec-area">
+            <button class="rec" id="rec" aria-label="Gravar">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Z"/>
+                <path d="M18 11a1 1 0 1 0-2 0 4 4 0 0 1-8 0 1 1 0 1 0-2 0 6 6 0 0 0 5 5.9V19H9a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2h-2v-2.1A6 6 0 0 0 18 11Z"/>
+              </svg>
+            </button>
+            <div class="timer" id="timer">00:00</div>
+            <div class="wave" id="wave" aria-hidden="true"></div>
+            <div class="rec-label" id="recLabel">Toque para gravar<br>o que você vê do imóvel</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:24px" id="transcriptCard" hidden>
+    <div class="field-top">
+      <h3>Transcrição</h3>
+      <div class="field-meta"><span class="badge ai">✦ IA</span></div>
+    </div>
+    <p class="sub" style="margin-bottom:12px">Whisper, português brasileiro, com glossário do setor: suíte, vaga, IPTU, permuta, escritura.</p>
+    <p class="transcript" id="transcript"></p>
+  </div>
+</main>
+
+<!-- ============ 2. REVISAR ============ -->
+<section class="wrap panel" id="p2" role="tabpanel">
+  <div class="split">
+    <div class="side">
+      <h2>Cada campo mostra de onde veio</h2>
+      <p>Este é o detalhe que faz o corretor confiar: ao lado de cada dado, o trecho exato do áudio que o originou.</p>
+      <ul>
+        <li><b>Confiança abaixo de 0,70</b> exige confirmação explícita — não passa em silêncio.</li>
+        <li><b>O que o corretor corrige sempre vence</b> o que a máquina propôs.</li>
+        <li><b>Nada é publicado sozinho.</b> O banco registra quem confirmou e quando.</li>
+      </ul>
+      <p class="note" style="margin-top:16px">Toque no marcador de tempo para ver o trecho no áudio.</p>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="field-top">
+          <h3>Revisão do rascunho</h3>
+          <div class="field-meta"><span class="badge ai">✦ proposto por IA</span></div>
+        </div>
+        <p class="sub" style="margin-bottom:14px">Apartamento · Cambuí, Campinas/SP · <span style="font-family:var(--mono)">PRP-000001</span></p>
+
+        <p class="transcript" id="transcript2" style="margin-bottom:16px"></p>
+
+        <div class="fields" id="fields"></div>
+
+        <div class="progress">
+          <span id="progressLabel">0 de 5 confirmados</span>
+          <span class="track"><i id="progressBar" style="width:0%"></i></span>
+          <button class="btn go" id="applyBtn" disabled>Aplicar ao imóvel</button>
+        </div>
+        <p class="sub" id="applied" hidden style="margin-top:12px; color:var(--ok-700)">
+          ✓ Rascunho aplicado. Imóvel em <b>revisão</b>, marcado como gerado por IA, com autoria registrada em auditoria.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>O que a IA propôs e o sistema recusou</h3>
+        <p class="sub" style="margin-bottom:12px">O modelo devolveu três campos fora do que ele pode escrever. Todos ignorados.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Campo proposto</th><th>Valor</th><th>Por que não passou</th></tr></thead>
+            <tbody>
+              <tr><td class="n">status</td><td class="n">publicado</td><td>A IA não publica. Só um humano identificado publica.</td></tr>
+              <tr><td class="n">slug</td><td class="n">tentativa-de-publicar</td><td>Endereço público é gerado pelo sistema, na publicação.</td></tr>
+              <tr><td class="n">org_id</td><td class="n">outra organização</td><td>Imóvel não muda de dono por texto vindo de um modelo.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. FOTOS ============ -->
+<section class="wrap panel" id="p3" role="tabpanel">
+  <div class="split">
+    <div class="side">
+      <h2>Fotografe e esqueça</h2>
+      <p>O corretor tira 20 fotos e vai embora. O tratamento acontece sozinho, e não é opcional.</p>
+      <ul>
+        <li><b>Rosto e placa são borrados</b> antes de qualquer coisa. Etapa bloqueante.</li>
+        <li><b>EXIF removido</b> — o GPS embutido na foto revelaria o endereço que o corretor escolheu ocultar.</li>
+        <li><b>Ambiente classificado</b>, capa sugerida, foto repetida descartada.</li>
+        <li><b>Se a análise falhar, o trabalho falha.</b> A foto não segue sem blur.</li>
+      </ul>
+      <p class="note" style="margin-top:16px">As imagens abaixo são ilustrações da demonstração, não fotos reais.</p>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="field-top">
+          <h3>Anonimização</h3>
+          <div class="field-meta"><span class="badge ok" id="blurBadge">blur aplicado</span></div>
+        </div>
+        <p class="sub">Recorta a região, borra e cola de volta — só o rosto some; o imóvel continua nítido.</p>
+        <div class="toggle-row">
+          <button class="btn" id="blurToggle">Ver como chegou do celular</button>
+          <span class="sub" id="blurState">Mostrando a versão que vai ao ar</span>
+        </div>
+        <div class="grid-photos" id="photos" style="margin-top:14px"></div>
+      </div>
+
+      <div class="card">
+        <h3>O que o banco recusa</h3>
+        <p class="sub" style="margin-bottom:12px">Três travas independentes, verificadas por teste automático.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Tentativa</th><th>Resultado</th></tr></thead>
+            <tbody>
+              <tr><td>Corretor marca a própria foto como anonimizada</td><td>Recusado — ele não escreve esse campo</td></tr>
+              <tr><td>Worker marca como pronta sem blur</td><td>Recusado pela restrição da tabela</td></tr>
+              <tr><td>Publicar anúncio sem nenhuma foto tratada</td><td>Recusado na publicação</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. PUBLICAR ============ -->
+<section class="wrap panel" id="p4" role="tabpanel">
+  <div class="split">
+    <div class="side">
+      <h2>Um link que vende</h2>
+      <p>Endereço próprio, prévia correta no WhatsApp, CRECI à vista e o botão que importa fixo no rodapé.</p>
+      <ul>
+        <li><b>Todo número do texto</b> é conferido contra o cadastro antes de liberar.</li>
+        <li><b>Promessa e superlativo sem base</b> são bloqueados — anúncio é oferta, e oferta falsa tem consequência.</li>
+        <li><b>Privacidade do endereço</b> escolhida pelo corretor: exato, rua ou bairro.</li>
+        <li><b>Cada visita e cada clique</b> viram evento, sem guardar IP em claro.</li>
+      </ul>
+    </div>
+
+    <div class="browser">
+      <div class="browser-bar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="url">propto.com.br/i/apartamento-3-dormitorios-no-cambui-cambui-campinas-prp-000001</span>
+      </div>
+      <div class="pub">
+        <div class="hero" id="pubHero">
+          <span class="illus" aria-hidden="true"></span>
+          <span class="count">1 / 24</span>
+          <span class="ilabel">imagem ilustrativa</span>
+        </div>
+        <div class="pub-body">
+          <div class="price">R$ 890.000</div>
+          <div class="pub-title">Apartamento 3 dormitórios no Cambuí</div>
+          <div class="pub-loc">Cambuí · Campinas / SP</div>
+
+          <div class="specs">
+            <div class="spec"><b>3</b><span>dormitórios</span></div>
+            <div class="spec"><b>1</b><span>suíte</span></div>
+            <div class="spec"><b>2</b><span>banheiros</span></div>
+            <div class="spec"><b>2</b><span>vagas</span></div>
+            <div class="spec"><b>98 m²</b><span>área útil</span></div>
+          </div>
+
+          <p class="pub-desc">
+            Apartamento de 98 m² úteis no Cambuí, com sala em dois ambientes, varanda e cozinha
+            planejada. São três dormitórios, sendo um suíte, e dois banheiros. O edifício tem
+            portaria 24 horas e o imóvel conta com duas vagas cobertas.
+          </p>
+          <p class="pub-desc" style="margin-top:12px">
+            Condomínio de R$ 980 e IPTU anual de R$ 3.200. Escritura registrada. Aceita financiamento.
+          </p>
+
+          <div class="facts">
+            <div class="fact"><span>Área total</span><b>120 m²</b></div>
+            <div class="fact"><span>Ano</span><b>2015</b></div>
+            <div class="fact"><span>Condomínio</span><b>R$ 980</b></div>
+            <div class="fact"><span>IPTU / ano</span><b>R$ 3.200</b></div>
+            <div class="fact"><span>Documentação</span><b>Escritura</b></div>
+            <div class="fact"><span>Financiamento</span><b>Aceita</b></div>
+          </div>
+
+          <div class="broker">
+            <div class="avatar">RV</div>
+            <div>
+              <div class="nm">Rodrigo França Viana</div>
+              <div class="cr">CRECI-SP 123456-F</div>
+            </div>
+            <span class="badge pub" style="margin-left:auto">Publicado</span>
+          </div>
+
+          <p class="legal">
+            Informações fornecidas pelo anunciante e sujeitas a confirmação. Valores e condições podem
+            sofrer alteração sem aviso prévio. Descrição gerada com auxílio de inteligência artificial
+            e revisada pelo corretor responsável.
+          </p>
+        </div>
+        <div class="cta">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+            <path d="M12 2a10 10 0 0 0-8.7 15l-1.2 4.4 4.5-1.2A10 10 0 1 0 12 2Zm5.8 14.1c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.8-.6-3.1-1.3-5.1-4.4-5.3-4.6-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4-.1.7.5l.9 2.1c.1.2.1.4 0 .6l-.4.5-.3.4c-.1.1-.3.3-.1.6.1.3.7 1.2 1.5 1.9 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.9-1c.2-.2.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.2.1.8-.2 1.7Z"/>
+          </svg>
+          Falar no WhatsApp
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. ESTADO ============ -->
+<section class="wrap panel" id="p5" role="tabpanel">
+  <h2 style="font-size:21px; font-weight:600">O que já está construído e verificado</h2>
+  <p style="color:var(--muted); margin-top:6px; max-width:66ch">
+    Esta demonstração é uma simulação da interface. O que está abaixo é código real, executado —
+    banco, fila e serviços rodando contra Postgres de verdade.
+  </p>
+
+  <div class="stats">
+    <div class="stat"><b>217</b><span>verificações automáticas, todas verdes</span></div>
+    <div class="stat"><b>6</b><span>migrations de banco aplicadas</span></div>
+    <div class="stat"><b>13</b><span>tabelas com isolamento por corretor</span></div>
+    <div class="stat"><b>0</b><span>alucinações toleradas — bloqueia o merge</span></div>
+  </div>
+
+  <div class="card" style="margin-top:22px">
+    <h3>Camadas</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Camada</th><th>Estado</th><th class="n">Verificação</th></tr></thead>
+        <tbody>
+          <tr><td>Banco — organizações, imóveis, captura, mídia</td><td>Pronto</td><td class="n">133</td></tr>
+          <tr><td>Fila assíncrona com 8 workers concorrentes</td><td>Pronto</td><td class="n">30</td></tr>
+          <tr><td>AI Gateway — roteamento, fallback, custo</td><td>Pronto</td><td class="n">25</td></tr>
+          <tr><td>media-worker — blur, EXIF, derivadas</td><td>Pronto</td><td class="n">29</td></tr>
+          <tr><td>App do corretor (Expo)</td><td>Não construído</td><td class="n">—</td></tr>
+          <tr><td>Painel e página pública (Next.js)</td><td>Não construído</td><td class="n">—</td></tr>
+          <tr><td>CRM e matching</td><td>Não construído</td><td class="n">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Custo de IA por imóvel</h3>
+    <p class="sub" style="margin-bottom:10px">Estimativa da tabela de preços do gateway. O teto de alerta é R$ 3,00.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Etapa</th><th class="n">Custo</th></tr></thead>
+        <tbody>
+          <tr><td>Transcrição de 5 minutos</td><td class="n">R$ 0,10</td></tr>
+          <tr><td>Extração dos dados do imóvel</td><td class="n">R$ 0,35</td></tr>
+          <tr><td>Classificação de 20 fotos</td><td class="n">R$ 0,60</td></tr>
+          <tr><td>Redação do anúncio</td><td class="n">R$ 0,55</td></tr>
+          <tr><td>Verificação de conformidade</td><td class="n">R$ 0,25</td></tr>
+          <tr><td>Vetor para matching</td><td class="n">R$ 0,02</td></tr>
+          <tr><td><b>Total por imóvel</b></td><td class="n"><b>R$ 1,87</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Propto — sistema operacional do corretor. PrimeCorp Brokers Consultoria e Intermediação de Negócios Ltda.<br>
+    Demonstração de interface: os dados são de exemplo e as imagens são ilustrações.
+  </div>
+</footer>
+
+<script>
+(() => {
+  'use strict';
+
+  // ---------- dados reais do seed de desenvolvimento ----------
+  const FALA = [
+    { t:'É um apartamento de ', k:null },
+    { t:'três dormitórios sendo uma suíte', k:'dorm' },
+    { t:', no ', k:null },
+    { t:'Cambuí, em Campinas', k:'bairro' },
+    { t:'. Tem ', k:null },
+    { t:'duas vagas cobertas', k:'vagas' },
+    { t:'. Tá pedindo ', k:null },
+    { t:'oitocentos e noventa mil', k:'preco' },
+    { t:'. Condomínio ', k:null },
+    { t:'novecentos e oitenta', k:'cond' },
+    { t:'.', k:null },
+  ];
+
+  const CAMPOS = [
+    { k:'dorm',  nome:'Dormitórios',  valor:'3',            conf:0.98, ini:'00:00', fim:'00:06' },
+    { k:'vagas', nome:'Vagas',        valor:'2 cobertas',   conf:0.90, ini:'00:08', fim:'00:11' },
+    { k:'preco', nome:'Preço',        valor:'R$ 890.000',   conf:0.82, ini:'00:11', fim:'00:16' },
+    { k:'bairro',nome:'Bairro',       valor:'Cambuí',       conf:0.78, ini:'00:06', fim:'00:08' },
+    { k:'cond',  nome:'Condomínio',   valor:'R$ 980',       conf:0.61, ini:'00:16', fim:'00:19' },
+  ];
+
+  const FOTOS = [
+    { nome:'Fachada', amb:'fachada', cap:'Fachada do edifício com portaria.', capa:true,  rosto:false, placa:true,  a:'#8FA3B8', b:'#5C7186' },
+    { nome:'Sala',    amb:'sala',    cap:'Sala em dois ambientes com varanda.', capa:false, rosto:true,  placa:false, a:'#D8C9B4', b:'#A48F73' },
+    { nome:'Cozinha', amb:'cozinha', cap:'Cozinha planejada com área de serviço.', capa:false, rosto:false, placa:false, a:'#C9D4D8', b:'#8FA5AD' },
+    { nome:'Quarto',  amb:'quarto',  cap:'Dormitório com armário embutido.', capa:false, rosto:false, placa:false, a:'#CFC6D8', b:'#9C8EAE' },
+  ];
+
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+  // ---------- navegação por etapa ----------
+  $$('.step').forEach((b) => {
+    b.addEventListener('click', () => {
+      $$('.step').forEach((x) => x.setAttribute('aria-selected', String(x === b)));
+      $$('.panel').forEach((p) => p.classList.toggle('on', p.id === b.dataset.panel));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // ---------- 1. gravação ----------
+  const rec = $('#rec'), timer = $('#timer'), wave = $('#wave');
+  const recLabel = $('#recLabel'), tCard = $('#transcriptCard');
+  for (let i = 0; i < 22; i++) {
+    const bar = document.createElement('i');
+    bar.style.height = '4px';
+    wave.appendChild(bar);
+  }
+  const bars = $$('i', wave);
+  let gravando = false, seg = 0, tick = null, anim = null;
+
+  function mmss(s) {
+    return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+  }
+
+  function pintaTranscricao(alvo) {
+    alvo.innerHTML = '';
+    FALA.forEach((p) => {
+      if (p.k) {
+        const m = document.createElement('mark');
+        m.textContent = p.t;
+        m.dataset.k = p.k;
+        alvo.appendChild(m);
+      } else {
+        alvo.appendChild(document.createTextNode(p.t));
+      }
+    });
+  }
+
+  function pararGravacao() {
+    gravando = false;
+    rec.classList.remove('live');
+    clearInterval(tick); cancelAnimationFrame(anim);
+    bars.forEach((b) => { b.style.height = '4px'; b.classList.remove('hot'); });
+    recLabel.innerHTML = 'Enviado. <b>Transcrevendo…</b>';
+    setTimeout(() => {
+      recLabel.innerHTML = 'Rascunho pronto.<br>Vá para <b>Revisar</b>.';
+      tCard.hidden = false;
+      pintaTranscricao($('#transcript'));
+    }, 900);
+  }
+
+  rec.addEventListener('click', () => {
+    if (gravando) { pararGravacao(); return; }
+    gravando = true; seg = 0;
+    rec.classList.add('live');
+    recLabel.innerHTML = 'Gravando. Pode guardar o celular —<br>continua com a tela apagada.';
+    tCard.hidden = true;
+    timer.textContent = '00:00';
+
+    tick = setInterval(() => {
+      seg += 1;
+      timer.textContent = mmss(seg);
+      if (seg >= 19) pararGravacao();
+    }, 1000);
+
+    const mover = () => {
+      if (!gravando) return;
+      bars.forEach((b, i) => {
+        const h = 4 + Math.abs(Math.sin(Date.now() / 220 + i * 0.7)) * 26;
+        b.style.height = h.toFixed(0) + 'px';
+        b.classList.toggle('hot', h > 20);
+      });
+      anim = requestAnimationFrame(mover);
+    };
+    mover();
+  });
+
+  // ---------- 2. revisão ----------
+  pintaTranscricao($('#transcript2'));
+
+  const fields = $('#fields');
+  const confirmados = new Set();
+
+  function corConf(c) {
+    if (c >= 0.85) return 'var(--ok)';
+    if (c >= 0.70) return 'var(--warn)';
+    return 'var(--danger)';
+  }
+
+  CAMPOS.forEach((c) => {
+    const el = document.createElement('div');
+    el.className = 'field';
+    el.dataset.k = c.k;
+    const exige = c.conf < 0.70;
+    el.innerHTML = `
+      <div class="field-top">
+        <span class="field-name">${c.nome}</span>
+        <div class="field-meta">
+          <span class="badge ai">✦ IA</span>
+          <span class="conf" title="Confiança da extração">
+            <span class="bar"><i style="width:${(c.conf * 100).toFixed(0)}%; background:${corConf(c.conf)}"></i></span>
+            ${c.conf.toFixed(2).replace('.', ',')}
+          </span>
+        </div>
+      </div>
+      <div class="field-value">${c.valor}</div>
+      <div class="field-foot">
+        <button class="anchor" data-k="${c.k}" aria-label="Ouvir o trecho de ${c.ini} a ${c.fim}">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          ${c.ini} – ${c.fim}
+        </button>
+        ${exige ? '<span class="must">confirmação obrigatória</span>' : ''}
+        <button class="btn brand confirm" data-k="${c.k}" style="margin-left:auto">Confirmar</button>
+      </div>`;
+    fields.appendChild(el);
+  });
+
+  function realce(k) {
+    $$('#transcript2 mark').forEach((m) => m.classList.toggle('lit', m.dataset.k === k));
+    setTimeout(() => $$('#transcript2 mark').forEach((m) => m.classList.remove('lit')), 2200);
+  }
+
+  fields.addEventListener('click', (e) => {
+    const anchor = e.target.closest('.anchor');
+    if (anchor) { realce(anchor.dataset.k); return; }
+
+    const btn = e.target.closest('.confirm');
+    if (!btn) return;
+    const k = btn.dataset.k;
+    confirmados.add(k);
+    const campo = fields.querySelector(`.field[data-k="${k}"]`);
+    campo.classList.add('done');
+    $('.badge', campo).outerHTML = '<span class="badge ok">✓ confirmado</span>';
+    const must = $('.must', campo); if (must) must.remove();
+    btn.outerHTML = '<span class="sub" style="margin-left:auto">confirmado por Rodrigo</span>';
+
+    const n = confirmados.size, total = CAMPOS.length;
+    $('#progressLabel').textContent = `${n} de ${total} confirmados`;
+    $('#progressBar').style.width = (n / total * 100) + '%';
+    if (n === total) {
+      $('#applyBtn').disabled = false;
+      $('#applyBtn').classList.add('brand');
+    }
+  });
+
+  $('#applyBtn').addEventListener('click', () => {
+    $('#applied').hidden = false;
+    const b = $('#applyBtn');
+    b.disabled = true;
+    b.classList.remove('brand');
+    b.textContent = '✓ Aplicado';
+  });
+
+  // ---------- 3. fotos ----------
+  const photos = $('#photos');
+  let borrado = true;
+
+  function desenhaFotos() {
+    photos.innerHTML = '';
+    FOTOS.forEach((f) => {
+      const el = document.createElement('div');
+      el.className = 'photo';
+      el.innerHTML = `
+        <div class="img" style="background:linear-gradient(140deg,${f.a},${f.b})">
+          <div class="blob" style="width:58px;height:58px;background:rgba(255,255,255,.16);left:52%;top:14%"></div>
+          <div class="blob" style="width:34px;height:34px;background:rgba(0,0,0,.10);left:18%;bottom:10%"></div>
+          ${f.rosto ? `<div class="face ${borrado ? 'blurred' : ''}"></div>` : ''}
+          ${f.placa ? `<div class="plate ${borrado ? 'blurred' : ''}">ABC1D23</div>` : ''}
+          <span>${f.capa ? 'capa · ' : ''}${f.amb}</span>
+        </div>
+        <div class="cap"><b>${f.nome}</b>${f.cap}</div>`;
+      photos.appendChild(el);
+    });
+  }
+  desenhaFotos();
+
+  $('#blurToggle').addEventListener('click', () => {
+    borrado = !borrado;
+    desenhaFotos();
+    $('#blurToggle').textContent = borrado ? 'Ver como chegou do celular' : 'Ver a versão tratada';
+    $('#blurState').textContent = borrado
+      ? 'Mostrando a versão que vai ao ar'
+      : 'Original — rosto e placa expostos. Esta versão nunca sai do armazenamento privado.';
+    const badge = $('#blurBadge');
+    badge.textContent = borrado ? 'blur aplicado' : 'sem tratamento';
+    badge.className = borrado ? 'badge ok' : 'badge warn';
+  });
+
+  // ---------- 4. capa da página pública ----------
+  const hero = $('#pubHero');
+  hero.style.background = 'linear-gradient(140deg,#8FA3B8,#42586D)';
+})();
+</script>
+
+</body>
+</html>

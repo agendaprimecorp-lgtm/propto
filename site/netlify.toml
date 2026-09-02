@@ -1,0 +1,44 @@
+# Propto — configuração do Netlify
+# Site estático: não há build. A pasta `site/` é publicada como está.
+
+[build]
+  publish = "."
+  command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    Content-Security-Policy = "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://wa.me"
+
+# Os arquivos de marca podem ficar em cache longo: mudam de nome quando mudam.
+[[headers]]
+  for = "/brand/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# Endereço definitivo das páginas de imóvel. Enquanto o app não existe,
+# tudo cai no exemplo — assim o link já pode ser divulgado.
+[[redirects]]
+  from = "/i/*"
+  to = "/imovel.html"
+  status = 200
+
+[[redirects]]
+  from = "/demonstracao"
+  to = "/demo.html"
+  status = 301
+
+[[redirects]]
+  from = "/piloto"
+  to = "/#falar"
+  status = 301

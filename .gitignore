@@ -1,0 +1,70 @@
+# Dependências
+node_modules/
+.pnp
+.pnp.js
+
+# Build
+dist/
+build/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+
+# Ambiente — NUNCA versionar
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Expo
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+ios/
+android/
+
+# Supabase
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+
+# Teste
+coverage/
+playwright-report/
+test-results/
+.nyc_output/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+
+# Sentry
+.sentryclirc
+
+# Arquivos temporários de mídia em desenvolvimento
+tmp/
+uploads/
+*.m4a
+*.wav
+!tests/**/*.m4a
+
+# Artefatos locais do gateway
+services/ai-gateway/dist/
+smoke.ts

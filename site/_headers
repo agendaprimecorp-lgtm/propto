@@ -1,0 +1,8 @@
+# Espelho do netlify.toml, para quem publicar arrastando a pasta.
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+/brand/*
+  Cache-Control: public, max-age=31536000, immutable

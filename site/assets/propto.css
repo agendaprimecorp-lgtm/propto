@@ -1,0 +1,148 @@
+/* ============================================================
+   Propto — folha de estilo do site
+   Tokens da identidade. Alterar cor ou tipografia aqui muda o
+   site inteiro; não repita valor literal nas páginas.
+   ============================================================ */
+
+:root {
+  /* Vermelho Propto — herdado da PrimeCorp, é o laço com o ecossistema. */
+  --red-50:#FDF2F2; --red-100:#FBE0E0; --red-300:#F09A9A;
+  --red-500:#E8443F; --red-600:#CC1B1B; --red-700:#A81616; --red-900:#6E1111;
+
+  /* Grafite morno: os neutros puxam levemente para o vermelho.
+     É o que separa o Propto do azul corporativo da PrimeCorp. */
+  --ink-50:#F8F7F7; --ink-100:#EFEDEE; --ink-200:#DFDCDD; --ink-300:#C4BFC1;
+  --ink-400:#96908F; --ink-500:#6E6867; --ink-600:#4C4746; --ink-700:#332F2F;
+  --ink-800:#1E1B1C; --ink-900:#12100F;
+
+  /* Areia: fundo alternativo, dá calor sem sujar o branco. */
+  --sand-50:#FAF8F5; --sand-100:#F2EDE6; --sand-200:#E5DCD0;
+
+  /* Funcionais — não são cores de marca. */
+  --ai:#8B5CF6; --ai-50:#F5F3FF; --ai-200:#DDD6FE;
+  --ok:#0F9D63; --ok-50:#ECFDF5; --warn:#C77700; --danger:#D93025;
+  --wa:#12A150;
+
+  --bg:var(--sand-50); --surface:#FFFFFF; --surface-2:var(--ink-100);
+  --line:var(--ink-200); --line-strong:var(--ink-300);
+  --text:var(--ink-900); --muted:var(--ink-500); --faint:var(--ink-400);
+  --primary:var(--red-600);
+  --shadow:0 4px 18px rgba(30,27,28,.08);
+  --shadow-lg:0 18px 46px rgba(30,27,28,.14);
+  --focus:0 0 0 3px rgba(204,27,27,.32);
+
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --display:'Sora',var(--sans);
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',monospace;
+
+  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:22px;
+  --maxw:1140px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:var(--ink-900); --surface:#1A1718; --surface-2:#221E1F;
+    --line:#302B2C; --line-strong:#443E3F;
+    --text:var(--ink-50); --muted:var(--ink-400); --faint:var(--ink-500);
+    --primary:var(--red-500); --red-50:#2C1616; --red-100:#3A1B1B;
+    --sand-50:var(--ink-900); --sand-100:#221E1F; --sand-200:#302B2C;
+    --ai-50:#221C3A; --ai-200:#4C3D8A; --ok-50:#0F2A21;
+    --shadow:0 4px 18px rgba(0,0,0,.45); --shadow-lg:0 18px 46px rgba(0,0,0,.6);
+    --focus:0 0 0 3px rgba(232,68,63,.42);
+  }
+}
+:root[data-theme="dark"] {
+  --bg:var(--ink-900); --surface:#1A1718; --surface-2:#221E1F;
+  --line:#302B2C; --line-strong:#443E3F;
+  --text:var(--ink-50); --muted:var(--ink-400); --faint:var(--ink-500);
+  --primary:var(--red-500); --red-50:#2C1616; --red-100:#3A1B1B;
+  --sand-50:var(--ink-900); --sand-100:#221E1F; --sand-200:#302B2C;
+  --ai-50:#221C3A; --ai-200:#4C3D8A; --ok-50:#0F2A21;
+  --shadow:0 4px 18px rgba(0,0,0,.45); --shadow-lg:0 18px 46px rgba(0,0,0,.6);
+  --focus:0 0 0 3px rgba(232,68,63,.42);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} *{animation-duration:.01ms!important; transition-duration:.01ms!important} }
+
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--sans); font-size:16px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--display); text-wrap:balance; margin:0; letter-spacing:-.02em}
+p{margin:0}
+a{color:inherit}
+img,svg{max-width:100%}
+:focus-visible{outline:none; box-shadow:var(--focus); border-radius:var(--r-sm)}
+
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px}
+.scroll{overflow-x:auto}
+
+/* ---------- marca ---------- */
+.logo{display:inline-flex; align-items:center; gap:10px; text-decoration:none}
+.logo svg{width:30px; height:30px; flex:none; color:var(--primary)}
+.logo .wm{font-family:var(--display); font-weight:700; font-size:21px; letter-spacing:-.03em}
+.logo .wm i{font-style:normal; color:var(--primary)}
+
+/* ---------- topo ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40; background:var(--surface);
+  border-bottom:1px solid var(--line);
+}
+.topbar .row{display:flex; align-items:center; gap:20px; padding:13px 0}
+.nav{display:flex; gap:18px; margin-left:auto; align-items:center; flex-wrap:wrap}
+.nav a{
+  text-decoration:none; color:var(--muted); font-size:14.5px; font-weight:500;
+  padding:5px 2px; border-bottom:2px solid transparent;
+}
+.nav a:hover{color:var(--text)}
+.nav a[aria-current="page"]{color:var(--text); border-bottom-color:var(--primary)}
+
+/* ---------- botões ---------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border:1px solid var(--line-strong); background:var(--surface); color:var(--text);
+  border-radius:var(--r-sm); padding:10px 17px; font-size:15px; font-weight:600;
+  font-family:var(--sans); cursor:pointer; text-decoration:none; line-height:1.2;
+}
+.btn:hover{border-color:var(--text)}
+.btn.primary{background:var(--primary); border-color:var(--primary); color:#fff}
+.btn.primary:hover{background:var(--red-700); border-color:var(--red-700)}
+.btn.ghost{background:transparent; border-color:transparent; color:var(--muted)}
+.btn.ghost:hover{color:var(--text); background:var(--surface-2)}
+.btn.sm{padding:7px 13px; font-size:14px}
+.btn.wa{background:var(--wa); border-color:var(--wa); color:#fff}
+
+/* ---------- selos ---------- */
+.badge{
+  display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:600;
+  padding:4px 10px; border-radius:999px; letter-spacing:.02em;
+}
+.badge.ai{background:var(--ai-50); color:var(--ai); border:1px solid var(--ai-200)}
+.badge.ok{background:var(--ok-50); color:var(--ok)}
+.badge.line{background:transparent; border:1px solid var(--line); color:var(--muted)}
+.badge.red{background:var(--red-50); color:var(--primary); border:1px solid var(--red-100)}
+
+/* ---------- blocos ---------- */
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:22px}
+.eyebrow{
+  font-size:11.5px; font-weight:600; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--primary);
+}
+.lead{color:var(--muted); font-size:17px; max-width:62ch}
+section{padding:64px 0}
+section + section{border-top:1px solid var(--line)}
+
+table{width:100%; border-collapse:collapse; font-size:14.5px}
+th,td{text-align:left; padding:11px 13px; border-bottom:1px solid var(--line); vertical-align:top}
+th{font-size:11.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:600}
+td.n{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+footer{border-top:1px solid var(--line); background:var(--surface); padding:34px 0 46px}
+.foot{display:flex; gap:26px; flex-wrap:wrap; align-items:flex-start}
+.foot p{font-size:13.5px; color:var(--muted); max-width:46ch}
+.foot nav{display:flex; gap:16px; flex-wrap:wrap; margin-left:auto}
+.foot nav a{font-size:13.5px; color:var(--muted); text-decoration:none}
+.foot nav a:hover{color:var(--text)}

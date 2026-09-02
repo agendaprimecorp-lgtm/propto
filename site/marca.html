@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marca Propto</title>
+<meta name="description" content="Identidade visual do Propto: símbolo, cores, tipografia e regras de uso.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#CC1B1B">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/assets/propto.css">
+<style>
+  .hd{padding:52px 0 34px}
+  .hd h1{font-size:clamp(30px,4.4vw,44px); font-weight:700}
+  .block{display:grid; gap:20px}
+  h2{font-size:24px; font-weight:600; margin-bottom:6px}
+  h3{font-size:15px; font-weight:600; margin-bottom:10px}
+  .sub{color:var(--muted); font-size:15px; max-width:64ch}
+
+  .marks{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px; margin-top:22px}
+  .mk{border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden; background:var(--surface)}
+  .mk .stage{height:130px; display:grid; place-items:center; padding:20px}
+  .mk .stage.dark{background:var(--ink-900)}
+  .mk .stage.sand{background:var(--sand-100)}
+  .mk .stage.red{background:var(--red-600)}
+  .mk .meta{border-top:1px solid var(--line); padding:11px 14px; font-size:12.5px; color:var(--muted)}
+  .mk .meta b{display:block; color:var(--text); font-size:13px; font-weight:600; margin-bottom:2px}
+
+  .swatches{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-top:18px}
+  .sw{border:1px solid var(--line); border-radius:var(--r-md); overflow:hidden; background:var(--surface)}
+  .sw .chip{height:72px}
+  .sw .info{padding:10px 12px}
+  .sw .nm{font-size:13px; font-weight:600}
+  .sw .hex{font-family:var(--mono); font-size:11.5px; color:var(--muted); text-transform:uppercase}
+
+  .type-row{border:1px solid var(--line); border-radius:var(--r-md); padding:18px; background:var(--surface)}
+  .type-row + .type-row{margin-top:12px}
+  .type-row .lbl{font-family:var(--mono); font-size:11.5px; color:var(--muted); margin-bottom:8px}
+
+  .rules{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px}
+  @media (max-width:720px){ .rules{grid-template-columns:1fr} }
+  .rule{border:1px solid var(--line); border-radius:var(--r-md); padding:16px; background:var(--surface)}
+  .rule h4{font-size:14px; font-weight:600; margin:0 0 10px; display:flex; align-items:center; gap:7px}
+  .rule.yes h4{color:var(--ok)}
+  .rule.no h4{color:var(--danger)}
+  .rule ul{margin:0; padding-left:18px; display:grid; gap:7px; font-size:14px; color:var(--muted)}
+  .files{margin-top:18px}
+  .files td.n{font-size:13px}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap row">
+    <a class="logo" href="/" aria-label="Propto, início">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M9 31.5 32 11l23 20.5" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="currentColor"/>
+        <rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="currentColor"/>
+        <rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="currentColor"/>
+      </svg>
+      <span class="wm">Prop<i>to</i></span>
+    </a>
+    <nav class="nav">
+      <a href="/">Início</a>
+      <a href="/demo.html">Demonstração</a>
+      <a href="/marca.html" aria-current="page">Marca</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hd">
+    <span class="eyebrow">Identidade</span>
+    <h1>A marca Propto</h1>
+    <p class="lead" style="margin-top:12px">
+      Um produto novo, com marca própria, dentro do ecossistema PrimeCorp. O vermelho é o laço
+      de família; todo o resto é do Propto.
+    </p>
+  </div>
+
+  <section>
+    <h2>O símbolo</h2>
+    <p class="sub">
+      Um telhado sobre três barras de voz. É o produto inteiro num glifo: a fala do corretor
+      constrói o imóvel. Aos 16 pixels ainda lê como casa; em tamanho grande aparece o equalizador.
+    </p>
+
+    <div class="marks">
+      <div class="mk">
+        <div class="stage">
+          <svg viewBox="0 0 64 64" width="72" height="72" style="color:var(--red-600)" aria-hidden="true">
+            <path d="M9 31.5 32 11l23 20.5" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="currentColor"/>
+            <rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="currentColor"/>
+            <rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="meta"><b>Símbolo</b>Sozinho, em ícone e avatar</div>
+      </div>
+
+      <div class="mk">
+        <div class="stage">
+          <span style="display:inline-flex; align-items:center; gap:11px">
+            <svg viewBox="0 0 64 64" width="40" height="40" style="color:var(--red-600)" aria-hidden="true">
+              <path d="M9 31.5 32 11l23 20.5" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="currentColor"/>
+              <rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="currentColor"/>
+              <rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="currentColor"/>
+            </svg>
+            <span style="font-family:var(--display); font-weight:700; font-size:31px; letter-spacing:-.035em; color:var(--ink-900)">Prop<span style="color:var(--red-600)">to</span></span>
+          </span>
+        </div>
+        <div class="meta"><b>Horizontal</b>Uso principal: site, documento, assinatura</div>
+      </div>
+
+      <div class="mk">
+        <div class="stage dark">
+          <span style="display:inline-flex; align-items:center; gap:11px">
+            <svg viewBox="0 0 64 64" width="40" height="40" style="color:var(--red-500)" aria-hidden="true">
+              <path d="M9 31.5 32 11l23 20.5" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="currentColor"/>
+              <rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="currentColor"/>
+              <rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="currentColor"/>
+            </svg>
+            <span style="font-family:var(--display); font-weight:700; font-size:31px; letter-spacing:-.035em; color:#F8F7F7">Prop<span style="color:var(--red-500)">to</span></span>
+          </span>
+        </div>
+        <div class="meta"><b>Fundo escuro</b>O vermelho clareia para o 500, senão some no grafite</div>
+      </div>
+
+      <div class="mk">
+        <div class="stage red">
+          <svg viewBox="0 0 64 64" width="72" height="72" style="color:#fff" aria-hidden="true">
+            <path d="M9 31.5 32 11l23 20.5" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="currentColor"/>
+            <rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="currentColor"/>
+            <rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="meta"><b>Monocromático</b>Sobre cor, em carimbo, gravação e fax</div>
+      </div>
+    </div>
+
+    <div class="rules">
+      <div class="rule yes">
+        <h4>✓ Pode</h4>
+        <ul>
+          <li>Usar o símbolo sozinho quando o nome já estiver por perto</li>
+          <li>Reduzir até 20 px de altura — abaixo disso, use o ícone de aplicativo</li>
+          <li>Deixar uma margem livre igual à altura do telhado em volta da marca</li>
+          <li>Aplicar em uma cor só, quando o processo não permitir duas</li>
+        </ul>
+      </div>
+      <div class="rule no">
+        <h4>✕ Não pode</h4>
+        <ul>
+          <li>Trocar a cor do símbolo por outra fora da paleta</li>
+          <li>Esticar, inclinar, girar ou aplicar sombra e contorno</li>
+          <li>Recompor o nome em outra fonte, ou separar o “to” do “Prop”</li>
+          <li>Colocar a marca vermelha sobre fundo vermelho ou foto sem contraste</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Cores</h2>
+    <p class="sub">
+      O vermelho é o mesmo da PrimeCorp — é de propósito, é o que amarra o ecossistema.
+      O que muda é a temperatura dos neutros: o cinza do Propto puxa levemente para o vermelho,
+      enquanto o da PrimeCorp é frio. O violeta não é cor de marca: marca conteúdo proposto
+      por inteligência artificial e não aparece em mais nada.
+    </p>
+
+    <h3 style="margin-top:24px">Marca</h3>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#CC1B1B"></div><div class="info"><div class="nm">Vermelho Propto</div><div class="hex">#CC1B1B</div></div></div>
+      <div class="sw"><div class="chip" style="background:#E8443F"></div><div class="info"><div class="nm">Vermelho claro</div><div class="hex">#E8443F</div></div></div>
+      <div class="sw"><div class="chip" style="background:#A81616"></div><div class="info"><div class="nm">Vermelho escuro</div><div class="hex">#A81616</div></div></div>
+      <div class="sw"><div class="chip" style="background:#12100F"></div><div class="info"><div class="nm">Grafite</div><div class="hex">#12100F</div></div></div>
+    </div>
+
+    <h3 style="margin-top:24px">Neutros e apoio</h3>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#FAF8F5"></div><div class="info"><div class="nm">Areia</div><div class="hex">#FAF8F5</div></div></div>
+      <div class="sw"><div class="chip" style="background:#DFDCDD"></div><div class="info"><div class="nm">Linha</div><div class="hex">#DFDCDD</div></div></div>
+      <div class="sw"><div class="chip" style="background:#6E6867"></div><div class="info"><div class="nm">Texto secundário</div><div class="hex">#6E6867</div></div></div>
+      <div class="sw"><div class="chip" style="background:#8B5CF6"></div><div class="info"><div class="nm">IA (funcional)</div><div class="hex">#8B5CF6</div></div></div>
+      <div class="sw"><div class="chip" style="background:#0F9D63"></div><div class="info"><div class="nm">Sucesso</div><div class="hex">#0F9D63</div></div></div>
+      <div class="sw"><div class="chip" style="background:#12A150"></div><div class="info"><div class="nm">WhatsApp</div><div class="hex">#12A150</div></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Tipografia</h2>
+    <p class="sub">Duas famílias e uma de dados. Todas do Google Fonts, gratuitas para uso comercial.</p>
+
+    <div style="margin-top:20px">
+      <div class="type-row">
+        <div class="lbl">Sora · títulos, preços, números grandes</div>
+        <div style="font-family:'Sora',sans-serif; font-weight:700; font-size:36px; letter-spacing:-.03em">R$ 890.000</div>
+        <div style="font-family:'Sora',sans-serif; font-weight:600; font-size:20px; margin-top:6px">Apartamento 3 dormitórios no Cambuí</div>
+      </div>
+      <div class="type-row">
+        <div class="lbl">Inter · texto corrido, interface, rótulos</div>
+        <div style="font-family:'Inter',sans-serif; font-size:16px; line-height:1.65; max-width:60ch; color:var(--muted)">
+          Apartamento de 98 m² úteis no Cambuí, com sala em dois ambientes, varanda e cozinha
+          planejada. São três dormitórios, sendo um suíte, e dois banheiros.
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="lbl">JetBrains Mono · código do imóvel, tempo, dados</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:16px">PRP-000001 · 00:11 – 00:16 · 0,82</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Voz da marca</h2>
+    <p class="sub">
+      O Propto fala como um corretor experiente explicando para outro: direto, concreto e sem
+      floreio. Verbo no início, número quando existe número, e nada de promessa que a gente não
+      possa cumprir — o produto inteiro é construído para impedir promessa vazia.
+    </p>
+    <div class="rules">
+      <div class="rule yes">
+        <h4>✓ Escreva assim</h4>
+        <ul>
+          <li>“Grave por três minutos. O anúncio sai pronto.”</li>
+          <li>“Rosto e placa são borrados antes de a foto ir ao ar.”</li>
+          <li>“15 minutos por imóvel, contra 3 horas hoje.”</li>
+        </ul>
+      </div>
+      <div class="rule no">
+        <h4>✕ Não escreva assim</h4>
+        <ul>
+          <li>“A solução definitiva para o mercado imobiliário.”</li>
+          <li>“Revolucione a sua forma de vender com IA de ponta.”</li>
+          <li>“Resultados garantidos em tempo recorde.”</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Arquivos</h2>
+    <p class="sub">Todos na pasta <code style="font-family:var(--mono); font-size:13.5px">brand/</code> do repositório.</p>
+    <div class="scroll files">
+      <table>
+        <thead><tr><th>Arquivo</th><th>Uso</th></tr></thead>
+        <tbody>
+          <tr><td class="n">propto-symbol.svg</td><td>Símbolo isolado, herda a cor do contexto</td></tr>
+          <tr><td class="n">propto-horizontal.svg</td><td>Marca completa, fundo claro</td></tr>
+          <tr><td class="n">propto-horizontal-dark.svg</td><td>Marca completa, fundo escuro</td></tr>
+          <tr><td class="n">propto-stacked.svg</td><td>Empilhada, com assinatura “sistema do corretor”</td></tr>
+          <tr><td class="n">propto-mono.svg</td><td>Uma cor só</td></tr>
+          <tr><td class="n">propto-appicon.svg</td><td>Ícone de aplicativo, 512 px</td></tr>
+          <tr><td class="n">favicon.svg · favicon-32.png · favicon-16.png</td><td>Aba do navegador</td></tr>
+          <tr><td class="n">icon-180.png · icon-192.png · icon-512.png</td><td>Tela de início do celular</td></tr>
+          <tr><td class="n">og-image.png</td><td>Prévia ao colar o link no WhatsApp</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <p>Propto — um produto PrimeCorp Brokers Consultoria e Intermediação de Negócios Ltda.</p>
+    <nav>
+      <a href="/">Início</a>
+      <a href="/demo.html">Demonstração</a>
+      <a href="/imovel.html">Exemplo de anúncio</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

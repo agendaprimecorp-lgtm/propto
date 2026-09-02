@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propto — o corretor fala, o sistema faz o resto</title>
+<meta name="description" content="Grave a sua voz na porta do imóvel. O Propto transcreve, organiza os dados, trata as fotos, escreve o anúncio e publica a página. Para corretores e proprietários.">
+<link rel="canonical" href="https://propto.com.br/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Propto">
+<meta property="og:title" content="Propto — o corretor fala, o sistema faz o resto">
+<meta property="og:description" content="Três minutos de voz viram cadastro, fotos tratadas, anúncio escrito e página pública.">
+<meta property="og:image" content="https://propto.com.br/og-image.png">
+<meta property="og:url" content="https://propto.com.br/">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#CC1B1B">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/assets/propto.css">
+<style>
+  /* ---------- abertura ---------- */
+  .hero{padding:70px 0 60px}
+  .hero-grid{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:52px; align-items:center}
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr; gap:40px} }
+  .hero h1{font-size:clamp(34px,5.2vw,58px); line-height:1.05; font-weight:700; max-width:15ch}
+  .hero h1 em{font-style:normal; color:var(--primary)}
+  .hero .lead{margin-top:18px; font-size:18px}
+  .hero-cta{display:flex; gap:12px; margin-top:28px; flex-wrap:wrap}
+  .hero-note{margin-top:18px; font-size:13.5px; color:var(--faint)}
+
+  /* relógio: o argumento é tempo */
+  .clock{
+    display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:center;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--r-xl);
+    padding:26px; box-shadow:var(--shadow);
+  }
+  .clock .col{text-align:center}
+  .clock .big{font-family:var(--display); font-size:44px; font-weight:700; line-height:1; letter-spacing:-.04em}
+  .clock .col.old .big{color:var(--muted)}
+  .clock .col.new .big{color:var(--primary)}
+  .clock .lbl{font-size:12px; color:var(--muted); margin-top:8px; line-height:1.4}
+  .clock .arrow{color:var(--line-strong); font-size:22px}
+  .clock .cap{
+    grid-column:1/-1; border-top:1px solid var(--line); padding-top:14px; margin-top:4px;
+    font-size:13px; color:var(--muted); text-align:center;
+  }
+
+  /* ---------- fluxo ---------- */
+  .steps{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1px; background:var(--line);
+         border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden}
+  @media (max-width:820px){ .steps{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:460px){ .steps{grid-template-columns:1fr} }
+  .stp{background:var(--surface); padding:22px 20px}
+  .stp .k{font-family:var(--mono); font-size:11.5px; color:var(--primary); font-weight:500}
+  .stp h3{font-size:16.5px; font-weight:600; margin:9px 0 6px}
+  .stp p{font-size:14px; color:var(--muted); line-height:1.55}
+
+  /* ---------- para quem ---------- */
+  .who{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px}
+  @media (max-width:760px){ .who{grid-template-columns:1fr} }
+  .who .card{display:flex; flex-direction:column; gap:12px; align-items:flex-start}
+  .who .card > *{width:100%}
+  .who .card > .badge{width:auto}
+  .who h3{font-size:19px; font-weight:600}
+  .who ul{margin:0; padding:0; list-style:none; display:grid; gap:9px}
+  .who li{position:relative; padding-left:20px; font-size:14.5px; color:var(--muted); line-height:1.5}
+  .who li::before{
+    content:''; position:absolute; left:0; top:8px; width:7px; height:7px;
+    border-radius:2px; background:var(--primary);
+  }
+
+  /* ---------- provas ---------- */
+  .proof{display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:18px}
+  .pf{border-left:2px solid var(--primary); padding:4px 0 4px 16px}
+  .pf b{display:block; font-family:var(--display); font-size:15.5px; font-weight:600; margin-bottom:5px}
+  .pf span{font-size:14px; color:var(--muted); line-height:1.55}
+
+  /* ---------- preço ---------- */
+  .plans{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; align-items:start}
+  @media (max-width:820px){ .plans{grid-template-columns:1fr} }
+  .plan{position:relative; display:flex; flex-direction:column; gap:14px}
+  .plan.pick{border-color:var(--primary); box-shadow:var(--shadow)}
+  .plan .pin{
+    position:absolute; top:-11px; left:22px; background:var(--primary); color:#fff;
+    font-size:11px; font-weight:600; letter-spacing:.06em; padding:3px 10px; border-radius:999px;
+    text-transform:uppercase;
+  }
+  .plan h3{font-size:17px; font-weight:600}
+  .plan .val{font-family:var(--display); font-size:36px; font-weight:700; letter-spacing:-.03em; line-height:1}
+  .plan .val small{font-size:14px; font-weight:500; color:var(--muted); letter-spacing:0}
+  .plan ul{margin:0; padding:0; list-style:none; display:grid; gap:8px; font-size:14px; color:var(--muted)}
+  .plan li{display:flex; gap:8px; align-items:flex-start}
+  .plan li svg{width:15px; height:15px; flex:none; margin-top:3px; color:var(--ok)}
+  .price-note{margin-top:20px; font-size:13.5px; color:var(--muted); max-width:70ch}
+
+  /* ---------- chamada final ---------- */
+  .final{
+    background:var(--ink-900); color:var(--ink-50); border-radius:var(--r-xl);
+    padding:44px; display:grid; gap:18px;
+  }
+  .final h2{font-size:clamp(24px,3.4vw,34px); font-weight:600; max-width:19ch; color:#fff}
+  .final p{color:var(--ink-300); max-width:58ch; font-size:16px}
+  .final .row{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px}
+  .final .btn{border-color:#3A3435}
+  .final .btn.primary{border-color:var(--red-500); background:var(--red-500)}
+  .final .btn:not(.primary){background:transparent; color:var(--ink-50)}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap row">
+    <a class="logo" href="/" aria-label="Propto, início">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M9 31.5 32 11l23 20.5" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="currentColor"/>
+        <rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="currentColor"/>
+        <rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="currentColor"/>
+      </svg>
+      <span class="wm">Prop<i>to</i></span>
+    </a>
+    <nav class="nav">
+      <a href="#como">Como funciona</a>
+      <a href="#quem">Para quem</a>
+      <a href="#planos">Planos</a>
+      <a href="/demo.html">Demonstração</a>
+      <a class="btn primary sm" href="#falar">Falar com a gente</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Captura inteligente de imóveis</span>
+        <h1>O corretor fala.<br>O <em>Propto</em> faz o resto.</h1>
+        <p class="lead">
+          Chegue no imóvel, aperte um botão e descreva o que você vê. Em minutos o anúncio
+          está escrito, as fotos tratadas e a página no ar — pronta para mandar no WhatsApp.
+        </p>
+        <div class="hero-cta">
+          <a class="btn primary" href="/demo.html">Ver a demonstração</a>
+          <a class="btn" href="/imovel.html">Ver um anúncio pronto</a>
+        </div>
+        <p class="hero-note">Sem instalar nada. A demonstração roda no navegador.</p>
+      </div>
+
+      <div class="clock">
+        <div class="col old">
+          <div class="big">3h</div>
+          <div class="lbl">Do jeito de hoje<br>por imóvel</div>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="col new">
+          <div class="big">15min</div>
+          <div class="lbl">Com o Propto<br>por imóvel</div>
+        </div>
+        <p class="cap">Dos quais menos de 5 minutos são de trabalho seu. O resto acontece sozinho.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="como">
+    <div class="wrap">
+      <span class="eyebrow">Como funciona</span>
+      <h2 style="font-size:30px; font-weight:600; margin:8px 0 10px">Quatro passos, um botão</h2>
+      <p class="lead" style="margin-bottom:30px">
+        Você grava e fotografa. O sistema entende, organiza, trata, escreve e publica.
+      </p>
+
+      <div class="steps">
+        <article class="stp">
+          <div class="k">01 · você</div>
+          <h3>Fale por 3 minutos</h3>
+          <p>Descreva o imóvel como falaria com um colega. Grava com a tela apagada e funciona sem internet.</p>
+        </article>
+        <article class="stp">
+          <div class="k">02 · sistema</div>
+          <h3>Vira cadastro</h3>
+          <p>Dormitórios, vagas, preço, condomínio, IPTU. Cada dado mostra o trecho do áudio que o originou.</p>
+        </article>
+        <article class="stp">
+          <div class="k">03 · sistema</div>
+          <h3>Fotos tratadas</h3>
+          <p>Rosto e placa borrados, localização removida das fotos, ambientes classificados, capa escolhida.</p>
+        </article>
+        <article class="stp">
+          <div class="k">04 · você confirma</div>
+          <h3>Anúncio no ar</h3>
+          <p>Texto escrito, página com endereço próprio e prévia certa no WhatsApp. Você confere e publica.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="quem">
+    <div class="wrap">
+      <span class="eyebrow">Para quem</span>
+      <h2 style="font-size:30px; font-weight:600; margin:8px 0 26px">Dois usos, o mesmo sistema</h2>
+
+      <div class="who">
+        <article class="card">
+          <span class="badge red">Corretor</span>
+          <h3>Sua carteira inteira sem digitar</h3>
+          <ul>
+            <li>Cadastre um imóvel na visita, sem voltar para casa para digitar</li>
+            <li>Anúncio pronto para portal, Instagram e WhatsApp, cada um no formato certo</li>
+            <li>Página com seu nome e seu CRECI, não o de uma imobiliária</li>
+            <li>Quem viu, quem clicou e quem chamou no WhatsApp — tudo registrado</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="badge red">Proprietário</span>
+          <h3>Anuncie o seu imóvel sozinho</h3>
+          <ul>
+            <li>Descreva o seu imóvel falando; não precisa saber escrever anúncio</li>
+            <li>Suas fotos tratadas — sem rosto de ninguém e sem revelar o endereço</li>
+            <li>Um link para mandar em grupo de WhatsApp, rede social ou portal</li>
+            <li>Pague por imóvel anunciado; sem mensalidade se você tem só um</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <span class="eyebrow">Por que confiar</span>
+      <h2 style="font-size:30px; font-weight:600; margin:8px 0 26px">O que a gente não deixa acontecer</h2>
+
+      <div class="proof">
+        <div class="pf">
+          <b>A máquina não publica sozinha</b>
+          <span>Nenhum texto vai ao ar sem você confirmar. Fica registrado quem publicou e quando.</span>
+        </div>
+        <div class="pf">
+          <b>Número inventado não passa</b>
+          <span>Todo valor do anúncio é conferido contra o cadastro antes de liberar. Divergiu, bloqueia.</span>
+        </div>
+        <div class="pf">
+          <b>Rosto e placa sempre borrados</b>
+          <span>Não é opção que você liga. Nenhuma foto chega ao público sem passar por isso.</span>
+        </div>
+        <div class="pf">
+          <b>A foto não entrega o endereço</b>
+          <span>O GPS que a câmera grava na imagem é removido. Você escolhe se mostra rua, bairro ou nada.</span>
+        </div>
+        <div class="pf">
+          <b>Sua carteira é só sua</b>
+          <span>Cada corretor enxerga apenas os próprios imóveis. É garantido no banco de dados, não na tela.</span>
+        </div>
+        <div class="pf">
+          <b>Promessa vazia é barrada</b>
+          <span>Nada de “valorização garantida” ou “documentação 100% ok”. Anúncio é oferta, e oferta tem consequência.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="planos">
+    <div class="wrap">
+      <span class="eyebrow">Planos</span>
+      <h2 style="font-size:30px; font-weight:600; margin:8px 0 10px">Preço em estudo</h2>
+      <p class="lead" style="margin-bottom:30px">
+        Os valores abaixo são a hipótese que vamos testar no piloto. Quem entrar agora ajuda a definir
+        o preço — e fica com ele travado por 12 meses.
+      </p>
+
+      <div class="plans">
+        <article class="card plan">
+          <h3>Avulso</h3>
+          <div class="val">R$ 39 <small>/ imóvel</small></div>
+          <ul>
+            <li><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 13.2 4.8 10l-1.3 1.3L8 15.8l8.5-8.5-1.3-1.3z"/></svg> Um imóvel completo</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 13.2 4.8 10l-1.3 1.3L8 15.8l8.5-8.5-1.3-1.3z"/></svg> Captura por voz e até 20 fotos</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 13.2 4.8 10l-1.3 1.3L8 15.8l8.5-8.5-1.3-1.3z"/></svg> Página pública por 6 meses</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 13.2 4.8 10l-1.3 1.3L8 15.8l8.5-8.5-1.3-1.3z"/></svg> Para quem tem um imóvel para anunciar</li>
+          </ul>
+        </article>
+
+        <article class="card plan pick">
+          <span class="pin">Corretor</span>
+          <h3>Mensal</h3>
+          <div class="val">R$ 147 <small>/ mês</small></div>
+          <ul>
+            <li><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 13.2 4.8 10l-1.3 1.3L8 15.8l8.5-8.5-1.3-1.3z"/></svg> 30 capturas por mês</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 13.2 4.8 10l-1.3 1.3L8 15.8l8.5-8.5-1.3-1.3z"/></svg> Imóveis ativos ilimitados</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 13.2 4.8 10l-1.3 1.3L8 15.8l8.5-8.5-1.3-1.3z"/></svg> Página com seu nome e CRECI</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 13.2 4.8 10l-1.3 1.3L8 15.8l8.5-8.5-1.3-1.3z"/></svg> Relatório de visitas e cliques</li>
+          </ul>
+          <a class="btn primary" href="#falar">Entrar no piloto</a>
+        </article>
+
+        <article class="card plan">
+          <h3>Equipe</h3>
+          <div class="val">R$ 497 <small>/ mês</small></div>
+          <ul>
+            <li><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 13.2 4.8 10l-1.3 1.3L8 15.8l8.5-8.5-1.3-1.3z"/></svg> Até 5 corretores</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 13.2 4.8 10l-1.3 1.3L8 15.8l8.5-8.5-1.3-1.3z"/></svg> 150 capturas por mês</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 13.2 4.8 10l-1.3 1.3L8 15.8l8.5-8.5-1.3-1.3z"/></svg> Carteira compartilhada</li>
+            <li><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M8 13.2 4.8 10l-1.3 1.3L8 15.8l8.5-8.5-1.3-1.3z"/></svg> Marca da imobiliária nas páginas</li>
+          </ul>
+        </article>
+      </div>
+
+      <p class="price-note">
+        Cada imóvel processado consome cerca de <b>R$ 2</b> em inteligência artificial. É por isso
+        que os planos têm limite de capturas, e não de imóveis: o que custa é processar, não guardar.
+      </p>
+    </div>
+  </section>
+
+  <section id="falar">
+    <div class="wrap">
+      <div class="final">
+        <span class="eyebrow" style="color:var(--red-500)">Piloto</span>
+        <h2>Estamos escolhendo os primeiros dez corretores.</h2>
+        <p>
+          Região de Campinas e Sumaré. Você usa por duas semanas na sua carteira de verdade,
+          a gente ajusta o que não servir, e o preço que você pagar fica travado por 12 meses.
+        </p>
+        <div class="row">
+          <a class="btn primary" href="https://wa.me/5519998051985?text=Quero%20entrar%20no%20piloto%20do%20Propto" rel="noopener">Falar no WhatsApp</a>
+          <a class="btn" href="mailto:contato@primecorpconsultoria.com.br?subject=Piloto%20Propto">Mandar um e-mail</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <a class="logo" href="/" style="margin-bottom:12px">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M9 31.5 32 11l23 20.5" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="currentColor"/>
+          <rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="currentColor"/>
+          <rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="currentColor"/>
+        </svg>
+        <span class="wm">Prop<i>to</i></span>
+      </a>
+      <p>
+        Um produto PrimeCorp Brokers Consultoria e Intermediação de Negócios Ltda.<br>
+        Sumaré / SP · contato@primecorpconsultoria.com.br
+      </p>
+    </div>
+    <nav>
+      <a href="/demo.html">Demonstração</a>
+      <a href="/imovel.html">Exemplo de anúncio</a>
+      <a href="/marca.html">Marca</a>
+      <a href="#planos">Planos</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

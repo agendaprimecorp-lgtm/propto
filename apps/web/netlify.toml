@@ -1,0 +1,40 @@
+# ============================================================
+# Propto — apps/web na Netlify
+#
+# Este app NÃO é site estático: tem rotas de API, geração de imagem para o
+# cartão do WhatsApp e revalidação a cada 5 minutos. O plugin oficial do
+# Next.js transforma isso em funções da Netlify automaticamente.
+#
+# Na Netlify, ao criar o site, aponte:
+#   Base directory:    apps/web
+#   Build command:     npm run build
+#   Publish directory: apps/web/.next
+# (o plugin ajusta o resto sozinho)
+# ============================================================
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Cabeçalhos de segurança. Os do next.config.mjs valem para as páginas
+# servidas pelo Next; estes valem para tudo, inclusive arquivos estáticos.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+# As respostas das APIs nunca são guardadas em cache: lead e evento são
+# escrita, e cache de escrita é bug esperando acontecer.
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store"

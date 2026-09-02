@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Propto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --red:#CC1B1B; --red-light:#E8443F; --red-dark:#A81616;
+  --graphite:#12100F; --graphite-2:#1D1917; --graphite-3:#2A2523;
+  --sand:#FAF8F5; --sand-2:#F2EEE9;
+  --line:#DFDCDD; --line-dark:#39322F;
+  --muted:#6E6867; --muted-dark:#A79C95;
+  --ai:#8B5CF6; --ok:#0F9D63; --warn:#C77700; --wa:#12A150;
+  --display:'Sora',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--graphite); color:var(--graphite);
+  font-family:var(--body); -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:var(--display); margin:0; letter-spacing:-.03em; text-wrap:balance; font-weight:700}
+p{margin:0}
+strong{font-weight:600}
+
+/* ---------- estrutura do slide ---------- */
+.deck{max-width:1180px; margin:0 auto; padding:26px 18px 60px; display:flex; flex-direction:column; gap:22px}
+
+.slide{
+  position:relative; aspect-ratio:16/9; border-radius:14px; overflow:hidden;
+  padding:52px 60px 46px; display:flex; flex-direction:column;
+  background:var(--sand); color:var(--graphite);
+  box-shadow:0 18px 46px rgba(0,0,0,.28);
+}
+.slide.dark{background:var(--graphite); color:var(--sand)}
+.slide.dark h1,.slide.dark h2,.slide.dark h3{color:var(--sand)}
+
+.num{
+  position:absolute; right:26px; bottom:20px;
+  font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:.04em;
+}
+.slide.dark .num{color:var(--muted-dark)}
+/* Na capa e no fecho o rodapé já assina o slide — o número ali só aperta o canto. */
+.cover .num{display:none}
+
+.eyebrow{
+  font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--red); margin-bottom:16px; font-weight:500;
+}
+.slide.dark .eyebrow{color:var(--red-light)}
+.eyebrow.q{color:var(--muted)} .slide.dark .eyebrow.q{color:var(--muted-dark)}
+
+.slide h2{font-size:clamp(22px,3.1vw,38px); line-height:1.08}
+.slide h3{font-size:16px; font-weight:600; letter-spacing:-.01em}
+.sub{font-size:clamp(13px,1.35vw,16px); line-height:1.55; color:var(--muted); max-width:62ch; margin-top:14px}
+.slide.dark .sub{color:var(--muted-dark)}
+.body-l{font-size:clamp(13px,1.3vw,15.5px); line-height:1.6}
+
+.grow{flex:1}
+.rule{height:1px; background:var(--line); margin:22px 0}
+.slide.dark .rule{background:var(--line-dark)}
+
+/* ---------- marca ---------- */
+.mark{display:flex; align-items:center; gap:9px}
+.mark svg{width:26px; height:26px; color:var(--red); flex:none}
+.slide.dark .mark svg{color:var(--red-light)}
+.mark .wm{font-family:var(--display); font-weight:700; font-size:19px; letter-spacing:-.04em}
+.mark .wm i{font-style:normal; color:var(--red)}
+.slide.dark .mark .wm i{color:var(--red-light)}
+
+/* ---------- capa ---------- */
+.cover{justify-content:center; align-items:flex-start; gap:0}
+.cover .big{
+  font-family:var(--display); font-weight:700; letter-spacing:-.055em;
+  font-size:clamp(56px,10vw,124px); line-height:.92; margin:22px 0 0;
+}
+.cover .big i{font-style:normal; color:var(--red-light)}
+.cover .tag{
+  font-size:clamp(15px,1.9vw,23px); color:var(--sand); margin-top:20px;
+  font-weight:500; letter-spacing:-.01em; max-width:34ch; line-height:1.35;
+}
+.cover .foot{
+  position:absolute; left:60px; right:60px; bottom:34px; display:flex;
+  justify-content:space-between; align-items:flex-end; gap:20px;
+  font-size:12px; color:var(--muted-dark); font-family:var(--mono);
+}
+.cover .glow{
+  position:absolute; right:-14%; top:-24%; width:62%; aspect-ratio:1; border-radius:50%;
+  background:radial-gradient(circle, rgba(204,27,27,.34), rgba(204,27,27,0) 66%);
+  pointer-events:none;
+}
+
+/* ---------- tabelas ---------- */
+table{width:100%; border-collapse:collapse; font-size:clamp(11px,1.15vw,13.5px)}
+th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--line)}
+.slide.dark th,.slide.dark td{border-color:var(--line-dark)}
+th{
+  font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.1em;
+  color:var(--muted); font-weight:500; border-bottom-width:1px;
+}
+.slide.dark th{color:var(--muted-dark)}
+td.n{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+tr.total td{font-weight:600; border-bottom:none}
+tr.total td.n{color:var(--red)}
+.slide.dark tr.total td.n{color:var(--red-light)}
+
+/* ---------- grades ---------- */
+.g2{display:grid; grid-template-columns:1fr 1fr; gap:20px 34px}
+.g3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+.g4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px}
+.g23{display:grid; grid-template-columns:repeat(3,1fr); gap:14px 16px}
+
+.card{
+  border:1px solid var(--line); border-radius:10px; padding:15px 16px;
+  display:flex; flex-direction:column; gap:6px; min-width:0; background:#fff;
+}
+.slide.dark .card{border-color:var(--line-dark); background:var(--graphite-2)}
+.card h3{font-size:14.5px}
+.card p{font-size:12.5px; line-height:1.5; color:var(--muted)}
+.slide.dark .card p{color:var(--muted-dark)}
+.card .k{
+  font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--red);
+}
+.slide.dark .card .k{color:var(--red-light)}
+
+/* passos numerados — a ordem é real, não decoração */
+.step{display:flex; gap:12px; align-items:flex-start}
+.step .i{
+  font-family:var(--mono); font-size:11px; font-weight:500; color:var(--red);
+  border:1px solid var(--red); border-radius:5px; width:26px; height:22px;
+  display:flex; align-items:center; justify-content:center; flex:none; margin-top:1px;
+}
+.slide.dark .step .i{color:var(--red-light); border-color:var(--red-light)}
+.step h3{font-size:13.5px; margin-bottom:3px}
+.step p{font-size:11.5px; line-height:1.45; color:var(--muted)}
+.slide.dark .step p{color:var(--muted-dark)}
+
+/* números grandes */
+.stat{display:flex; flex-direction:column; gap:2px}
+.stat b{
+  font-family:var(--display); font-weight:700; letter-spacing:-.045em;
+  font-size:clamp(28px,4.4vw,56px); line-height:1; color:var(--red);
+}
+.slide.dark .stat b{color:var(--red-light)}
+.stat span{font-size:12px; color:var(--muted); line-height:1.4; max-width:22ch}
+.slide.dark .stat span{color:var(--muted-dark)}
+
+/* antes e depois */
+.ba{display:grid; grid-template-columns:1fr auto 1fr; gap:26px; align-items:center}
+.ba .box{border:1px solid var(--line-dark); border-radius:12px; padding:22px 24px; background:var(--graphite-2)}
+.ba .box.now{border-color:var(--red-light); background:rgba(232,68,63,.08)}
+.ba .arrow{font-size:26px; color:var(--muted-dark); font-family:var(--mono)}
+.ba .lab{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted-dark)}
+.ba .val{font-family:var(--display); font-weight:700; font-size:clamp(24px,3.6vw,44px); letter-spacing:-.04em; margin-top:8px}
+.ba .box.now .val{color:var(--red-light)}
+.ba .det{font-size:12px; color:var(--muted-dark); margin-top:8px; line-height:1.45}
+
+/* etiquetas */
+.tag{
+  display:inline-flex; align-items:center; gap:6px; border-radius:999px;
+  padding:4px 11px; font-size:11px; font-weight:500; border:1px solid var(--line);
+  color:var(--muted); font-family:var(--body);
+}
+.slide.dark .tag{border-color:var(--line-dark); color:var(--muted-dark)}
+.tag.ok{border-color:rgba(15,157,99,.4); color:var(--ok); background:rgba(15,157,99,.09)}
+.tag.ai{border-color:rgba(139,92,246,.45); color:var(--ai); background:rgba(139,92,246,.1)}
+.tag.red{border-color:rgba(204,27,27,.35); color:var(--red); background:rgba(204,27,27,.07)}
+.slide.dark .tag.red{border-color:rgba(232,68,63,.4); color:var(--red-light); background:rgba(232,68,63,.1)}
+.tags{display:flex; flex-wrap:wrap; gap:7px}
+
+/* citação */
+.quote{
+  font-family:var(--display); font-weight:600; letter-spacing:-.035em;
+  font-size:clamp(24px,4.1vw,50px); line-height:1.12; max-width:19ch;
+}
+.quote em{font-style:normal; color:var(--red-light)}
+
+/* agentes */
+.agent{
+  border-left:2px solid var(--ai); padding:2px 0 2px 12px;
+  display:flex; flex-direction:column; gap:2px;
+}
+.agent b{font-size:12.5px; font-weight:600; font-family:var(--display); letter-spacing:-.01em}
+.agent code{font-family:var(--mono); font-size:9.5px; color:var(--ai)}
+.agent p{font-size:11px; line-height:1.42; color:var(--muted-dark)}
+
+/* linha do tempo */
+.tl{display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-top:6px}
+.tl .p{border-top:2px solid var(--line); padding-top:11px; display:flex; flex-direction:column; gap:4px}
+.slide.dark .tl .p{border-color:var(--line-dark)}
+.tl .p.on{border-color:var(--ok)}
+.tl .p.gate{border-color:var(--red)}
+.slide.dark .tl .p.gate{border-color:var(--red-light)}
+.tl .p .w{font-family:var(--mono); font-size:9.5px; letter-spacing:.06em; color:var(--muted)}
+.slide.dark .tl .p .w{color:var(--muted-dark)}
+.tl .p b{font-size:12px; font-family:var(--display); letter-spacing:-.01em}
+.tl .p span{font-size:10.5px; line-height:1.35; color:var(--muted)}
+.slide.dark .tl .p span{color:var(--muted-dark)}
+
+.note{
+  font-size:11.5px; line-height:1.5; color:var(--muted); border-left:2px solid var(--line);
+  padding-left:12px;
+}
+.slide.dark .note{color:var(--muted-dark); border-color:var(--line-dark)}
+
+.contact{display:flex; gap:44px; flex-wrap:wrap; margin-top:26px}
+.contact div{display:flex; flex-direction:column; gap:3px}
+.contact .l{font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted-dark)}
+.contact .v{font-size:17px; font-weight:600; letter-spacing:-.01em}
+
+/* ---------- celular ---------- */
+@media (max-width:820px){
+  .deck{padding:14px 12px 40px; gap:14px}
+  .slide{aspect-ratio:auto; min-height:0; padding:30px 24px 40px; border-radius:11px}
+  .g2,.g3,.g4,.g23{grid-template-columns:1fr; gap:12px}
+  .ba{grid-template-columns:1fr; gap:12px}
+  .ba .arrow{display:none}
+  .tl{grid-template-columns:1fr 1fr}
+  .cover .foot{position:static; margin-top:30px; flex-direction:column; align-items:flex-start; gap:8px}
+  .cover .big{font-size:60px}
+  .quote{max-width:none}
+  table{font-size:11.5px}
+  th,td{padding:7px 8px}
+  .num{right:14px; bottom:12px}
+}
+
+/* ---------- impressão / PDF ---------- */
+@page{size:1280px 720px; margin:0}
+@media print{
+  body{background:#fff}
+  .deck{max-width:none; margin:0; padding:0; gap:0}
+  .slide{
+    aspect-ratio:auto; width:1280px; height:720px; border-radius:0; box-shadow:none;
+    break-after:page; page-break-after:always;
+  }
+  .slide:last-child{break-after:auto; page-break-after:auto}
+}
+</style>
+
+</head>
+<body style="margin:0">
+<div class="deck">
+
+<!-- 01 · capa -->
+<section class="slide dark cover">
+  <div class="glow"></div>
+  <div class="mark">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M9 31.5 32 11l23 20.5" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="currentColor"/><rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="currentColor"/><rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="currentColor"/></svg>
+    <span class="wm">Pr<i>o</i>pto</span>
+  </div>
+  <div class="big">Pr<i>o</i>pto</div>
+  <p style="font-size:clamp(15px,1.9vw,23px);color:var(--sand);margin-top:20px;font-weight:500;letter-spacing:-.01em;max-width:36ch;line-height:1.35">
+    O corretor fala e fotografa. O anúncio sai pronto, tratado e no ar.
+  </p>
+  <div class="foot">
+    <span>propto.com.br · setembro de 2026</span>
+    <span>um produto PrimeCorp Brokers</span>
+  </div>
+  <span class="num">01</span>
+</section>
+
+<!-- 02 · o problema -->
+<section class="slide">
+  <p class="eyebrow">O problema</p>
+  <h2>O corretor autônomo perde a maior parte<br>do tempo produtivo em trabalho administrativo.</h2>
+  <div class="rule"></div>
+  <div class="grow">
+    <table>
+      <thead><tr><th>Etapa, hoje</th><th>Tempo médio</th><th>Qualidade do resultado</th></tr></thead>
+      <tbody>
+        <tr><td>Visita e anotação do imóvel</td><td class="n">30–60 min</td><td>Caderno, WhatsApp, memória</td></tr>
+        <tr><td>Digitação do cadastro</td><td class="n">20–40 min</td><td>Campos faltando, dados inconsistentes</td></tr>
+        <tr><td>Tratamento das fotos</td><td class="n">30–90 min</td><td>Foto escura, torta, com placa e rosto</td></tr>
+        <tr><td>Escrita do anúncio</td><td class="n">20–45 min</td><td>Texto genérico, copiado, com erro</td></tr>
+        <tr><td>Publicação em cada canal</td><td class="n">15–30 min</td><td>Retrabalho manual por canal</td></tr>
+        <tr><td>Follow-up com interessados</td><td class="n">disperso</td><td>Lead esfria, nada fica registrado</td></tr>
+        <tr class="total"><td>Total por imóvel</td><td class="n">2 a 5 horas</td><td>Carteira pequena, anúncio ruim, lead perdido</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <span class="num">02</span>
+</section>
+
+<!-- 03 · o diagnóstico -->
+<section class="slide dark" style="justify-content:center">
+  <p class="eyebrow q">O diagnóstico</p>
+  <div class="quote">O problema não é falta de CRM. É que o dado <em>nunca chega</em> ao CRM.</div>
+  <p class="sub" style="margin-top:26px">
+    Todo sistema do mercado começa pelo CRM e presume que alguém vai alimentá-lo. Ninguém alimenta —
+    porque alimentar custa de duas a cinco horas por imóvel. O Propto inverte a ordem: começa pela captura,
+    e o CRM nasce do dado que a operação já gerou.
+  </p>
+  <p style="font-family:var(--mono);font-size:12px;color:var(--red-light);margin-top:30px;letter-spacing:.02em">
+    quem tem a captura tem o dado &nbsp;·&nbsp; quem tem o dado tem o encontro &nbsp;·&nbsp; quem tem o encontro tem a venda
+  </p>
+  <span class="num">03</span>
+</section>
+
+<!-- 04 · antes e depois -->
+<section class="slide dark">
+  <p class="eyebrow">O que muda</p>
+  <h2>Da porta ao anúncio publicado.</h2>
+  <div class="grow" style="display:flex;align-items:center">
+    <div class="ba" style="width:100%">
+      <div class="box">
+        <div class="lab">Hoje, sem o Propto</div>
+        <div class="val">2 a 5 h</div>
+        <div class="det">Trabalho humano do início ao fim, espalhado por vários dias e vários aplicativos.</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box now">
+        <div class="lab">Meta do produto</div>
+        <div class="val">&lt; 15 min</div>
+        <div class="det">Sendo menos de 5 minutos de trabalho humano. O resto é a máquina processando enquanto o corretor vai para a próxima visita.</div>
+      </div>
+    </div>
+  </div>
+  <p class="note">Estas são as duas métricas-mãe do produto: tempo até publicar e tempo de trabalho humano. É possível ter a primeira boa e a segunda ruim — nesse caso o produto não resolveu nada, só mudou o trabalho de lugar.</p>
+  <span class="num">04</span>
+</section>
+
+<!-- 05 · como funciona -->
+<section class="slide">
+  <p class="eyebrow">Como funciona</p>
+  <h2>Nove etapas, uma gravação.</h2>
+  <div class="grow" style="display:flex;align-items:center;margin-top:18px">
+    <div class="g23" style="width:100%">
+      <div class="step"><div class="i">1</div><div><h3>Capturar</h3><p>O corretor grava falando enquanto anda pelo imóvel e fotografa. Funciona sem internet.</p></div></div>
+      <div class="step"><div class="i">2</div><div><h3>Entender</h3><p>A fala vira ficha estruturada, com o nível de confiança e o trecho do áudio que originou cada dado.</p></div></div>
+      <div class="step"><div class="i">3</div><div><h3>Organizar</h3><p>As fotos são classificadas por ambiente, ordenadas e a capa é escolhida.</p></div></div>
+      <div class="step"><div class="i">4</div><div><h3>Tratar</h3><p>Exposição, enquadramento, e o obrigatório: rosto e placa borrados, metadados removidos.</p></div></div>
+      <div class="step"><div class="i">5</div><div><h3>Escrever</h3><p>Título, descrição e destaques, mais as versões para portal, Instagram e WhatsApp.</p></div></div>
+      <div class="step"><div class="i">6</div><div><h3>Apresentar</h3><p>Uma página própria do imóvel, rápida, com ficha, galeria e o CRECI do responsável.</p></div></div>
+      <div class="step"><div class="i">7</div><div><h3>Publicar</h3><p>Link único para mandar no WhatsApp, com cartão de prévia gerado automaticamente.</p></div></div>
+      <div class="step"><div class="i">8</div><div><h3>Acompanhar</h3><p>Visita, clique e mensagem viram lead no funil, com alerta quando esfria.</p></div></div>
+      <div class="step"><div class="i">9</div><div><h3>Encontrar comprador</h3><p>Imóvel novo varre a base de compradores. Comprador novo varre a carteira.</p></div></div>
+    </div>
+  </div>
+  <span class="num">05</span>
+</section>
+
+<!-- 06 · capturar -->
+<section class="slide">
+  <p class="eyebrow">Funcionalidades · capturar e entender</p>
+  <h2>A fala do corretor é a matéria-prima.</h2>
+  <div class="grow" style="display:flex;align-items:center;margin-top:16px">
+    <div class="g2" style="width:100%">
+      <div class="card"><span class="k">Gravação</span><h3>Grava com a tela bloqueada</h3><p>O corretor guarda o celular no bolso e continua falando. Sobrevive a ligação recebida.</p></div>
+      <div class="card"><span class="k">Campo</span><h3>Funciona sem internet</h3><p>Cem por cento da captura é offline. O áudio entra na fila e sobe sozinho quando a rede voltar.</p></div>
+      <div class="card"><span class="k">Extração</span><h3>Confiança campo a campo</h3><p>Cada dado extraído vem com o quanto o sistema confia nele. Abaixo de 0,7 aparece destacado — não passa em silêncio.</p></div>
+      <div class="card"><span class="k">Prova</span><h3>Áudio-âncora</h3><p>Ao tocar em qualquer campo, o trecho exato da gravação que originou aquele dado toca de volta. O corretor ouve a prova.</p></div>
+      <div class="card"><span class="k">Fotos</span><h3>Até 40 por imóvel</h3><p>Envio resiliente: sobrevive ao aplicativo ser fechado no meio e retoma de onde parou.</p></div>
+      <div class="card"><span class="k">Correção</span><h3>Complemento sem perder edição</h3><p>Gravar de novo para completar não apaga o que o corretor já corrigiu à mão.</p></div>
+    </div>
+  </div>
+  <span class="num">06</span>
+</section>
+
+<!-- 07 · tratar fotos -->
+<section class="slide dark">
+  <p class="eyebrow">Funcionalidades · tratar</p>
+  <h2>Nenhuma foto vai ao ar sem tratamento.</h2>
+  <p class="sub">Isso não é uma opção de configuração. É uma restrição do banco de dados: a foto só recebe o estado
+  <span style="font-family:var(--mono);font-size:.92em">pronta</span> se rosto e placa estiverem borrados e os metadados removidos. E só foto pronta é publicável.</p>
+  <div class="grow" style="display:flex;align-items:center;margin-top:14px">
+    <div class="g4" style="width:100%">
+      <div class="card"><span class="k">Obrigatório</span><h3>Rosto e placa borrados</h3><p>Meta de 95% de recall. Falso negativo aqui é exposição jurídica, não defeito estético.</p></div>
+      <div class="card"><span class="k">Obrigatório</span><h3>Metadados removidos</h3><p>A foto do celular carrega a coordenada de onde foi tirada. Sai antes de ir ao ar.</p></div>
+      <div class="card"><span class="k">Automático</span><h3>Exposição e perspectiva</h3><p>Corrige foto escura e parede torta. O original é preservado, sempre.</p></div>
+      <div class="card"><span class="k">Automático</span><h3>Descarte sugerido</h3><p>Foto tremida, escura ou repetida é apontada. Duplicata é detectada por cálculo, não por opinião.</p></div>
+    </div>
+  </div>
+  <span class="num">07</span>
+</section>
+
+<!-- 08 · escrever -->
+<section class="slide">
+  <p class="eyebrow">Funcionalidades · escrever</p>
+  <h2>O texto passa por um fiscal antes de existir.</h2>
+  <div class="grow" style="display:flex;align-items:center;margin-top:16px">
+    <div class="g2" style="width:100%;align-items:start">
+      <div>
+        <h3 style="margin-bottom:10px">O que sai</h3>
+        <p class="body-l" style="color:var(--muted)">Título de até 70 caracteres, descrição longa e de três a seis destaques. Mais as versões por canal: portal, legenda de Instagram com hashtags, mensagem curta de WhatsApp e a descrição de busca para o Google.</p>
+        <div class="rule"></div>
+        <h3 style="margin-bottom:10px">O que nunca sai</h3>
+        <div class="tags">
+          <span class="tag red">imperdível</span><span class="tag red">oportunidade única</span>
+          <span class="tag red">última unidade</span><span class="tag red">melhor da região</span>
+          <span class="tag red">valorização garantida</span><span class="tag red">documentação 100% ok</span>
+        </div>
+        <p style="font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.5">Nem qualquer referência a perfil de morador — família, religião, origem, estado civil, presença de crianças.</p>
+      </div>
+      <div>
+        <div class="card" style="background:var(--sand-2);border-color:var(--line)">
+          <span class="k">Como o fiscal trabalha</span>
+          <h3>Primeiro a conta, depois a leitura</h3>
+          <p>A primeira verificação não usa inteligência artificial: o sistema extrai todo número do texto e confronta com a ficha do imóvel. Metragem divergente, preço trocado, telefone ou CPF vazando no corpo do anúncio — tudo isso é pego por conta, não por opinião.</p>
+          <p>Só depois um segundo agente lê o texto procurando promessa implícita, afirmação sem base e discriminação velada.</p>
+          <p style="color:var(--red);font-weight:500">Bloqueio impede a publicação. Não é aviso.</p>
+        </div>
+        <p class="note" style="margin-top:14px">Campo que não foi dito vira vazio, nunca estimativa. Não inventar é regra dura: uma regressão em alucinação trava a entrega do código.</p>
+      </div>
+    </div>
+  </div>
+  <span class="num">08</span>
+</section>
+
+<!-- 09 · apresentar e publicar -->
+<section class="slide dark">
+  <p class="eyebrow">Funcionalidades · apresentar, publicar e acompanhar</p>
+  <h2>Uma página por imóvel, com o CRECI de quem responde.</h2>
+  <div class="grow" style="display:flex;align-items:center;margin-top:14px">
+    <div class="g3" style="width:100%">
+      <div class="card"><span class="k">Página</span><h3>Endereço próprio e rápido</h3><p>Galeria, ficha técnica, mapa e os dados do corretor. Carrega em menos de 2,5 segundos no 4G.</p></div>
+      <div class="card"><span class="k">Privacidade</span><h3>Endereço em três níveis</h3><p>Exato, só a rua, ou só o bairro. O corretor escolhe por imóvel e vê antes o que o público verá.</p></div>
+      <div class="card"><span class="k">Distribuição</span><h3>Cartão pronto para o WhatsApp</h3><p>Ao colar o link, aparece preço, código e foto. Botão principal abre a conversa com a mensagem já escrita.</p></div>
+      <div class="card"><span class="k">Medição</span><h3>Visita e clique registrados</h3><p>Sem guardar endereço de IP de ninguém. O corretor sabe quantos viram; ninguém sabe quem foram.</p></div>
+      <div class="card"><span class="k">Funil</span><h3>Lead vira negócio sozinho</h3><p>Quem preenche o formulário entra no funil de oito estágios, com o consentimento registrado palavra por palavra.</p></div>
+      <div class="card"><span class="k">Encontro</span><h3>Busca nos dois sentidos</h3><p>Imóvel novo varre a base de compradores; comprador novo varre a carteira. O sistema explica por que casa e o que não casa.</p></div>
+    </div>
+  </div>
+  <span class="num">09</span>
+</section>
+
+<!-- 10 · agentes -->
+<section class="slide dark">
+  <p class="eyebrow">Dentro do produto</p>
+  <h2>Nove agentes, cada um com uma responsabilidade.</h2>
+  <p class="sub">Nenhum deles escreve no banco de dados. Todos devolvem confiança. Saída fora do formato esperado é descartada, não remendada.</p>
+  <div class="grow" style="display:flex;align-items:center;margin-top:16px">
+    <div class="g3" style="width:100%;gap:14px 26px">
+      <div class="agent"><b>A1 · Transcritor</b><code>transcribe</code><p>Converte a fala em texto com marcação de tempo, com glossário de jargão imobiliário.</p></div>
+      <div class="agent"><b>A2 · Extrator</b><code>extract_property</code><p>Transforma a fala corrida em ficha estruturada. O agente mais importante do produto.</p></div>
+      <div class="agent"><b>A3 · Curador de mídia</b><code>classify_photo</code><p>Classifica o ambiente, dá nota à foto e detecta rosto, placa e item pessoal.</p></div>
+      <div class="agent"><b>A4 · Redator</b><code>write_listing</code><p>Escreve o anúncio a partir apenas dos dados confirmados pelo corretor.</p></div>
+      <div class="agent"><b>A5 · Compliance</b><code>compliance_check</code><p>Portão obrigatório. Aprova ou bloqueia, apontando o que está errado.</p></div>
+      <div class="agent"><b>A6 · Faixa de preço</b><code>price_range</code><p>Faixa indicativa com comparáveis e ressalvas. Nunca chamada de avaliação.</p></div>
+      <div class="agent"><b>A7 · Perfilador</b><code>extract_requirements</code><p>Extrai o que o comprador quer, separando o essencial do desejável.</p></div>
+      <div class="agent"><b>A8 · Matcher</b><code>match_explain</code><p>Explica por que imóvel e comprador casam. A nota é calculada em código, não pelo modelo.</p></div>
+      <div class="agent"><b>A9 · Follow-up</b><code>suggest_followup</code><p>Sugere a próxima mensagem ao lead. Nunca envia: abre o WhatsApp preenchido.</p></div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:6px">O violeta identifica conteúdo proposto por inteligência artificial — no produto inteiro, essa cor só aparece onde a máquina propôs algo que o corretor ainda vai confirmar.</p>
+  <span class="num">10</span>
+</section>
+
+<!-- 11 · proteção jurídica -->
+<section class="slide">
+  <p class="eyebrow">Por que isso importa juridicamente</p>
+  <h2>As quatro travas que o produto tem e a planilha não tem.</h2>
+  <div class="grow" style="display:flex;align-items:center;margin-top:16px">
+    <div class="g4" style="width:100%">
+      <div class="card"><span class="k">Direito de imagem</span><h3>Anonimização bloqueante</h3><p>Publicar rosto de terceiro ou placa legível é risco real. Aqui a foto não chega à área pública sem tratamento — a regra está no banco, não na boa vontade do usuário.</p></div>
+      <div class="card"><span class="k">Lei 6.530/1978</span><h3>CRECI na página</h3><p>Só publica imóvel de corretor com CRECI informado, e o número aparece no anúncio.</p></div>
+      <div class="card"><span class="k">Lei 13.709/2018</span><h3>Consentimento versionado</h3><p>Fica gravado o texto exato que a pessoa leu ao aceitar. Sem consentimento, a mensagem não é enviada. Visitas são contadas sem guardar IP.</p></div>
+      <div class="card"><span class="k">Código de Defesa do Consumidor</span><h3>Anúncio que não promete</h3><p>Número divergente do cadastro e promessa sem base bloqueiam a publicação. O anúncio só afirma o que está no dado.</p></div>
+    </div>
+  </div>
+  <p class="note">Cada corretor enxerga apenas a própria carteira e os próprios leads. O isolamento é verificado por teste automático que impede a entrega do código se falhar.</p>
+  <span class="num">11</span>
+</section>
+
+<!-- 12 · gateway -->
+<section class="slide dark">
+  <p class="eyebrow">Infraestrutura</p>
+  <h2>A inteligência artificial é um ativo da casa,<br>não uma peça dentro do aplicativo.</h2>
+  <p class="sub">O AI Gateway é um serviço independente. Roteia cada tarefa para o modelo certo, troca de provedor
+  sozinho quando um falha, corta o gasto quando o orçamento acaba e registra custo por organização e por tarefa.
+  Três produtos da PrimeCorp usam a mesma infraestrutura.</p>
+  <div class="grow" style="display:flex;align-items:center;margin-top:14px">
+    <div class="g3" style="width:100%">
+      <div class="card"><span class="k">Propto</span><h3>Imóveis</h3><p>Transcrição, extração, fotos, redação e compliance.</p></div>
+      <div class="card"><span class="k">VeriMulta</span><h3>Multas de trânsito</h3><p>Mesmo gateway, chave própria, orçamento próprio.</p></div>
+      <div class="card"><span class="k">PrimeGov IA</span><h3>Municípios</h3><p>Terceiro consumidor previsto da mesma base.</p></div>
+    </div>
+  </div>
+  <div class="g4" style="margin-top:18px">
+    <div class="stat"><b>4</b><span>provedores, com troca automática em caso de falha</span></div>
+    <div class="stat"><b>402</b><span>é o que o gateway responde quando o orçamento da organização acaba — corte rígido, com alerta em 80%</span></div>
+    <div class="stat"><b>≥20%</b><span>de economia esperada com cache semântico nas tarefas repetitivas</span></div>
+    <div class="stat"><b>100%</b><span>das chamadas registradas com custo, inclusive as que falharam</span></div>
+  </div>
+  <span class="num">12</span>
+</section>
+
+<!-- 13 · mercado -->
+<section class="slide">
+  <p class="eyebrow">Mercado</p>
+  <h2>730 mil corretores no Brasil.<br>Começamos por um perfil específico.</h2>
+  <div class="grow" style="display:flex;align-items:center;margin-top:16px">
+    <div class="g2" style="width:100%;align-items:start">
+      <div>
+        <h3 style="margin-bottom:12px">Quem é o cliente do primeiro ano</h3>
+        <table>
+          <tbody>
+            <tr><td>Registro</td><td>CRECI ativo</td></tr>
+            <tr><td>Estrutura</td><td>Trabalha sozinho ou com um assistente</td></tr>
+            <tr><td>Carteira</td><td class="n">5 a 60 imóveis</td></tr>
+            <tr><td>Ticket do imóvel</td><td class="n">R$ 250 mil a R$ 50 milhões</td></tr>
+            <tr><td>Onde trabalha</td><td>No celular, em campo, com internet instável</td></tr>
+            <tr><td>Onde publica</td><td>Portais, Instagram e WhatsApp</td></tr>
+            <tr><td>Marketing</td><td>Não tem equipe e não vai contratar</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="card" style="background:var(--sand-2)">
+          <span class="k">Onde começa</span>
+          <h3>Campinas e Sumaré, com carteira real</h3>
+          <p>O produto é operado desde o primeiro dia na carteira de um corretor com CRECI-SP. Nenhuma entrega é aceita sem uso real em imóvel de verdade.</p>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <span class="k">Fora do escopo agora</span>
+          <h3>Imobiliária com equipe, incorporadora, gestão de locação</h3>
+          <p>O modelo de dados já nasceu preparado para carteira compartilhada e divisão de comissão. É a segunda versão, não a primeira — vender para dois perfis ao mesmo tempo é como se perde os dois.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="num">13</span>
+</section>
+
+<!-- 14 · modelo de receita -->
+<section class="slide dark">
+  <p class="eyebrow">Modelo de negócio</p>
+  <h2>Assinatura mensal, com limite de capturas.</h2>
+  <div class="grow" style="display:flex;align-items:center;margin-top:14px">
+    <div class="g2" style="width:100%;align-items:start;gap:20px 34px">
+      <div>
+        <table>
+          <thead><tr><th>Plano</th><th>Mensal</th><th>Imóveis</th><th>Capturas</th></tr></thead>
+          <tbody>
+            <tr><td>Free</td><td class="n">R$ 0</td><td class="n">3</td><td class="n">3</td></tr>
+            <tr><td>Corretor</td><td class="n">R$ 97</td><td class="n">30</td><td class="n">40</td></tr>
+            <tr><td>Corretor Pro</td><td class="n">R$ 197</td><td class="n">100</td><td class="n">150</td></tr>
+            <tr><td>Imobiliária</td><td class="n">R$ 497+</td><td>ilimitado</td><td class="n">500</td></tr>
+          </tbody>
+        </table>
+        <p class="note" style="margin-top:14px">Preço é hipótese declarada, a ser validada no piloto. O limite de capturas existe porque o custo de inteligência artificial é variável e real.</p>
+      </div>
+      <div>
+        <h3 style="margin-bottom:12px">A aritmética, sem maquiagem</h3>
+        <table>
+          <tbody>
+            <tr><td>Custo de IA por imóvel</td><td class="n">R$ 1,87</td></tr>
+            <tr><td>Uso típico: 30 capturas</td><td class="n">R$ 56,00</td></tr>
+            <tr><td>Receita do plano Corretor</td><td class="n">R$ 97,00</td></tr>
+            <tr class="total"><td>Margem no uso típico</td><td class="n">42%</td></tr>
+            <tr><td>No teto do plano, 40 capturas</td><td class="n">23%</td></tr>
+          </tbody>
+        </table>
+        <p class="note" style="margin-top:14px">A meta de 80% é de longo prazo, por cache semântico, escolha de modelo por tarefa e reprecificação. A meta da primeira versão é 40%. Se o uso real ficar perto do teto, o preço sobe ou o limite cai — é uma decisão de dado, marcada no calendário.</p>
+      </div>
+    </div>
+  </div>
+  <span class="num">14</span>
+</section>
+
+<!-- 15 · estado atual -->
+<section class="slide">
+  <p class="eyebrow">Onde o produto está hoje</p>
+  <h2>A fundação está construída e verificada.</h2>
+  <div class="grow" style="display:flex;flex-direction:column;justify-content:center;gap:18px;margin-top:10px">
+    <div class="g4">
+      <div class="stat"><b>242</b><span>verificações automáticas, todas executadas</span></div>
+      <div class="stat"><b>16</b><span>tabelas com isolamento entre corretores provado por teste</span></div>
+      <div class="stat"><b>7</b><span>migrações de banco aplicadas e conferidas</span></div>
+      <div class="stat"><b>1</b><span>página pública real no ar, lendo do banco</span></div>
+    </div>
+    <div class="rule" style="margin:4px 0"></div>
+    <div class="g3">
+      <div class="card"><span class="k">Pronto</span><h3>Banco de dados completo</h3><p>Organizações, imóveis, captura, fila de processamento, mídia, página pública e leads — com as travas de LGPD já no banco.</p></div>
+      <div class="card"><span class="k">Pronto</span><h3>AI Gateway e tratamento de imagem</h3><p>Roteamento, troca de provedor, orçamento, cache. E o borrão de rosto e placa conferido pixel a pixel.</p></div>
+      <div class="card"><span class="k">Pronto</span><h3>Marca, site e página do imóvel</h3><p>Identidade visual, site de vendas e a página pública em Next.js lendo do banco de verdade.</p></div>
+      <div class="card"><span class="k">Falta</span><h3>Aplicativo de captura</h3><p>A tela onde o corretor grava e fotografa. É o coração do produto e o próximo item.</p></div>
+      <div class="card"><span class="k">Falta</span><h3>Painel do corretor</h3><p>Entrar, revisar o rascunho, publicar e ver os leads sem depender de ninguém.</p></div>
+      <div class="card"><span class="k">Falta</span><h3>CRM, encontro e cobrança</h3><p>Funil, busca comprador × imóvel e a assinatura com pagamento.</p></div>
+    </div>
+  </div>
+  <span class="num">15</span>
+</section>
+
+<!-- 16 · roadmap -->
+<section class="slide dark">
+  <p class="eyebrow">Caminho até a primeira venda</p>
+  <h2>Um portão comercial antes de construir o resto.</h2>
+  <p class="sub">Dez sprints até a versão completa é tempo demais para descobrir se alguém paga. Por isso existe o Piloto Zero:
+  em dezembro, três corretores usam a captura na carteira real e pagam um valor simbólico. O objetivo não é faturar, é medir disposição a pagar.</p>
+  <div class="grow" style="display:flex;align-items:center;margin-top:12px">
+    <div class="tl" style="width:100%">
+      <div class="p on"><span class="w">CONCLUÍDO</span><b>Fundação</b><span>Banco, fila, gateway, imagem, marca e página pública</span></div>
+      <div class="p"><span class="w">SET — OUT</span><b>Captura</b><span>Aplicativo, voz, extração com confiança e áudio-âncora</span></div>
+      <div class="p"><span class="w">NOV</span><b>Fotos e texto</b><span>Tratamento, anonimização, redação e compliance</span></div>
+      <div class="p"><span class="w">DEZ</span><b>Publicação</b><span>Página, WhatsApp, lead e cobrança definida</span></div>
+      <div class="p gate"><span class="w">26 DEZ · PORTÃO</span><b>Piloto Zero</b><span>3 corretores reais, 2 semanas. Sem aprovação aqui, não se constrói o CRM</span></div>
+      <div class="p"><span class="w">JAN — FEV</span><b>CRM e encontro</b><span>Funil, busca comprador × imóvel, painel de custo, lojas</span></div>
+    </div>
+  </div>
+  <p class="note">O portão tem critério objetivo: 70% dos imóveis cadastrados por voz, mediana abaixo de 15 minutos, anúncios publicados com edição leve, e ao menos um corretor pagando por vontade própria. Falhando, a decisão é corrigir a captura — não construir CRM sobre uma captura que ninguém quis.</p>
+  <span class="num">16</span>
+</section>
+
+<!-- 17 · sucesso -->
+<section class="slide">
+  <p class="eyebrow">Como saberemos que deu certo</p>
+  <h2>Seis números, decididos antes de começar.</h2>
+  <div class="grow" style="display:flex;align-items:center;margin-top:16px">
+    <div class="g3" style="width:100%">
+      <div class="card"><span class="k">Adoção</span><h3>70% por voz</h3><p>Dos imóveis cadastrados no período, ao menos setenta por cento entram pela captura falada.</p></div>
+      <div class="card"><span class="k">Velocidade</span><h3>Menos de 15 minutos</h3><p>Mediana da primeira gravação ao anúncio publicado.</p></div>
+      <div class="card"><span class="k">Qualidade</span><h3>60% com edição leve</h3><p>Das descrições geradas, a maioria publicada alterando menos de um quinto do texto. É o melhor sinal de qualidade que existe: mede o que o corretor fez, não o que ele disse.</p></div>
+      <div class="card"><span class="k">Custo</span><h3>Menos de R$ 3 por imóvel</h3><p>Acima disso, o gateway rebaixa a qualidade do modelo automaticamente e registra o rebaixamento.</p></div>
+      <div class="card"><span class="k">Uso</span><h3>5 corretores por semana</h3><p>Usando sem nenhum incentivo para usar.</p></div>
+      <div class="card"><span class="k">Receita</span><h3>3 assinaturas pagas</h3><p>Ao fim do piloto. Uma delas já no Piloto Zero, em dezembro.</p></div>
+    </div>
+  </div>
+  <p class="note">Falhar em adoção, em qualidade ou em receita significa repensar o produto — não iterar o código. E há uma métrica que nunca pode piorar: invenção de característica que o imóvel não tem. A meta é zero, e uma regressão nela para a venda até ser resolvida.</p>
+  <span class="num">17</span>
+</section>
+
+<!-- 18 · fecho -->
+<section class="slide dark cover" style="justify-content:center">
+  <div class="glow"></div>
+  <div class="mark">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M9 31.5 32 11l23 20.5" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="currentColor"/><rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="currentColor"/><rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="currentColor"/></svg>
+    <span class="wm">Pr<i>o</i>pto</span>
+  </div>
+  <div class="quote" style="margin-top:34px;max-width:24ch">Grave por três minutos. O anúncio sai <em>pronto</em>.</div>
+  <div class="contact">
+    <div><span class="l">Site</span><span class="v">propto.com.br</span></div>
+    <div><span class="l">WhatsApp</span><span class="v">+55 19 99805-1985</span></div>
+    <div><span class="l">Responsável</span><span class="v">Rodrigo Viana · CRECI-SP</span></div>
+  </div>
+  <div class="foot">
+    <span>propto.com.br</span>
+    <span>um produto PrimeCorp Brokers</span>
+  </div>
+  <span class="num">18</span>
+</section>
+
+</div>
+
+</body>
+</html>
