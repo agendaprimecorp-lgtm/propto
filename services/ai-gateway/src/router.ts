@@ -1,4 +1,5 @@
-import { GatewayError, ProviderError } from './errors.js';
+import { GatewayError, ProviderError, type ProviderFailureKind } from './errors.js';
+import { validateAgainstSchema } from './schema.js';
 import { costUsd, toBrl } from './pricing.js';
 import { cacheKey, type BudgetStatus, type Store, type UsageRecord } from './store.js';
 import type { GatewayConfig, Product, ProviderName, Quality, Task } from './config.js';
@@ -93,8 +94,17 @@ export class Router {
 
   async run(req: RunRequest): Promise<RunResult> {
     // 1. Idempotência — a mesma chave nunca paga duas vezes.
-    if (req.idempotencyKey) {
-      const hit = await this.store.getIdempotent(`${req.product}:${req.idempotencyKey}`);
+    //
+    // A chave inclui a organização. Sem isso, todas as organizações do
+    // produto dividem o mesmo espaço de nomes, e repetir a chave de outra
+    // devolve a saída dela: a transcrição da visita, os dados extraídos
+    // do imóvel. Isolamento entre inquilinos vale também no cache.
+    const chaveIdem = req.idempotencyKey
+      ? `${req.product}:${req.orgId ?? 'sem-org'}:${req.idempotencyKey}`
+      : null;
+
+    if (chaveIdem) {
+      const hit = await this.store.getIdempotent(chaveIdem);
       if (hit) return hit as RunResult;
     }
 
@@ -145,7 +155,10 @@ export class Router {
         { task: req.task });
     }
 
-    const failures: Array<{ provider: string; error: string }> = [];
+    // O que sai na resposta é a classificação, não a mensagem do provedor —
+    // ela carrega corpo de erro, identificador de requisição e detalhe de
+    // cota. O texto completo vai para o log do gateway.
+    const failures: Array<{ provider: string; reason: ProviderFailureKind }> = [];
     let fallbackFrom: string | null = null;
 
     for (let i = 0; i < chain.length; i++) {
@@ -192,8 +205,8 @@ export class Router {
 
         const result: RunResult = { output, meta };
         await this.store.setCache(key, result, this.cfg.cacheTtlMs);
-        if (req.idempotencyKey) {
-          await this.store.setIdempotent(`${req.product}:${req.idempotencyKey}`, result, this.cfg.cacheTtlMs);
+        if (chaveIdem) {
+          await this.store.setIdempotent(chaveIdem, result, this.cfg.cacheTtlMs);
         }
         return result;
       } catch (err) {
@@ -201,7 +214,10 @@ export class Router {
 
         const latencyMs = Date.now() - started;
         const message = (err as Error).message;
-        failures.push({ provider: step.provider, error: message });
+        const reason: ProviderFailureKind =
+          err instanceof ProviderError ? err.kind : 'rede';
+        failures.push({ provider: step.provider, reason });
+        console.error(`[gateway] ${step.provider}/${step.model} falhou (${reason}): ${message}`);
 
         // A tentativa que falhou também custa — registrar é regra (MASTER_PROMPT §4, regra 7).
         await this.store.recordUsage(this.toRecord(req, {
@@ -217,6 +233,16 @@ export class Router {
       }
     }
 
+    // Quando toda a cadeia respondeu fora do schema, o problema não é
+    // disponibilidade: é a resposta do modelo. O chamador precisa saber a
+    // diferença — uma se resolve tentando de novo, a outra não.
+    const todasSchema = failures.length > 0 && failures.every((f) => f.reason === 'schema');
+    if (todasSchema) {
+      throw new GatewayError('SCHEMA_VALIDATION_FAILED',
+        'A resposta da IA não veio no formato esperado. Tente novamente.',
+        { attempts: failures.length, failures });
+    }
+
     throw new GatewayError('ALL_PROVIDERS_FAILED',
       'Não foi possível processar agora. Tentaremos novamente em instantes.',
       { attempts: failures.length, failures });
@@ -228,7 +254,7 @@ export class Router {
 
     try {
       if (req.kind === 'transcribe') {
-        if (!provider.transcribe) throw new ProviderError(provider.name, 'não faz transcrição', true);
+        if (!provider.transcribe) throw new ProviderError(provider.name, 'não faz transcrição', true, 'nao_suportado');
         const out = await provider.transcribe({
           model,
           audioUrl: String(req.payload.audio_url ?? ''),
@@ -240,14 +266,14 @@ export class Router {
       }
 
       if (req.kind === 'embed') {
-        if (!provider.embed) throw new ProviderError(provider.name, 'não gera embeddings', true);
+        if (!provider.embed) throw new ProviderError(provider.name, 'não gera embeddings', true, 'nao_suportado');
         const out = await provider.embed({
           model, input: req.payload.input as string[], signal: controller.signal,
         });
         return { output: { vectors: out.vectors }, usage: out.usage };
       }
 
-      if (!provider.complete) throw new ProviderError(provider.name, 'não faz completions', true);
+      if (!provider.complete) throw new ProviderError(provider.name, 'não faz completions', true, 'nao_suportado');
       const out = await provider.complete({
         model,
         messages: req.payload.messages as any,
@@ -259,8 +285,23 @@ export class Router {
       });
 
       // Saída fora do schema é descartada, não consertada na mão (AI_AGENTS §1, regra 4).
-      if (req.schema && out.json === undefined) {
-        throw new ProviderError(provider.name, 'a resposta não bate com o schema pedido', true);
+      //
+      // "Fora do schema" quer dizer conferido campo a campo. Testar só se o
+      // texto era JSON parseável deixava `{"a":1}` passar como análise de
+      // foto válida — e o normalizador do worker completa o que falta com
+      // padrões seguros, entre eles "nenhum rosto".
+      if (req.schema) {
+        if (out.json === undefined) {
+          throw new ProviderError(
+            provider.name, 'a resposta não é JSON parseável', true, 'schema',
+          );
+        }
+        const problemas = validateAgainstSchema(out.json, req.schema);
+        if (problemas.length > 0) {
+          throw new ProviderError(
+            provider.name, `resposta fora do schema: ${problemas.join('; ')}`, true, 'schema',
+          );
+        }
       }
 
       return { output: req.schema ? out.json : { text: out.text }, usage: out.usage };

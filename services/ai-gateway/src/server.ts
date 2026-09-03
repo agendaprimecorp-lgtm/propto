@@ -3,6 +3,7 @@ import { GatewayError } from './errors.js';
 import { Router } from './router.js';
 import { MemoryStore, type Store } from './store.js';
 import { buildProviders } from './providers/http.js';
+import { assertAllowedAssetUrl } from './assets.js';
 import { PRICES_REVIEWED_AT } from './pricing.js';
 import {
   loadConfig, TASKS, type GatewayConfig, type Product, type Quality, type Task,
@@ -21,7 +22,10 @@ interface Caller { product: Product; orgId: string | null; idempotencyKey: strin
 export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store: Store } {
   const cfg: GatewayConfig = { ...loadConfig(), ...opts.config };
   const store = opts.store ?? new MemoryStore();
-  const providers = opts.providers ?? buildProviders(cfg.providerKeys);
+  const providers = opts.providers ?? buildProviders(cfg.providerKeys, {
+    allowedHosts: cfg.assetAllowedHosts,
+    maxBytes: cfg.maxAssetBytes,
+  });
   const router = new Router(cfg, providers, store);
 
   const app = Fastify({ logger: false, bodyLimit: 8 * 1024 * 1024 });
@@ -44,6 +48,30 @@ export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store:
       idempotencyKey: req.headers['x-idempotency-key'] ? String(req.headers['x-idempotency-key']) : null,
       jobId: req.headers['x-job-id'] ? String(req.headers['x-job-id']) : null,
     };
+  }
+
+  /**
+   * Toda chamada cobrável precisa dizer de quem é a conta.
+   *
+   * O bloco de orçamento roda dentro de `if (req.orgId)`: sem esta guarda,
+   * omitir o cabeçalho desliga o limite de gasto da organização e só resta
+   * o teto diário do produto, que é global. Quem paga a conta tem nome.
+   */
+  function requireOrg(caller: Caller): string {
+    if (!caller.orgId) {
+      throw new GatewayError('INVALID_REQUEST',
+        'Informe a organização no cabeçalho x-org-id.');
+    }
+    return caller.orgId;
+  }
+
+  /** URL de mídia recusada é erro do pedido, não indisponibilidade do provedor. */
+  function requireAssetUrl(value: unknown, campo: string): string {
+    try {
+      return assertAllowedAssetUrl(value, cfg.assetAllowedHosts).toString();
+    } catch (err) {
+      throw new GatewayError('INVALID_REQUEST', (err as Error).message, { campo });
+    }
   }
 
   function requireTask(value: unknown): Task {
@@ -98,7 +126,7 @@ export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store:
       kind: 'complete',
       task,
       product: caller.product,
-      orgId: caller.orgId,
+      orgId: requireOrg(caller),
       jobId: caller.jobId,
       idempotencyKey: caller.idempotencyKey,
       quality: quality(body.policy),
@@ -127,14 +155,14 @@ export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store:
       kind: 'complete',
       task,
       product: caller.product,
-      orgId: caller.orgId,
+      orgId: requireOrg(caller),
       jobId: caller.jobId,
       idempotencyKey: caller.idempotencyKey,
       quality: quality(body.policy),
       schema: body.schema as Record<string, unknown> | undefined,
       payload: {
         messages: body.messages ?? [{ role: 'user', content: String(body.prompt ?? 'Analise a imagem.') }],
-        image_urls: body.image_urls,
+        image_urls: (body.image_urls as unknown[]).map((u) => requireAssetUrl(u, 'image_urls')),
       },
     });
   });
@@ -149,11 +177,11 @@ export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store:
       kind: 'transcribe',
       task: 'transcribe',
       product: caller.product,
-      orgId: caller.orgId,
+      orgId: requireOrg(caller),
       jobId: caller.jobId,
       idempotencyKey: caller.idempotencyKey,
       payload: {
-        audio_url: body.audio_url,
+        audio_url: requireAssetUrl(body.audio_url, 'audio_url'),
         language: body.language ?? 'pt-BR',
         prompt: body.prompt,
       },
@@ -170,7 +198,7 @@ export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store:
       kind: 'embed',
       task: 'embed',
       product: caller.product,
-      orgId: caller.orgId,
+      orgId: requireOrg(caller),
       jobId: caller.jobId,
       idempotencyKey: caller.idempotencyKey,
       payload: { input: body.input },

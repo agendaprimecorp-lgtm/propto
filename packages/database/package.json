@@ -1,0 +1,17 @@
+{
+  "name": "@propto/database",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/org-scoped.ts",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "tsx --test test/*.test.ts",
+    "lint": "echo \"(lint no pacote raiz)\""
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

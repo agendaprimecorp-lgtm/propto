@@ -1,14 +1,24 @@
 import { ProviderError } from '../errors.js';
+import { assertAllowedAssetUrl, fetchAsset, toBase64 } from '../assets.js';
 import type { ProviderName } from '../config.js';
 import type {
   CompleteInput, CompleteOutput, EmbedInput, EmbedOutput,
   Provider, TranscribeInput, TranscribeOutput,
 } from './types.js';
 
+/** De onde o gateway pode baixar mídia, e até que tamanho. Ver src/assets.ts. */
+export interface AssetPolicy {
+  allowedHosts: string[];
+  maxBytes: number;
+}
+
+const ASSET_PADRAO: AssetPolicy = { allowedHosts: [], maxBytes: 100 * 1024 * 1024 };
+
 /** 429 e 5xx valem outra tentativa; 4xx de contrato, não. */
 function classify(provider: string, status: number, body: string): ProviderError {
   const retryable = status === 429 || status >= 500;
-  return new ProviderError(provider, `HTTP ${status}: ${body.slice(0, 300)}`, retryable);
+  const kind = status === 429 ? 'rate_limit' : status >= 500 ? 'upstream_5xx' : 'contrato';
+  return new ProviderError(provider, `HTTP ${status}: ${body.slice(0, 300)}`, retryable, kind);
 }
 
 async function postJson(
@@ -28,14 +38,14 @@ async function postJson(
     });
   } catch (err) {
     // Falha de rede é sempre recuperável: o próximo provedor pode estar de pé.
-    throw new ProviderError(provider, `falha de rede: ${(err as Error).message}`, true);
+    throw new ProviderError(provider, `falha de rede: ${(err as Error).message}`, true, 'rede');
   }
   const text = await res.text();
   if (!res.ok) throw classify(provider, res.status, text);
   try {
     return JSON.parse(text);
   } catch {
-    throw new ProviderError(provider, 'resposta não é JSON válido', true);
+    throw new ProviderError(provider, 'resposta não é JSON válido', true, 'schema');
   }
 }
 
@@ -57,7 +67,7 @@ export function extractJson(text: string): unknown | undefined {
 // OpenAI
 // ------------------------------------------------------------
 
-export function openaiProvider(apiKey?: string): Provider {
+export function openaiProvider(apiKey?: string, assets: AssetPolicy = ASSET_PADRAO): Provider {
   const auth = () => ({ authorization: `Bearer ${apiKey}` });
   return {
     name: 'openai',
@@ -90,12 +100,17 @@ export function openaiProvider(apiKey?: string): Provider {
     },
 
     async transcribe(input: TranscribeInput): Promise<TranscribeOutput> {
-      const audio = await fetch(input.audioUrl, { signal: input.signal ?? null });
-      if (!audio.ok) {
-        throw new ProviderError('openai', `não foi possível baixar o áudio (${audio.status})`, true);
+      // O áudio é baixado pelo gateway, então a URL passa pela conferência de
+      // host e pelo teto de tamanho antes de virar uma requisição de rede.
+      let audio;
+      try {
+        audio = await fetchAsset(input.audioUrl, assets.allowedHosts, assets.maxBytes, input.signal);
+      } catch (err) {
+        // URL recusada não melhora no próximo provedor.
+        throw new ProviderError('openai', (err as Error).message, false);
       }
       const form = new FormData();
-      form.append('file', await audio.blob(), 'audio.m4a');
+      form.append('file', new Blob([audio.bytes], { type: audio.contentType }), 'audio.m4a');
       form.append('model', input.model);
       form.append('language', (input.language ?? 'pt-BR').slice(0, 2));
       form.append('response_format', 'verbose_json');
@@ -131,7 +146,7 @@ export function openaiProvider(apiKey?: string): Provider {
 // Anthropic
 // ------------------------------------------------------------
 
-export function anthropicProvider(apiKey?: string): Provider {
+export function anthropicProvider(apiKey?: string, assets: AssetPolicy = ASSET_PADRAO): Provider {
   return {
     name: 'anthropic',
     isConfigured: () => Boolean(apiKey),
@@ -142,6 +157,13 @@ export function anthropicProvider(apiKey?: string): Provider {
 
       const content: unknown[] = [];
       for (const url of input.imageUrls ?? []) {
+        // Quem baixa aqui é a Anthropic, não o gateway — mas a URL passa pela
+        // mesma conferência, para não usar o provedor como intermediário.
+        try {
+          assertAllowedAssetUrl(url, assets.allowedHosts);
+        } catch (err) {
+          throw new ProviderError('anthropic', (err as Error).message, false);
+        }
         content.push({ type: 'image', source: { type: 'url', url } });
       }
       content.push({ type: 'text', text: rest.map((m) => m.content).join('\n\n') });
@@ -186,13 +208,29 @@ export function anthropicProvider(apiKey?: string): Provider {
 // Google
 // ------------------------------------------------------------
 
-export function googleProvider(apiKey?: string): Provider {
+export function googleProvider(apiKey?: string, assets: AssetPolicy = ASSET_PADRAO): Provider {
   return {
     name: 'google',
     isConfigured: () => Boolean(apiKey),
 
     async complete(input: CompleteInput): Promise<CompleteOutput> {
-      const parts: unknown[] = [{ text: input.messages.map((m) => m.content).join('\n\n') }];
+      // A API do Gemini recebe imagem como `inline_data` em base64 — não
+      // aceita URL arbitrária. Enviar só o texto faria o modelo responder
+      // sobre uma foto que ele nunca viu, e `classify_photo` é a rota que
+      // decide se há rosto para borrar: resposta sem imagem publica rosto.
+      const parts: unknown[] = [];
+      for (const url of input.imageUrls ?? []) {
+        let imagem;
+        try {
+          imagem = await fetchAsset(url, assets.allowedHosts, assets.maxBytes, input.signal);
+        } catch (err) {
+          throw new ProviderError('google', (err as Error).message, false);
+        }
+        parts.push({ inline_data: { mime_type: imagem.contentType, data: toBase64(imagem.bytes) } });
+      }
+      parts.push({ text: input.messages.map((m) => m.content).join('\n\n') });
+
+      const enviadas = parts.length - 1;
       const body: Record<string, unknown> = {
         contents: [{ role: 'user', parts }],
         generationConfig: {
@@ -213,7 +251,9 @@ export function googleProvider(apiKey?: string): Provider {
         usage: {
           tokensIn: json?.usageMetadata?.promptTokenCount ?? 0,
           tokensOut: json?.usageMetadata?.candidatesTokenCount ?? 0,
-          images: input.imageUrls?.length ?? 0,
+          // Só o que foi de fato enviado. Contar `imageUrls.length` cobrava
+          // por imagem que o modelo não recebeu.
+          images: enviadas,
         },
       };
     },
@@ -267,11 +307,14 @@ export function openrouterProvider(apiKey?: string): Provider {
   };
 }
 
-export function buildProviders(keys: Partial<Record<ProviderName, string | undefined>>): Map<ProviderName, Provider> {
+export function buildProviders(
+  keys: Partial<Record<ProviderName, string | undefined>>,
+  assets: AssetPolicy = ASSET_PADRAO,
+): Map<ProviderName, Provider> {
   const list: Provider[] = [
-    openaiProvider(keys.openai),
-    anthropicProvider(keys.anthropic),
-    googleProvider(keys.google),
+    openaiProvider(keys.openai, assets),
+    anthropicProvider(keys.anthropic, assets),
+    googleProvider(keys.google, assets),
     openrouterProvider(keys.openrouter),
   ];
   return new Map(list.map((p) => [p.name, p]));

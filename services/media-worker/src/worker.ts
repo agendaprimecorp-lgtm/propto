@@ -83,6 +83,19 @@ export async function processMediaJob(deps: WorkerDeps, job: MediaJob): Promise<
     watermark: deps.watermarkText ? { text: deps.watermarkText } : undefined,
   });
 
+  // 2b. A promessa é "só publica anonimizada". Aqui ela é conferida, não
+  //     declarada: se a análise afirma que há rosto ou placa e nenhuma
+  //     região foi borrada — porque o modelo não devolveu caixa, ou devolveu
+  //     caixa degenerada — a foto não pode seguir. Falhar o job manda a foto
+  //     para `erro`, onde ela fica fora da view pública e visível para o
+  //     corretor, que reenvia ou descarta.
+  if ((analysis.has_face || analysis.has_plate) && result.blurredRegions === 0) {
+    throw new Error(
+      'análise indica rosto ou placa mas nenhuma região foi borrada — ' +
+        'a foto não segue sem anonimização',
+    );
+  }
+
   // 3. Duplicada? O corretor aperta o botão de novo quando acha que não subiu.
   //    Só vale para imagem com textura: duas fotos escuras diferentes têm
   //    pHash quase idêntico, e descartá-las seria perder foto legítima.

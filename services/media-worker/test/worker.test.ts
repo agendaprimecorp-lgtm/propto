@@ -315,3 +315,90 @@ describe('worker no banco', { skip: temBanco ? false : 'SUPABASE_DB_URL não def
       'um job conclui e o outro volta para a fila com backoff');
   });
 });
+
+// ============================================================
+// A anonimização é conferida, não declarada
+//
+// Achado C2 da auditoria de 02/09/2026: o provedor primário de visão não
+// enviava a imagem ao modelo, a resposta vinha sem caixa nenhuma, e a foto
+// era promovida com `anonymized = true`. Estes testes não precisam de banco
+// — o ponto é o worker recusar a promoção, e isso é decisão dele.
+// ============================================================
+
+class SqlFalso {
+  readonly consultas: Array<{ text: string; values: unknown[] }> = [];
+  constructor(private readonly media: Record<string, unknown>) {}
+  async query(text: string, values: unknown[] = []): Promise<{ rows: any[] }> {
+    this.consultas.push({ text, values });
+    if (text.includes('storage_path_raw')) return { rows: [this.media] };
+    return { rows: [] };
+  }
+  promoveu(): boolean {
+    return this.consultas.some((c) => c.text.includes("status = 'pronta'"));
+  }
+}
+
+describe('anonimização bloqueante', () => {
+  const ORG = '11111111-1111-1111-1111-111111111111';
+  const MEDIA = '33333333-3333-3333-3333-333333333333';
+
+  async function montar(analise: PhotoAnalysis) {
+    const storage = new MemoryStorage();
+    await storage.put('raw', 'org/prop/foto.jpg', await foto());
+    const sql = new SqlFalso({
+      id: MEDIA, org_id: ORG, property_id: '44444444-4444-4444-4444-444444444444',
+      storage_path_raw: 'org/prop/foto.jpg', status: 'enviada',
+    });
+    const deps: WorkerDeps = {
+      sql, storage, detector: new DetectorFalso(analise), workerId: 'teste',
+    };
+    return { deps, sql };
+  }
+
+  test('rosto declarado sem caixa nenhuma impede a promoção', async () => {
+    const { deps, sql } = await montar(analiseFalsa({ has_face: true, faces: [] }));
+
+    await assert.rejects(
+      () => processMediaJob(deps, {
+        id: 'job-1', org_id: ORG, type: 'process', payload: { media_id: MEDIA }, attempts: 0,
+      }),
+      /anonimiza/i,
+    );
+    assert.equal(sql.promoveu(), false, 'a foto não pode virar `pronta` sem borrão');
+  });
+
+  test('placa declarada sem caixa nenhuma impede a promoção', async () => {
+    const { deps, sql } = await montar(analiseFalsa({ has_plate: true, plates: [] }));
+
+    await assert.rejects(
+      () => processMediaJob(deps, {
+        id: 'job-2', org_id: ORG, type: 'process', payload: { media_id: MEDIA }, attempts: 0,
+      }),
+      /anonimiza/i,
+    );
+    assert.equal(sql.promoveu(), false);
+  });
+
+  test('com a caixa presente, borra e promove', async () => {
+    const { deps, sql } = await montar(analiseFalsa({
+      has_face: true, faces: [{ x: 0.3, y: 0.3, w: 0.2, h: 0.2 }],
+    }));
+
+    const out = await processMediaJob(deps, {
+      id: 'job-3', org_id: ORG, type: 'process', payload: { media_id: MEDIA }, attempts: 0,
+    });
+
+    assert.equal(out.status, 'pronta');
+    assert.equal(out.blurredRegions, 1);
+    assert.equal(sql.promoveu(), true);
+  });
+
+  test('foto sem pessoa e sem veículo segue normalmente', async () => {
+    const { deps } = await montar(analiseFalsa());
+    const out = await processMediaJob(deps, {
+      id: 'job-4', org_id: ORG, type: 'process', payload: { media_id: MEDIA }, attempts: 0,
+    });
+    assert.equal(out.status, 'pronta');
+    assert.equal(out.blurredRegions, 0);
+  });
+});

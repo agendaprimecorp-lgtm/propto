@@ -22,8 +22,9 @@ export async function POST(req: Request) {
   const evento = typeof corpo.event === 'string' ? corpo.event : '';
   if (!slug || !EVENTOS.has(evento)) return NextResponse.json({ ok: false }, { status: 400 });
 
-  const hash = sessionHash(clientIp(req.headers), req.headers.get('user-agent') ?? '');
-  if (!rateLimit(`ev:${hash}`, 120, 60_000)) return new NextResponse(null, { status: 204 });
+  const ip = clientIp(req.headers);
+  const hash = sessionHash(ip, req.headers.get('user-agent') ?? '');
+  if (!rateLimit(`ev:${ip}`, 120, 60_000)) return new NextResponse(null, { status: 204 });
 
   try {
     await recordEvent({

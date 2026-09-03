@@ -112,11 +112,27 @@ export async function listSlugs(): Promise<Array<{ slug: string; published_at: s
 }
 
 /**
+ * Em produção o sal é obrigatório. Com o valor de desenvolvimento, o espaço
+ * de IP + User-Agent + dia é pequeno o bastante para reverter o hash por
+ * força bruta — e aí `property_views` deixa de ser pseudonimizado e passa a
+ * identificar o visitante, que é exatamente o que docs/SECURITY.md §4 promete
+ * não fazer. Falhar aqui é melhor que subir prometendo o que não se cumpre.
+ */
+function fallbackSalt(): string {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'SESSION_HASH_SALT não configurado. Sem ele o hash de sessão é reversível.',
+    );
+  }
+  return 'propto-dev';
+}
+
+/**
  * Identifica um visitante no dia sem guardar quem ele é.
  * Nunca gravamos IP (docs/SECURITY.md §4).
  */
 export function sessionHash(ip: string, userAgent: string): string {
-  const salt = process.env.SESSION_HASH_SALT ?? 'propto-dev';
+  const salt = process.env.SESSION_HASH_SALT ?? fallbackSalt();
   const dia = new Date().toISOString().slice(0, 10);
   return createHash('sha256').update(`${ip}|${userAgent}|${dia}|${salt}`).digest('hex');
 }
@@ -219,6 +235,22 @@ export function placeholderGradient(roomType: string | null, seed: string): stri
   const par = paletas[roomType ?? ''] ?? ['#C7C2BE', '#8C8580'];
   const ang = 110 + (seed.charCodeAt(0) % 60);
   return `linear-gradient(${ang}deg, ${par[0]}, ${par[1]})`;
+}
+
+/**
+ * JSON pronto para ir dentro de uma tag <script>.
+ *
+ * `JSON.stringify` não escapa `<`. Uma descrição de imóvel contendo
+ * `</script>` fecha a tag antes da hora e o resto do texto vira marcação
+ * executável na página pública — XSS armazenado, com a origem que serve
+ * /api/lead. Escapar `<` resolve na fonte; ` `/` ` são válidos em
+ * JSON e quebram o parser de JavaScript.
+ */
+export function safeJsonLd(value: unknown): string {
+  return JSON.stringify(value).replace(
+    /[<\u2028\u2029]/g,
+    (c) => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0'),
+  );
 }
 
 export function whatsappLink(phone: string | null, text: string): string | null {

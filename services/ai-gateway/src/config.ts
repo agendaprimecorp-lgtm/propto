@@ -96,6 +96,10 @@ export interface GatewayConfig {
   dailyCostCapUsd: number;
   cacheTtlMs: number;
   providerKeys: Partial<Record<ProviderName, string | undefined>>;
+  /** Hosts de onde o gateway aceita baixar áudio e imagem. Vazio = qualquer host público. */
+  assetAllowedHosts: string[];
+  /** Teto de bytes por mídia baixada. */
+  maxAssetBytes: number;
 }
 
 function parseApiKeys(raw: string | undefined): Map<string, Product> {
@@ -122,6 +126,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): GatewayConfig 
     breakerCooldownMs: Number(env.AI_BREAKER_COOLDOWN_MS ?? 30000),
     dailyCostCapUsd: Number(env.AI_DAILY_COST_CAP_USD ?? 50),
     cacheTtlMs: Number(env.AI_CACHE_TTL_MS ?? 6 * 60 * 60 * 1000),
+    assetAllowedHosts: (env.AI_ASSET_ALLOWED_HOSTS ?? '')
+      .split(',')
+      .map((h) => h.trim().toLowerCase())
+      .filter(Boolean),
+    maxAssetBytes: Number(env.AI_MAX_ASSET_BYTES ?? 100 * 1024 * 1024),
     providerKeys: {
       openai: env.OPENAI_API_KEY,
       anthropic: env.ANTHROPIC_API_KEY,

@@ -35,8 +35,9 @@ export async function POST(req: Request) {
   // Campo-armadilha preenchido = robô. Responde 200 para não ensiná-lo a errar menos.
   if (texto(c.website, 10)) return NextResponse.json({ ok: true });
 
-  const hash = sessionHash(clientIp(req.headers), req.headers.get('user-agent') ?? '');
-  if (!rateLimit(`lead:${hash}`, 5, 10 * 60_000)) {
+  const ip = clientIp(req.headers);
+  const hash = sessionHash(ip, req.headers.get('user-agent') ?? '');
+  if (!rateLimit(`lead:${ip}`, 5, 10 * 60_000)) {
     return NextResponse.json(
       { ok: false, error: 'Muitas mensagens seguidas. Tente de novo em alguns minutos.' },
       { status: 429 },

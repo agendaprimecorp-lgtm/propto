@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main, develop]
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -74,24 +77,10 @@ jobs:
           SUPABASE_DB_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
           QUEUE_TEST_WORKERS: 8
 
-  ai-eval:
-    name: Suítes douradas de IA
-    runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.changed_files, 'packages/ai') || github.event_name == 'push'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with: { version: 9 }
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: Avaliação de agentes (alucinação = 0)
-        run: pnpm test:ai
-        env:
-          AI_GATEWAY_URL: ${{ secrets.AI_GATEWAY_URL_STAGING }}
-          AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY_STAGING }}
+  # A suíte dourada de IA (tests/ai) nasce no Sprint 3, junto com o agente de
+  # extração — ver docs/ROADMAP.md. Enquanto o diretório não existe, um job
+  # que roda `pnpm test:ai` falha em todo push e treina o time a ignorar
+  # vermelho no CI, que é pior que não ter o job. Ele volta com a suíte.
 
   gateway:
     name: AI Gateway (roteamento, fallback, orçamento)

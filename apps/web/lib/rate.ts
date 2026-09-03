@@ -4,8 +4,12 @@
  * Limitação conhecida e assumida: cada instância do servidor tem o seu próprio
  * balde. Em uma máquina só (Netlify/Fly com uma instância) isso segura robô de
  * formulário; ao escalar para várias instâncias, trocar por Redis ou pelo
- * limitador da borda. O que ele NUNCA guarda é quem é a pessoa — a chave é o
- * mesmo hash de sessão do dia usado nos eventos.
+ * limitador da borda.
+ *
+ * A chave é o IP, não o hash de sessão. O hash inclui o User-Agent: bastava
+ * trocar de User-Agent a cada envio para ganhar um balde novo, e o limite de
+ * cinco leads virava ilimitado do mesmo IP. O hash continua sendo o que vai
+ * para o banco — aqui ele não servia para o que precisamos contar.
  */
 const baldes = new Map<string, { n: number; ate: number }>();
 

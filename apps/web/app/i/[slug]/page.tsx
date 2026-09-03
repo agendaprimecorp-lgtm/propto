@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
   getProperty, getMedia, money, area, mediaUrl, placeholderGradient, whatsappLink,
-  TYPE_LABEL, ROOM_LABEL, DEED_LABEL,
+  safeJsonLd, TYPE_LABEL, ROOM_LABEL, DEED_LABEL,
   type PublicProperty, type PublicMedia,
 } from '@/lib/property';
 import { CONSENT_TEXT, CONSENT_VERSION } from '@/lib/consent';
@@ -146,7 +146,7 @@ export default async function PropertyPage({ params }: Params) {
       <Track slug={p.slug} />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
 
       <header className="public-top">
