@@ -157,11 +157,13 @@ select rls_test.assert(public_address = 'Rua Coronel Quirino, 1200',
 
 set local role postgres;
 update properties set address_privacy = 'bairro' where id = :'prop_pub';
--- A partir daqui o papel é `propto_public`, e não `anon`: é ele que o
--- apps/web usa em PUBLIC_DB_URL, e desde a migration 0011 é o único que
--- executa estas duas funções. Testar por `anon` media um caminho que a
--- aplicação não percorre — e que, justamente por isso, foi fechado.
-set local role propto_public;
+-- Estas chamadas rodam como `postgres`, e não como `anon`: desde a
+-- migration 0011 o único papel que executa estas duas funções é
+-- `propto_public`, o que apps/web usa em PUBLIC_DB_URL. Como as funções são
+-- SECURITY DEFINER, o comportamento independe de quem chama — o que este
+-- arquivo mede. QUEM pode chamar é assertiva de permissão, e vive em
+-- 060_correcoes_auditoria.sql, declarada com has_function_privilege.
+set local role postgres;
 
 -- ============================================================
 -- 4. Eventos de visita (PRP-606)
@@ -183,7 +185,7 @@ select rls_test.assert(count(*) = 0,
  where property_id = :'prop_pub'
    and (session_hash is not null and session_hash !~ '^[0-9a-f]{64}$');
 
-set local role propto_public;
+set local role postgres;
 select record_property_event('slug-que-nao-existe', 'view');
 set local role postgres;
 select rls_test.assert_count(count(*), 2,
@@ -196,7 +198,7 @@ select rls_test.assert_count(count(*), 2,
 
 \echo '── lead ──'
 
-set local role propto_public;
+set local role postgres;
 
 do $$
 begin
@@ -274,7 +276,7 @@ select rls_test.assert(count(*) >= 2,
 select rls_test.assert(org_id = :'org_a',
   'o lead cai na organização do anúncio') from contacts where id = :'lead1';
 
-set local role propto_public;
+set local role postgres;
 do $$
 begin
   perform submit_lead('slug-inexistente', 'Alguém', '+5519911112222', null, 'oi', true, 'texto');

@@ -46,7 +46,5 @@ $$;
 
 -- Os utilitários são chamados enquanto a sessão está com o papel do usuário
 -- final; sem estes grants o próprio teste falha antes de testar qualquer coisa.
--- `propto_public` entra na lista porque é o papel que a página pública usa
--- de verdade, e é sob ele que 050_public exercita submit_lead.
-grant usage on schema rls_test to authenticated, anon, propto_public;
-grant execute on all functions in schema rls_test to authenticated, anon, propto_public;
+grant usage on schema rls_test to authenticated, anon;
+grant execute on all functions in schema rls_test to authenticated, anon;

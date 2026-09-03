@@ -3083,22 +3083,6 @@ grant execute on function public.record_property_event(text, text, text, text, j
 grant execute on function public.submit_lead(text, text, text, text, text, boolean, text, jsonb)
   to propto_public;
 
--- Para que a suíte de testes e o suporte consigam `set role propto_public`
--- e exercitar o caminho real da página em vez de um aproximado.
-do $$
-begin
-  if not exists (
-    select 1
-      from pg_auth_members m
-      join pg_roles r on r.oid = m.roleid
-      join pg_roles g on g.oid = m.member
-     where r.rolname = 'propto_public' and g.rolname = current_user
-  ) then
-    execute format('grant propto_public to %I', current_user);
-  end if;
-end;
-$$;
-
 
 -- ============================================================
 -- Confirmação: se a última linha da saída disser "estrutura completa",

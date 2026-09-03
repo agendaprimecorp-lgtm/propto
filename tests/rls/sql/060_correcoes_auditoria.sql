@@ -130,6 +130,19 @@ select rls_test.assert(
     'public.discard_media(uuid,text)', 'execute'),
   'anon perdeu o EXECUTE herdado de PUBLIC em discard_media');
 
+-- O EXECUTE que o Postgres concede a PUBLIC em toda funcao nova e herdado
+-- por todo papel. Revogar so de `anon` deixa a concessao herdada de pe —
+-- foi o que aconteceu entre a 0008 e a 0011. Estas duas assertivas medem o
+-- efeito, nao a intencao.
+select rls_test.assert(
+  not has_function_privilege('anon',
+    'public.submit_lead(text,text,text,text,text,boolean,text,jsonb)', 'execute'),
+  'anon nao executa submit_lead nem por heranca de PUBLIC');
+select rls_test.assert(
+  not has_function_privilege('anon',
+    'public.record_property_event(text,text,text,text,jsonb)', 'execute'),
+  'anon nao executa record_property_event nem por heranca de PUBLIC');
+
 -- ============================================================
 -- A3 — ninguém ativa vínculo de organização por outra pessoa
 -- ============================================================
