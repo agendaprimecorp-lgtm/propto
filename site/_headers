@@ -1,8 +1,20 @@
 # Espelho do netlify.toml, para quem publicar arrastando a pasta.
+#
+# Precisa continuar espelho de verdade: antes faltavam aqui a CSP e o HSTS,
+# então arrastar a pasta para o Netlify Drop — que é o caminho que o
+# COMECE_AQUI ensina — publicava o site sem as duas defesas mais
+# importantes, e sem nada que avisasse.
+
 /*
   X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://wa.me
+
 /brand/*
   Cache-Control: public, max-age=31536000, immutable
+
+/assets/*
+  Cache-Control: public, max-age=604800

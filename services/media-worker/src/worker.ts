@@ -1,5 +1,5 @@
 import { toDetection, type Detector } from './detect.js';
-import { hammingDistance, processImage } from './pipeline.js';
+import { hammingDistance, hasMetadata, processImage } from './pipeline.js';
 import type { Storage } from './storage.js';
 
 /**
@@ -123,6 +123,15 @@ export async function processMediaJob(
   await deps.storage.put('processed', `${base}-og.webp`, result.og.data, 'image/webp');
 
   const full = result.derivatives.find((d) => d.name === 'full')!;
+
+  // EXIF de foto de imovel carrega GPS: o endereco exato que o corretor
+  // escolheu nao publicar vai junto com a imagem. O `sharp` descarta o
+  // metadado por padrao, entao ate aqui `exif_stripped = true` era verdade —
+  // mas verdade afirmada, nunca conferida. `hasMetadata` existia desde o
+  // inicio e nao era chamada por ninguem. Custa uma leitura de cabecalho.
+  if (await hasMetadata(full.data)) {
+    throw new Error('a derivada publica ainda carrega metadado — EXIF nao foi removido');
+  }
   await deps.storage.put('public', `${base}-full.webp`, full.data, 'image/webp');
 
   // 5. Promoção. A constraint do banco confere de novo — de propósito.

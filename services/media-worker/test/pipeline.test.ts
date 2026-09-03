@@ -229,3 +229,27 @@ describe('duplicadas', () => {
     assert.match(await perceptualHash(img), /^[0-9a-f]{16}$/);
   });
 });
+
+// ============================================================
+// Achado B5 da auditoria: `hasMetadata` existia e nunca era chamada.
+// `exif_stripped = true` era afirmado, não conferido.
+// ============================================================
+
+describe('remoção de metadado é conferida', () => {
+  test('a derivada pública não carrega EXIF, ICC, IPTC nem XMP', async () => {
+    const comExif = await sharp({
+      create: { width: 300, height: 200, channels: 3, background: { r: 90, g: 120, b: 150 } },
+    })
+      .withMetadata({ exif: { IFD0: { Copyright: 'Propto', Software: 'teste' } } })
+      .jpeg()
+      .toBuffer();
+
+    assert.equal(await hasMetadata(comExif), true, 'a foto de entrada precisa ter metadado');
+
+    const out = await processImage(comExif);
+    const full = out.derivatives.find((d) => d.name === 'full')!;
+
+    assert.equal(await hasMetadata(full.data), false, 'a derivada pública sai sem metadado');
+    assert.equal(await hasMetadata(out.og.data), false, 'o cartão de compartilhamento também');
+  });
+});
