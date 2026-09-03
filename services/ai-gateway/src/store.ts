@@ -75,7 +75,10 @@ export function cacheKey(parts: Record<string, unknown>): string {
 // Memória — teste, desenvolvimento e modo degradado
 // ------------------------------------------------------------
 
-interface Entry { value: unknown; expiresAt: number }
+interface Entry {
+  value: unknown;
+  expiresAt: number;
+}
 
 export class MemoryStore implements Store {
   private budgets = new Map<string, { budgetBrl: number; spentBrl: number }>();
@@ -111,19 +114,28 @@ export class MemoryStore implements Store {
   private read(key: string): unknown | undefined {
     const e = this.entries.get(key);
     if (!e) return undefined;
-    if (e.expiresAt < Date.now()) { this.entries.delete(key); return undefined; }
+    if (e.expiresAt < Date.now()) {
+      this.entries.delete(key);
+      return undefined;
+    }
     return e.value;
   }
 
-  async getCache(key: string) { return this.read(`c:${key}`); }
+  async getCache(key: string) {
+    return this.read(`c:${key}`);
+  }
   async setCache(key: string, value: unknown, ttlMs: number) {
     this.entries.set(`c:${key}`, { value, expiresAt: Date.now() + ttlMs });
   }
-  async getIdempotent(key: string) { return this.read(`i:${key}`); }
+  async getIdempotent(key: string) {
+    return this.read(`i:${key}`);
+  }
   async setIdempotent(key: string, value: unknown, ttlMs: number) {
     this.entries.set(`i:${key}`, { value, expiresAt: Date.now() + ttlMs });
   }
-  async close() { /* nada a fechar */ }
+  async close() {
+    /* nada a fechar */
+  }
 }
 
 // ------------------------------------------------------------
@@ -137,7 +149,10 @@ export interface SqlClient {
 }
 
 export class PostgresStore implements Store {
-  constructor(private readonly sql: SqlClient, private readonly memory = new MemoryStore()) {}
+  constructor(
+    private readonly sql: SqlClient,
+    private readonly memory = new MemoryStore(),
+  ) {}
 
   async budget(orgId: string): Promise<BudgetStatus | null> {
     const { rows } = await this.sql.query(
@@ -160,9 +175,22 @@ export class PostgresStore implements Store {
           audio_seconds, images, cost_usd, cost_brl, latency_ms, cached, fallback_from, success)
        values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
       [
-        rec.orgId, rec.product, rec.jobId ?? null, rec.task, rec.provider, rec.model,
-        rec.tokensIn, rec.tokensOut, rec.audioSeconds ?? null, rec.images,
-        rec.costUsd, rec.costBrl, rec.latencyMs, rec.cached, rec.fallbackFrom ?? null, rec.success,
+        rec.orgId,
+        rec.product,
+        rec.jobId ?? null,
+        rec.task,
+        rec.provider,
+        rec.model,
+        rec.tokensIn,
+        rec.tokensOut,
+        rec.audioSeconds ?? null,
+        rec.images,
+        rec.costUsd,
+        rec.costBrl,
+        rec.latencyMs,
+        rec.cached,
+        rec.fallbackFrom ?? null,
+        rec.success,
       ],
     );
   }
@@ -179,10 +207,20 @@ export class PostgresStore implements Store {
 
   // Cache e idempotência ficam em memória por processo: são otimizações,
   // não fonte de verdade. Perder o cache custa dinheiro, não correção.
-  getCache(key: string) { return this.memory.getCache(key); }
-  setCache(key: string, v: unknown, ttl: number) { return this.memory.setCache(key, v, ttl); }
-  getIdempotent(key: string) { return this.memory.getIdempotent(key); }
-  setIdempotent(key: string, v: unknown, ttl: number) { return this.memory.setIdempotent(key, v, ttl); }
+  getCache(key: string) {
+    return this.memory.getCache(key);
+  }
+  setCache(key: string, v: unknown, ttl: number) {
+    return this.memory.setCache(key, v, ttl);
+  }
+  getIdempotent(key: string) {
+    return this.memory.getIdempotent(key);
+  }
+  setIdempotent(key: string, v: unknown, ttl: number) {
+    return this.memory.setIdempotent(key, v, ttl);
+  }
 
-  async close(): Promise<void> { await this.sql.end?.(); }
+  async close(): Promise<void> {
+    await this.sql.end?.();
+  }
 }

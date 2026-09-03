@@ -54,7 +54,9 @@ console.log(
   `\nPropto · isolamento entre organizações\nbanco: ${DB_URL.replace(/:[^:@]+@/, ':***@')}\n`,
 );
 
-const files = readdirSync(SQL_DIR).filter((f) => f.endsWith('.sql')).sort();
+const files = readdirSync(SQL_DIR)
+  .filter((f) => f.endsWith('.sql'))
+  .sort();
 if (files.length === 0) {
   console.error('Nenhum arquivo .sql em tests/rls/sql/ — a suíte não pode estar vazia.');
   process.exit(1);

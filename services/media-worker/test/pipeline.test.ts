@@ -2,8 +2,14 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
 import {
-  blurRegions, hammingDistance, hasMetadata, perceptualHash, processImage,
-  DERIVATIVES, OG_SIZE, type Box,
+  blurRegions,
+  hammingDistance,
+  hasMetadata,
+  perceptualHash,
+  processImage,
+  DERIVATIVES,
+  OG_SIZE,
+  type Box,
 } from '../src/pipeline.js';
 
 /**
@@ -14,7 +20,10 @@ import {
 
 /** Fundo cinza com um quadrado colorido de alta frequência (xadrez) na região dada. */
 async function imagemComPadrao(
-  width: number, height: number, box: Box, withExif = false,
+  width: number,
+  height: number,
+  box: Box,
+  withExif = false,
 ): Promise<Buffer> {
   const left = Math.round(box.x * width);
   const top = Math.round(box.y * height);
@@ -25,7 +34,7 @@ async function imagemComPadrao(
   const passo = 8;
   for (let y = 0; y < h; y += passo) {
     for (let x = 0; x < w; x += passo) {
-      const escuro = ((x / passo) + (y / passo)) % 2 === 0;
+      const escuro = (x / passo + y / passo) % 2 === 0;
       quadrados.push(
         `<rect x="${left + x}" y="${top + y}" width="${passo}" height="${passo}" fill="${escuro ? '#000' : '#fff'}"/>`,
       );
@@ -50,10 +59,13 @@ async function imagemComPadrao(
 /** Desvio padrão da luminância numa região — cai muito quando há blur. */
 async function variancia(buf: Buffer, box: Box): Promise<number> {
   const meta = await sharp(buf).metadata();
-  const W = meta.width!, H = meta.height!;
+  const W = meta.width!,
+    H = meta.height!;
   const region = {
-    left: Math.round(box.x * W), top: Math.round(box.y * H),
-    width: Math.round(box.w * W), height: Math.round(box.h * H),
+    left: Math.round(box.x * W),
+    top: Math.round(box.y * H),
+    width: Math.round(box.w * W),
+    height: Math.round(box.h * H),
   };
   const raw = await sharp(buf).extract(region).greyscale().raw().toBuffer();
   const media = raw.reduce((s, v) => s + v, 0) / raw.length;
@@ -74,8 +86,10 @@ describe('anonimização', () => {
 
     assert.equal(applied, 1);
     assert.ok(antes > 40, `a imagem de teste precisa ter detalhe (variância ${antes.toFixed(1)})`);
-    assert.ok(depois < antes * 0.25,
-      `o detalhe precisa sumir: antes ${antes.toFixed(1)}, depois ${depois.toFixed(1)}`);
+    assert.ok(
+      depois < antes * 0.25,
+      `o detalhe precisa sumir: antes ${antes.toFixed(1)}, depois ${depois.toFixed(1)}`,
+    );
   });
 
   test('o restante da imagem não é tocado', async () => {
@@ -84,8 +98,10 @@ describe('anonimização', () => {
 
     const cantoAntes = await variancia(img, OUTRO_CANTO);
     const cantoDepois = await variancia(data, OUTRO_CANTO);
-    assert.ok(Math.abs(cantoAntes - cantoDepois) < 3,
-      'borrar o rosto não pode borrar o imóvel inteiro');
+    assert.ok(
+      Math.abs(cantoAntes - cantoDepois) < 3,
+      'borrar o rosto não pode borrar o imóvel inteiro',
+    );
   });
 
   test('borra rosto e placa na mesma passada', async () => {
@@ -168,18 +184,20 @@ describe('derivadas', () => {
 
     const full = out.derivatives.find((d) => d.name === 'full')!;
     const detalhe = await variancia(full.data, ROSTO);
-    assert.ok(detalhe < 25,
-      `o rosto continua visível na derivada publicada (variância ${detalhe.toFixed(1)})`);
+    assert.ok(
+      detalhe < 25,
+      `o rosto continua visível na derivada publicada (variância ${detalhe.toFixed(1)})`,
+    );
   });
 
-  test('marca d\'água aparece sem cobrir a foto', async () => {
+  test("marca d'água aparece sem cobrir a foto", async () => {
     const img = await imagemComPadrao(1200, 800, ROSTO);
     const semMarca = await processImage(img);
     const comMarca = await processImage(img, { watermark: { text: 'CRECI-SP 123456-F' } });
 
     const a = comMarca.derivatives.find((d) => d.name === 'full')!;
     const b = semMarca.derivatives.find((d) => d.name === 'full')!;
-    assert.notEqual(a.bytes, b.bytes, 'a marca d\'água deveria mudar a imagem');
+    assert.notEqual(a.bytes, b.bytes, "a marca d'água deveria mudar a imagem");
     assert.equal(a.width, b.width);
   });
 });

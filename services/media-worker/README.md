@@ -56,16 +56,16 @@ SUPABASE_DB_URL=postgresql://... pnpm --filter @propto/media-worker test   # inc
 
 **29 testes.** Os de imagem desenham figuras de verdade e conferem pixels de verdade:
 
-| Verificação | Como |
-|---|---|
-| O blur destrói o detalhe do rosto | desvio padrão da região cai para menos de 25% do original |
-| O resto da foto não é tocado | desvio padrão do canto oposto varia menos de 3 |
-| Nenhuma derivada carrega EXIF | `sharp.metadata()` em cada saída — com um teste antes provando que a entrada TINHA metadado |
-| Foto pequena não é ampliada | largura da derivada `full` continua a original |
-| Duplicada é reconhecida após recompressão | mesma foto a 640px, distância de Hamming < 8 |
-| Fotos diferentes não colidem | distância ≥ 8 |
-| Sem análise, nada vai para `public/` | storage inspecionado após a falha |
-| Duas fotos escuras diferentes não viram duplicadas | ambas `pronta`, a segunda sinalizada `escura` |
+| Verificação                                        | Como                                                                                        |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| O blur destrói o detalhe do rosto                  | desvio padrão da região cai para menos de 25% do original                                   |
+| O resto da foto não é tocado                       | desvio padrão do canto oposto varia menos de 3                                              |
+| Nenhuma derivada carrega EXIF                      | `sharp.metadata()` em cada saída — com um teste antes provando que a entrada TINHA metadado |
+| Foto pequena não é ampliada                        | largura da derivada `full` continua a original                                              |
+| Duplicada é reconhecida após recompressão          | mesma foto a 640px, distância de Hamming < 8                                                |
+| Fotos diferentes não colidem                       | distância ≥ 8                                                                               |
+| Sem análise, nada vai para `public/`               | storage inspecionado após a falha                                                           |
+| Duas fotos escuras diferentes não viram duplicadas | ambas `pronta`, a segunda sinalizada `escura`                                               |
 
 Os testes de banco rodam contra Postgres real e provam a promoção respeitando as constraints da 0006. Sem `SUPABASE_DB_URL`, são pulados e os de imagem continuam rodando.
 

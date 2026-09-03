@@ -23,19 +23,25 @@ async function main(): Promise<void> {
     // `pg` é dependência opcional: o gateway sobe sem ela, em modo memória.
     const pg: any = await import('pg');
     const pool = new (pg.default?.Pool ?? pg.Pool)({
-      connectionString: process.env.SUPABASE_DB_URL, max: 10,
+      connectionString: process.env.SUPABASE_DB_URL,
+      max: 10,
     });
     store = new PostgresStore(pool);
     console.log('registro de custo: Postgres');
   } else {
-    console.warn('SUPABASE_DB_URL ausente — custo registrado só em memória. Não use assim em produção.');
+    console.warn(
+      'SUPABASE_DB_URL ausente — custo registrado só em memória. Não use assim em produção.',
+    );
   }
 
   const app = buildServer({ config: cfg, store });
 
   for (const sig of ['SIGINT', 'SIGTERM'] as const) {
     process.on(sig, () => {
-      void app.close().then(() => store.close()).then(() => process.exit(0));
+      void app
+        .close()
+        .then(() => store.close())
+        .then(() => process.exit(0));
     });
   }
 

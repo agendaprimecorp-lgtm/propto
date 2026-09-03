@@ -1,4 +1,5 @@
 import sharp from 'sharp';
+import type { OverlayOptions } from 'sharp';
 
 /**
  * Pipeline de imagem do Propto.
@@ -107,7 +108,7 @@ export async function blurRegions(
   const height = meta.height ?? 0;
   if (!width || !height) throw new Error('imagem sem dimensões legíveis');
 
-  const overlays: sharp.OverlayOptions[] = [];
+  const overlays: OverlayOptions[] = [];
   let applied = 0;
 
   for (const box of boxes) {
@@ -115,10 +116,7 @@ export async function blurRegions(
     if (region.width < 2 || region.height < 2) continue;
 
     const sigma = Math.max(2, Math.min(region.width, region.height) * strength);
-    const patch = await sharp(input)
-      .extract(region)
-      .blur(sigma)
-      .toBuffer();
+    const patch = await sharp(input).extract(region).blur(sigma).toBuffer();
 
     overlays.push({ input: patch, left: region.left, top: region.top });
     applied += 1;
@@ -136,11 +134,7 @@ export async function blurRegions(
  */
 export async function perceptualHash(input: Buffer): Promise<string> {
   const size = 8;
-  const raw = await sharp(input)
-    .greyscale()
-    .resize(size, size, { fit: 'fill' })
-    .raw()
-    .toBuffer();
+  const raw = await sharp(input).greyscale().resize(size, size, { fit: 'fill' }).raw().toBuffer();
 
   const avg = raw.reduce((sum, v) => sum + v, 0) / raw.length;
   let bits = '';
@@ -157,7 +151,10 @@ export function hammingDistance(a: string, b: string): number {
   let d = 0;
   for (let i = 0; i < a.length; i++) {
     let x = parseInt(a[i]!, 16) ^ parseInt(b[i]!, 16);
-    while (x) { d += x & 1; x >>= 1; }
+    while (x) {
+      d += x & 1;
+      x >>= 1;
+    }
   }
   return d;
 }
@@ -191,7 +188,7 @@ export async function processImage(
 
   // 2. Normalizar e remover TODO metadado. `sharp` só preserva EXIF se
   //    mandarmos preservar; não mandar é o comportamento correto aqui.
-  const base = sharp(anonymized).rotate();       // aplica a orientação e descarta o campo
+  const base = sharp(anonymized).rotate(); // aplica a orientação e descarta o campo
   const meta = await base.metadata();
   const width = meta.width ?? 0;
   const height = meta.height ?? 0;
@@ -203,22 +200,28 @@ export async function processImage(
 
     if (opts.watermark) {
       const wmWidth = target;
-      img = sharp(await img.toBuffer()).composite([{
-        input: watermarkSvg(opts.watermark.text, wmWidth, opts.watermark.opacity ?? 0.75),
-        gravity: 'south',
-      }]);
+      img = sharp(await img.toBuffer()).composite([
+        {
+          input: watermarkSvg(opts.watermark.text, wmWidth, opts.watermark.opacity ?? 0.75),
+          gravity: 'south',
+        },
+      ]);
     }
 
     const buf = await img.webp({ quality: 82 }).toBuffer();
     const m = await sharp(buf).metadata();
     derivatives.push({
-      name: spec.name, width: m.width ?? 0, height: m.height ?? 0,
-      bytes: buf.byteLength, data: buf,
+      name: spec.name,
+      width: m.width ?? 0,
+      height: m.height ?? 0,
+      bytes: buf.byteLength,
+      data: buf,
     });
   }
 
   // Open Graph: corte fixo, porque WhatsApp e portais recortam de qualquer jeito.
-  const ogBuf = await sharp(anonymized).rotate()
+  const ogBuf = await sharp(anonymized)
+    .rotate()
     .resize({ ...OG_SIZE, fit: 'cover', position: 'attention' })
     .webp({ quality: 80 })
     .toBuffer();
@@ -227,7 +230,13 @@ export async function processImage(
 
   return {
     derivatives,
-    og: { name: 'og', width: OG_SIZE.width, height: OG_SIZE.height, bytes: ogBuf.byteLength, data: ogBuf },
+    og: {
+      name: 'og',
+      width: OG_SIZE.width,
+      height: OG_SIZE.height,
+      bytes: ogBuf.byteLength,
+      data: ogBuf,
+    },
     width,
     height,
     anonymized: true,

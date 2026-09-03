@@ -1,8 +1,13 @@
 import { ProviderError } from '../errors.js';
 import type { ProviderName } from '../config.js';
 import type {
-  CompleteInput, CompleteOutput, EmbedInput, EmbedOutput,
-  Provider, TranscribeInput, TranscribeOutput,
+  CompleteInput,
+  CompleteOutput,
+  EmbedInput,
+  EmbedOutput,
+  Provider,
+  TranscribeInput,
+  TranscribeOutput,
 } from './types.js';
 
 /**
@@ -38,7 +43,9 @@ export function mockProvider(opts: MockProviderOptions = {}): Provider & {
   const api = {
     name,
     calls: 0,
-    setBehavior(b: MockBehavior) { behavior = b; },
+    setBehavior(b: MockBehavior) {
+      behavior = b;
+    },
     isConfigured: () => true,
 
     async complete(input: CompleteInput): Promise<CompleteOutput> {
@@ -93,9 +100,13 @@ async function guard(
 
   await new Promise<void>((resolve, reject) => {
     const t = setTimeout(resolve, delay);
-    signal?.addEventListener('abort', () => {
-      clearTimeout(t);
-      reject(new ProviderError(name, 'tempo esgotado', true));
-    }, { once: true });
+    signal?.addEventListener(
+      'abort',
+      () => {
+        clearTimeout(t);
+        reject(new ProviderError(name, 'tempo esgotado', true));
+      },
+      { once: true },
+    );
   });
 }

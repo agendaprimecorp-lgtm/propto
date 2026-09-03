@@ -19,7 +19,15 @@ describe('assertOrgId', () => {
     assert.doesNotThrow(() => assertOrgId(ORG));
   });
 
-  for (const ruim of [null, undefined, '', 'org-1', 42, {}, '11111111-1111-1111-1111-111111111111']) {
+  for (const ruim of [
+    null,
+    undefined,
+    '',
+    'org-1',
+    42,
+    {},
+    '11111111-1111-1111-1111-111111111111',
+  ]) {
     test(`recusa ${JSON.stringify(ruim)}`, () => {
       assert.throws(() => assertOrgId(ruim), MissingOrgScopeError);
     });
@@ -53,10 +61,18 @@ describe('orgScoped', () => {
       filtros,
       from(tabela: string) {
         return {
-          select: (...args: unknown[]) => (chamadas.push({ tabela, op: 'select', args }), construtor(tabela, 'select')),
-          insert: (...args: unknown[]) => (chamadas.push({ tabela, op: 'insert', args }), construtor(tabela, 'insert')),
-          update: (...args: unknown[]) => (chamadas.push({ tabela, op: 'update', args }), construtor(tabela, 'update')),
-          delete: (...args: unknown[]) => (chamadas.push({ tabela, op: 'delete', args }), construtor(tabela, 'delete')),
+          select: (...args: unknown[]) => (
+            chamadas.push({ tabela, op: 'select', args }), construtor(tabela, 'select')
+          ),
+          insert: (...args: unknown[]) => (
+            chamadas.push({ tabela, op: 'insert', args }), construtor(tabela, 'insert')
+          ),
+          update: (...args: unknown[]) => (
+            chamadas.push({ tabela, op: 'update', args }), construtor(tabela, 'update')
+          ),
+          delete: (...args: unknown[]) => (
+            chamadas.push({ tabela, op: 'delete', args }), construtor(tabela, 'delete')
+          ),
         };
       },
     };
@@ -80,7 +96,9 @@ describe('orgScoped', () => {
 
   test('lote de escrita carrega a organização em cada linha', () => {
     const c = clienteFalso();
-    orgScoped(c, ORG).from('property_media').insert([{ position: 0 }, { position: 1 }]);
+    orgScoped(c, ORG)
+      .from('property_media')
+      .insert([{ position: 0 }, { position: 1 }]);
     assert.deepEqual(c.chamadas[0]?.args[0], [
       { position: 0, org_id: ORG },
       { position: 1, org_id: ORG },
@@ -91,8 +109,11 @@ describe('orgScoped', () => {
     const c = clienteFalso();
     const outra = '22222222-2222-4222-8222-222222222222';
     orgScoped(c, ORG).from('properties').insert({ title: 'Apto', org_id: outra });
-    assert.equal((c.chamadas[0]?.args[0] as { org_id: string }).org_id, ORG,
-      'o escopo manda: um payload não escolhe a organização de destino');
+    assert.equal(
+      (c.chamadas[0]?.args[0] as { org_id: string }).org_id,
+      ORG,
+      'o escopo manda: um payload não escolhe a organização de destino',
+    );
   });
 
   test('update e delete também saem filtrados', () => {

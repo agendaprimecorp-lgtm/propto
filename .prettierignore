@@ -1,0 +1,14 @@
+# Gerados — formatar aqui é ruído de diff e some na próxima geração.
+pnpm-lock.yaml
+package-lock.json
+supabase/producao/
+.next/
+dist/
+build/
+.turbo/
+coverage/
+
+# O SQL é formatado à mão e alinhado de propósito: as colunas das
+# constraints e dos grants se leem em coluna. Não há plugin de SQL no
+# projeto, e adicionar um desmancharia esse alinhamento.
+*.sql

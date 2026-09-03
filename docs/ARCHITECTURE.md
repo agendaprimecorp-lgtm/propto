@@ -64,25 +64,25 @@
 
 ## 3. Stack decidida
 
-| Camada | Tecnologia | Motivo |
-|---|---|---|
-| Monorepo | Turborepo + pnpm workspaces | Cache de build, um só TypeScript, deploy independente por app |
-| Mobile | Expo SDK 52+ / React Native, expo-router | Microfone em background, câmera, fila offline, OTA update (ADR-002) |
-| Web | Next.js 15 App Router, React Server Components | SSR para SEO da página pública, mesma linguagem do mobile |
-| Admin | Next.js 15 (rota isolada, deploy separado) | Back-office não compartilha superfície com o produto |
-| Estado | TanStack Query + Zustand | Cache de servidor separado do estado de UI |
-| Banco | Supabase Postgres 15 + pgvector + PostGIS | RLS nativa, geolocalização, similaridade semântica em um só lugar |
-| Auth | Supabase Auth (magic link + OTP SMS) | JWT com `org_id` no claim, integração direta com RLS |
-| Storage | Supabase Storage (S3) | Signed URLs, políticas por bucket, mesmo controle de acesso |
-| Fila | Tabela Postgres + `FOR UPDATE SKIP LOCKED` | Uma dependência a menos; migra para pgmq/Redis quando >50 jobs/min (ADR-005) |
-| Workers | Node 22 + TypeScript, containers | Um processo por domínio, escala independente |
-| AI Gateway | Fastify + TypeScript, container | Baixa latência, schema-first, fácil de portar entre produtos |
-| Validação | Zod (compartilhado em `packages/validation`) | Um schema serve API, formulário, extração de IA e teste |
-| Estilo web | Tailwind CSS + tokens de `packages/ui` | Velocidade com consistência |
-| Estilo mobile | StyleSheet + os mesmos tokens | Tokens compartilhados, primitivos separados (ADR-006) |
-| Testes | Vitest (unit), Playwright (e2e web), Maestro (e2e mobile) | Cobre as três superfícies |
-| CI/CD | GitHub Actions; Vercel (web/admin), Fly.io (workers/gateway), EAS (mobile) | Cada alvo no serviço que faz aquilo bem |
-| Observabilidade | Sentry (erro), Axiom/Logtail (log), tabela `ai_usage_events` (custo) | Custo de IA é métrica de produto, mora no banco |
+| Camada          | Tecnologia                                                                 | Motivo                                                                       |
+| --------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Monorepo        | Turborepo + pnpm workspaces                                                | Cache de build, um só TypeScript, deploy independente por app                |
+| Mobile          | Expo SDK 52+ / React Native, expo-router                                   | Microfone em background, câmera, fila offline, OTA update (ADR-002)          |
+| Web             | Next.js 15 App Router, React Server Components                             | SSR para SEO da página pública, mesma linguagem do mobile                    |
+| Admin           | Next.js 15 (rota isolada, deploy separado)                                 | Back-office não compartilha superfície com o produto                         |
+| Estado          | TanStack Query + Zustand                                                   | Cache de servidor separado do estado de UI                                   |
+| Banco           | Supabase Postgres 15 + pgvector + PostGIS                                  | RLS nativa, geolocalização, similaridade semântica em um só lugar            |
+| Auth            | Supabase Auth (magic link + OTP SMS)                                       | JWT com `org_id` no claim, integração direta com RLS                         |
+| Storage         | Supabase Storage (S3)                                                      | Signed URLs, políticas por bucket, mesmo controle de acesso                  |
+| Fila            | Tabela Postgres + `FOR UPDATE SKIP LOCKED`                                 | Uma dependência a menos; migra para pgmq/Redis quando >50 jobs/min (ADR-005) |
+| Workers         | Node 22 + TypeScript, containers                                           | Um processo por domínio, escala independente                                 |
+| AI Gateway      | Fastify + TypeScript, container                                            | Baixa latência, schema-first, fácil de portar entre produtos                 |
+| Validação       | Zod (compartilhado em `packages/validation`)                               | Um schema serve API, formulário, extração de IA e teste                      |
+| Estilo web      | Tailwind CSS + tokens de `packages/ui`                                     | Velocidade com consistência                                                  |
+| Estilo mobile   | StyleSheet + os mesmos tokens                                              | Tokens compartilhados, primitivos separados (ADR-006)                        |
+| Testes          | Vitest (unit), Playwright (e2e web), Maestro (e2e mobile)                  | Cobre as três superfícies                                                    |
+| CI/CD           | GitHub Actions; Vercel (web/admin), Fly.io (workers/gateway), EAS (mobile) | Cada alvo no serviço que faz aquilo bem                                      |
+| Observabilidade | Sentry (erro), Axiom/Logtail (log), tabela `ai_usage_events` (custo)       | Custo de IA é métrica de produto, mora no banco                              |
 
 ## 4. Estrutura do monorepo
 
@@ -177,14 +177,14 @@ Headers: `X-Api-Key`, `X-Product` (`propto|verimulta|primegov`), `X-Org-Id`, `X-
 
 **Política de roteamento (padrão do Propto):**
 
-| Tarefa | Primário | Fallback 1 | Fallback 2 |
-|---|---|---|---|
-| `transcribe` | OpenAI Whisper | Gemini | — |
-| `extract_property` | Claude (JSON estrito) | GPT | OpenRouter |
-| `write_listing` | Claude | GPT | OpenRouter |
-| `classify_photo` | Gemini Vision (custo) | Claude Vision | — |
-| `compliance_check` | Claude | GPT | — |
-| `embed` | OpenAI embeddings | Gemini | — |
+| Tarefa             | Primário              | Fallback 1    | Fallback 2 |
+| ------------------ | --------------------- | ------------- | ---------- |
+| `transcribe`       | OpenAI Whisper        | Gemini        | —          |
+| `extract_property` | Claude (JSON estrito) | GPT           | OpenRouter |
+| `write_listing`    | Claude                | GPT           | OpenRouter |
+| `classify_photo`   | Gemini Vision (custo) | Claude Vision | —          |
+| `compliance_check` | Claude                | GPT           | —          |
+| `embed`            | OpenAI embeddings     | Gemini        | —          |
 
 Detalhes de prompt e schemas em [AI_AGENTS.md](./AI_AGENTS.md).
 
@@ -198,23 +198,23 @@ Detalhes de prompt e schemas em [AI_AGENTS.md](./AI_AGENTS.md).
 
 ## 9. Ambientes
 
-| Ambiente | Banco | Web | Workers | Mobile |
-|---|---|---|---|---|
-| `local` | Supabase CLI (Docker) | localhost:3000 | tsx watch | Expo Go |
-| `staging` | projeto Supabase staging | Vercel preview | Fly.io staging | EAS preview |
-| `production` | projeto Supabase prod | Vercel prod | Fly.io prod | EAS production |
+| Ambiente     | Banco                    | Web            | Workers        | Mobile         |
+| ------------ | ------------------------ | -------------- | -------------- | -------------- |
+| `local`      | Supabase CLI (Docker)    | localhost:3000 | tsx watch      | Expo Go        |
+| `staging`    | projeto Supabase staging | Vercel preview | Fly.io staging | EAS preview    |
+| `production` | projeto Supabase prod    | Vercel prod    | Fly.io prod    | EAS production |
 
 Nenhum dado real de cliente em staging. Seed sintético obrigatório.
 
 ## 10. Escalabilidade — o que quebra primeiro e o plano
 
-| Limite | Sinal | Ação |
-|---|---|---|
-| Fila em tabela | > 50 jobs/min ou lag > 2 min | migrar para pgmq ou Redis + BullMQ |
-| Processamento de imagem no worker | fila de mídia > 5 min p95 | escalar réplicas; depois mover resize para CDN |
-| Custo de IA | > R$ 3/imóvel | cache semântico agressivo + rebaixar modelo por tarefa |
-| pgvector | > 1 M embeddings | índice HNSW; depois banco vetorial dedicado |
-| Postgres | > 60 % CPU sustentado | read replica para páginas públicas |
+| Limite                            | Sinal                        | Ação                                                   |
+| --------------------------------- | ---------------------------- | ------------------------------------------------------ |
+| Fila em tabela                    | > 50 jobs/min ou lag > 2 min | migrar para pgmq ou Redis + BullMQ                     |
+| Processamento de imagem no worker | fila de mídia > 5 min p95    | escalar réplicas; depois mover resize para CDN         |
+| Custo de IA                       | > R$ 3/imóvel                | cache semântico agressivo + rebaixar modelo por tarefa |
+| pgvector                          | > 1 M embeddings             | índice HNSW; depois banco vetorial dedicado            |
+| Postgres                          | > 60 % CPU sustentado        | read replica para páginas públicas                     |
 
 ## 11. Decisões deliberadamente adiadas
 

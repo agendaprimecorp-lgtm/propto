@@ -7,8 +7,33 @@ import { z } from 'zod';
  */
 
 export const UF = [
-  'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT',
-  'PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO',
+  'AC',
+  'AL',
+  'AM',
+  'AP',
+  'BA',
+  'CE',
+  'DF',
+  'ES',
+  'GO',
+  'MA',
+  'MG',
+  'MS',
+  'MT',
+  'PA',
+  'PB',
+  'PE',
+  'PI',
+  'PR',
+  'RJ',
+  'RN',
+  'RO',
+  'RR',
+  'RS',
+  'SC',
+  'SE',
+  'SP',
+  'TO',
 ] as const;
 
 export const OrgType = z.enum(['corretor_autonomo', 'imobiliaria']);
@@ -27,9 +52,7 @@ export const DocumentBR = z
   .string()
   .regex(/^\d{11}$|^\d{14}$/, 'Informe um CPF ou CNPJ válido, apenas números.');
 
-export const HexColor = z
-  .string()
-  .regex(/^#[0-9a-fA-F]{6}$/, 'Use uma cor no formato #RRGGBB.');
+export const HexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Use uma cor no formato #RRGGBB.');
 
 export const OrganizationSchema = z.object({
   id: z.string().uuid(),

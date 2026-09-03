@@ -86,7 +86,11 @@ export class Router {
   private breaker(name: ProviderName): CircuitBreaker {
     let b = this.breakers.get(name);
     if (!b) {
-      b = new CircuitBreaker(this.cfg.breakerThreshold, this.cfg.breakerWindowMs, this.cfg.breakerCooldownMs);
+      b = new CircuitBreaker(
+        this.cfg.breakerThreshold,
+        this.cfg.breakerWindowMs,
+        this.cfg.breakerCooldownMs,
+      );
       this.breakers.set(name, b);
     }
     return b;
@@ -127,17 +131,28 @@ export class Router {
     // 3. Teto diário do produto — trava de segurança contra laço de retry.
     const daily = await this.store.dailyCostUsd(req.product);
     if (daily >= this.cfg.dailyCostCapUsd) {
-      throw new GatewayError('DAILY_CAP_EXCEEDED',
+      throw new GatewayError(
+        'DAILY_CAP_EXCEEDED',
         'O teto diário de uso de IA foi atingido. Tente novamente amanhã ou fale com o suporte.',
-        { spent_usd: daily, cap_usd: this.cfg.dailyCostCapUsd });
+        { spent_usd: daily, cap_usd: this.cfg.dailyCostCapUsd },
+      );
     }
 
     // 4. Cache — mesma entrada, mesma resposta, sem pagar de novo.
-    const key = cacheKey({ t: req.task, p: req.payload, s: req.schema ?? null, q: req.quality ?? 'alta' });
+    const key = cacheKey({
+      t: req.task,
+      p: req.payload,
+      s: req.schema ?? null,
+      q: req.quality ?? 'alta',
+    });
     const cached = await this.store.getCache(key);
     if (cached) {
       const meta: RunMeta = {
-        ...(cached as RunResult).meta, cached: true, costUsd: 0, costBrl: 0, latencyMs: 0,
+        ...(cached as RunResult).meta,
+        cached: true,
+        costUsd: 0,
+        costBrl: 0,
+        latencyMs: 0,
       };
       await this.store.recordUsage(this.toRecord(req, meta, true));
       return { output: (cached as RunResult).output, meta };
@@ -150,9 +165,11 @@ export class Router {
     });
 
     if (chain.length === 0) {
-      throw new GatewayError('PROVIDER_UNAVAILABLE',
+      throw new GatewayError(
+        'PROVIDER_UNAVAILABLE',
         'Nenhum provedor de IA disponível para esta tarefa no momento.',
-        { task: req.task });
+        { task: req.task },
+      );
     }
 
     // O que sai na resposta é a classificação, não a mensagem do provedor —
@@ -173,15 +190,29 @@ export class Router {
 
         if (req.maxCostUsd !== undefined && usd > req.maxCostUsd) {
           // Já gastamos: registra o custo e avisa. Silenciar seria pior.
-          await this.store.recordUsage(this.toRecord(req, {
-            provider: step.provider, model: step.model,
-            tokensIn: usage.tokensIn, tokensOut: usage.tokensOut,
-            costUsd: usd, costBrl: toBrl(usd, this.cfg.usdToBrl),
-            latencyMs, cached: false, fallbackFrom, attempts: i + 1,
-          }, true));
-          throw new GatewayError('BUDGET_EXCEEDED',
+          await this.store.recordUsage(
+            this.toRecord(
+              req,
+              {
+                provider: step.provider,
+                model: step.model,
+                tokensIn: usage.tokensIn,
+                tokensOut: usage.tokensOut,
+                costUsd: usd,
+                costBrl: toBrl(usd, this.cfg.usdToBrl),
+                latencyMs,
+                cached: false,
+                fallbackFrom,
+                attempts: i + 1,
+              },
+              true,
+            ),
+          );
+          throw new GatewayError(
+            'BUDGET_EXCEEDED',
             'Esta requisição custaria mais que o limite definido.',
-            { cost_usd: usd, max_cost_usd: req.maxCostUsd });
+            { cost_usd: usd, max_cost_usd: req.maxCostUsd },
+          );
         }
 
         this.breaker(step.provider).recordSuccess();
@@ -214,16 +245,29 @@ export class Router {
 
         const latencyMs = Date.now() - started;
         const message = (err as Error).message;
-        const reason: ProviderFailureKind =
-          err instanceof ProviderError ? err.kind : 'rede';
+        const reason: ProviderFailureKind = err instanceof ProviderError ? err.kind : 'rede';
         failures.push({ provider: step.provider, reason });
         console.error(`[gateway] ${step.provider}/${step.model} falhou (${reason}): ${message}`);
 
         // A tentativa que falhou também custa — registrar é regra (MASTER_PROMPT §4, regra 7).
-        await this.store.recordUsage(this.toRecord(req, {
-          provider: step.provider, model: step.model, tokensIn: 0, tokensOut: 0,
-          costUsd: 0, costBrl: 0, latencyMs, cached: false, fallbackFrom, attempts: i + 1,
-        }, false));
+        await this.store.recordUsage(
+          this.toRecord(
+            req,
+            {
+              provider: step.provider,
+              model: step.model,
+              tokensIn: 0,
+              tokensOut: 0,
+              costUsd: 0,
+              costBrl: 0,
+              latencyMs,
+              cached: false,
+              fallbackFrom,
+              attempts: i + 1,
+            },
+            false,
+          ),
+        );
 
         this.breaker(step.provider).recordFailure();
 
@@ -238,23 +282,31 @@ export class Router {
     // diferença — uma se resolve tentando de novo, a outra não.
     const todasSchema = failures.length > 0 && failures.every((f) => f.reason === 'schema');
     if (todasSchema) {
-      throw new GatewayError('SCHEMA_VALIDATION_FAILED',
+      throw new GatewayError(
+        'SCHEMA_VALIDATION_FAILED',
         'A resposta da IA não veio no formato esperado. Tente novamente.',
-        { attempts: failures.length, failures });
+        { attempts: failures.length, failures },
+      );
     }
 
-    throw new GatewayError('ALL_PROVIDERS_FAILED',
+    throw new GatewayError(
+      'ALL_PROVIDERS_FAILED',
       'Não foi possível processar agora. Tentaremos novamente em instantes.',
-      { attempts: failures.length, failures });
+      { attempts: failures.length, failures },
+    );
   }
 
   private async invoke(provider: Provider, model: string, req: RunRequest) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), req.timeoutMs ?? this.cfg.requestTimeoutMs);
+    const timeout = setTimeout(
+      () => controller.abort(),
+      req.timeoutMs ?? this.cfg.requestTimeoutMs,
+    );
 
     try {
       if (req.kind === 'transcribe') {
-        if (!provider.transcribe) throw new ProviderError(provider.name, 'não faz transcrição', true, 'nao_suportado');
+        if (!provider.transcribe)
+          throw new ProviderError(provider.name, 'não faz transcrição', true, 'nao_suportado');
         const out = await provider.transcribe({
           model,
           audioUrl: String(req.payload.audio_url ?? ''),
@@ -266,14 +318,18 @@ export class Router {
       }
 
       if (req.kind === 'embed') {
-        if (!provider.embed) throw new ProviderError(provider.name, 'não gera embeddings', true, 'nao_suportado');
+        if (!provider.embed)
+          throw new ProviderError(provider.name, 'não gera embeddings', true, 'nao_suportado');
         const out = await provider.embed({
-          model, input: req.payload.input as string[], signal: controller.signal,
+          model,
+          input: req.payload.input as string[],
+          signal: controller.signal,
         });
         return { output: { vectors: out.vectors }, usage: out.usage };
       }
 
-      if (!provider.complete) throw new ProviderError(provider.name, 'não faz completions', true, 'nao_suportado');
+      if (!provider.complete)
+        throw new ProviderError(provider.name, 'não faz completions', true, 'nao_suportado');
       const out = await provider.complete({
         model,
         messages: req.payload.messages as any,
@@ -292,14 +348,15 @@ export class Router {
       // padrões seguros, entre eles "nenhum rosto".
       if (req.schema) {
         if (out.json === undefined) {
-          throw new ProviderError(
-            provider.name, 'a resposta não é JSON parseável', true, 'schema',
-          );
+          throw new ProviderError(provider.name, 'a resposta não é JSON parseável', true, 'schema');
         }
         const problemas = validateAgainstSchema(out.json, req.schema);
         if (problemas.length > 0) {
           throw new ProviderError(
-            provider.name, `resposta fora do schema: ${problemas.join('; ')}`, true, 'schema',
+            provider.name,
+            `resposta fora do schema: ${problemas.join('; ')}`,
+            true,
+            'schema',
           );
         }
       }
@@ -310,7 +367,11 @@ export class Router {
     }
   }
 
-  private toRecord(req: RunRequest, meta: Omit<RunMeta, 'budgetRatio' | 'budgetWarning'> & Partial<RunMeta>, success: boolean): UsageRecord {
+  private toRecord(
+    req: RunRequest,
+    meta: Omit<RunMeta, 'budgetRatio' | 'budgetWarning'> & Partial<RunMeta>,
+    success: boolean,
+  ): UsageRecord {
     return {
       orgId: req.orgId,
       product: req.product,

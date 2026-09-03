@@ -26,15 +26,15 @@ Sai com código ≠ 0 na primeira assertiva quebrada. É isso que bloqueia o mer
 
 **71 assertivas**, em duas suítes.
 
-| Tabela | Ler alheio | Alterar alheio | Apagar alheio | Inserir em org alheia | Papéis |
-|---|---|---|---|---|---|
-| `organizations` | ✅ | ✅ | ✅ | — | ✅ owner × corretor |
-| `profiles` | ✅ | ✅ | — | — | ✅ próprio × colega |
-| `memberships` | ✅ | ✅ | ✅ | ✅ | ✅ owner × corretor |
-| `properties` | ✅ | ✅ | ✅ | ✅ | ✅ owner × assistente |
-| `property_features` | ✅ | ✅ | — | ✅ | — |
-| `property_owners` | ✅ | ✅ | — | ✅ | ✅ assistente não vê |
-| `audit_log` | ✅ | escrita bloqueada | exclusão bloqueada | — | ✅ só owner/admin lê |
+| Tabela              | Ler alheio | Alterar alheio    | Apagar alheio      | Inserir em org alheia | Papéis                |
+| ------------------- | ---------- | ----------------- | ------------------ | --------------------- | --------------------- |
+| `organizations`     | ✅         | ✅                | ✅                 | —                     | ✅ owner × corretor   |
+| `profiles`          | ✅         | ✅                | —                  | —                     | ✅ próprio × colega   |
+| `memberships`       | ✅         | ✅                | ✅                 | ✅                    | ✅ owner × corretor   |
+| `properties`        | ✅         | ✅                | ✅                 | ✅                    | ✅ owner × assistente |
+| `property_features` | ✅         | ✅                | —                  | ✅                    | —                     |
+| `property_owners`   | ✅         | ✅                | —                  | ✅                    | ✅ assistente não vê  |
+| `audit_log`         | ✅         | escrita bloqueada | exclusão bloqueada | —                     | ✅ só owner/admin lê  |
 
 Além do isolamento, a suíte de imóveis cobre comportamento: numeração sequencial por organização, busca sem acento, máquina de estados, carimbo de autoria na publicação, geração de slug e sobrevivência do imóvel publicado à exclusão da conta (LGPD).
 
@@ -44,7 +44,7 @@ Tudo roda numa transação com `rollback` ao final — não deixa resíduo no ba
 
 ## Regra ao adicionar tabela
 
-Tabela nova de negócio entra com bloco de assertivas neste diretório, **no mesmo PR**. Não é burocracia: a varredura de cobertura pega tabela sem RLS, mas só um teste específico pega política *escrita errada* — que é o erro mais comum e o mais silencioso.
+Tabela nova de negócio entra com bloco de assertivas neste diretório, **no mesmo PR**. Não é burocracia: a varredura de cobertura pega tabela sem RLS, mas só um teste específico pega política _escrita errada_ — que é o erro mais comum e o mais silencioso.
 
 ## Verifique que o teste testa
 
@@ -66,9 +66,9 @@ Se passar, o teste está mentindo. Conserte o teste antes de escrever qualquer o
 
 ## Arquivos
 
-| Arquivo | Conteúdo |
-|---|---|
-| `run.mjs` | Executor — aplica os `.sql` em ordem, propaga o código de saída |
-| `sql/000_helpers.sql` | `assert`, `assert_count`, montagem do claim JWT |
-| `sql/010_isolation.sql` | Organizações, perfis e vínculos (migration 0002) |
+| Arquivo                  | Conteúdo                                                             |
+| ------------------------ | -------------------------------------------------------------------- |
+| `run.mjs`                | Executor — aplica os `.sql` em ordem, propaga o código de saída      |
+| `sql/000_helpers.sql`    | `assert`, `assert_count`, montagem do claim JWT                      |
+| `sql/010_isolation.sql`  | Organizações, perfis e vínculos (migration 0002)                     |
 | `sql/020_properties.sql` | Imóveis, características, proprietários e auditoria (migration 0003) |

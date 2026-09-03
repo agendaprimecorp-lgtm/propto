@@ -26,34 +26,84 @@ export const PHOTO_ANALYSIS_SCHEMA = {
   properties: {
     room_type: {
       type: 'string',
-      enum: ['fachada', 'sala', 'cozinha', 'quarto', 'suite', 'banheiro', 'area_servico',
-             'varanda', 'quintal', 'piscina', 'garagem', 'area_comum', 'vista', 'planta', 'outro'],
+      enum: [
+        'fachada',
+        'sala',
+        'cozinha',
+        'quarto',
+        'suite',
+        'banheiro',
+        'area_servico',
+        'varanda',
+        'quintal',
+        'piscina',
+        'garagem',
+        'area_comum',
+        'vista',
+        'planta',
+        'outro',
+      ],
       description: 'Ambiente retratado na foto.',
     },
-    quality_score: { type: 'number', minimum: 0, maximum: 1, description: 'Qualidade técnica da foto.' },
+    quality_score: {
+      type: 'number',
+      minimum: 0,
+      maximum: 1,
+      description: 'Qualidade técnica da foto.',
+    },
     issues: {
       type: 'array',
-      items: { type: 'string', enum: ['escura', 'estourada', 'tremida', 'torta', 'ruidosa', 'enquadramento_ruim', 'irrelevante'] },
+      items: {
+        type: 'string',
+        enum: [
+          'escura',
+          'estourada',
+          'tremida',
+          'torta',
+          'ruidosa',
+          'enquadramento_ruim',
+          'irrelevante',
+        ],
+      },
     },
-    has_face: { type: 'boolean', description: 'Há rosto humano visível, mesmo parcial ou ao fundo.' },
+    has_face: {
+      type: 'boolean',
+      description: 'Há rosto humano visível, mesmo parcial ou ao fundo.',
+    },
     has_plate: { type: 'boolean', description: 'Há placa de veículo legível, mesmo parcial.' },
     faces: {
       type: 'array',
       description: 'Caixa de cada rosto, em coordenadas relativas de 0 a 1.',
       items: {
-        type: 'object', required: ['x', 'y', 'w', 'h'],
-        properties: { x: { type: 'number' }, y: { type: 'number' }, w: { type: 'number' }, h: { type: 'number' } },
+        type: 'object',
+        required: ['x', 'y', 'w', 'h'],
+        properties: {
+          x: { type: 'number' },
+          y: { type: 'number' },
+          w: { type: 'number' },
+          h: { type: 'number' },
+        },
       },
     },
     plates: {
       type: 'array',
       description: 'Caixa de cada placa de veículo, em coordenadas relativas de 0 a 1.',
       items: {
-        type: 'object', required: ['x', 'y', 'w', 'h'],
-        properties: { x: { type: 'number' }, y: { type: 'number' }, w: { type: 'number' }, h: { type: 'number' } },
+        type: 'object',
+        required: ['x', 'y', 'w', 'h'],
+        properties: {
+          x: { type: 'number' },
+          y: { type: 'number' },
+          w: { type: 'number' },
+          h: { type: 'number' },
+        },
       },
     },
-    caption: { type: 'string', maxLength: 120, description: 'Legenda objetiva em pt-BR, sem adjetivo de venda.' },
+    caption: {
+      type: 'string',
+      maxLength: 120,
+      description: 'Legenda objetiva em pt-BR, sem adjetivo de venda.',
+    },
     suggested_position: { type: 'integer', minimum: 0, maximum: 100 },
   },
 } as const;
@@ -104,7 +154,7 @@ export class GatewayDetector implements Detector {
     if (!res.ok) {
       throw new Error(`gateway recusou a análise: HTTP ${res.status} ${await res.text()}`);
     }
-    const body = await res.json() as { output: unknown };
+    const body = (await res.json()) as { output: unknown };
     return normalizeAnalysis(body.output);
   }
 }
@@ -122,7 +172,9 @@ export function normalizeAnalysis(raw: unknown): PhotoAnalysis {
   return {
     room_type: typeof o.room_type === 'string' ? o.room_type : 'outro',
     quality_score: clamp(typeof o.quality_score === 'number' ? o.quality_score : 0.5, 0, 1),
-    issues: Array.isArray(o.issues) ? o.issues.filter((i): i is string => typeof i === 'string') : [],
+    issues: Array.isArray(o.issues)
+      ? o.issues.filter((i): i is string => typeof i === 'string')
+      : [],
     // Caixa presente implica presença, mesmo que o booleano venha errado.
     has_face: Boolean(o.has_face) || faces.length > 0,
     has_plate: Boolean(o.has_plate) || plates.length > 0,
@@ -138,7 +190,10 @@ function normalizeBoxes(raw: unknown): Box[] {
   const out: Box[] = [];
   for (const item of raw) {
     const b = item as Record<string, unknown>;
-    const x = Number(b?.x), y = Number(b?.y), w = Number(b?.w), h = Number(b?.h);
+    const x = Number(b?.x),
+      y = Number(b?.y),
+      w = Number(b?.w),
+      h = Number(b?.h);
     if (![x, y, w, h].every(Number.isFinite)) continue;
     if (w <= 0 || h <= 0) continue;
     out.push({ x: clamp(x, 0, 1), y: clamp(y, 0, 1), w: clamp(w, 0, 1), h: clamp(h, 0, 1) });

@@ -6,7 +6,12 @@ import { buildProviders } from './providers/http.js';
 import { assertAllowedAssetUrl } from './assets.js';
 import { PRICES_REVIEWED_AT } from './pricing.js';
 import {
-  loadConfig, TASKS, type GatewayConfig, type Product, type Quality, type Task,
+  loadConfig,
+  TASKS,
+  type GatewayConfig,
+  type Product,
+  type Quality,
+  type Task,
 } from './config.js';
 import type { Provider } from './providers/types.js';
 import type { ProviderName } from './config.js';
@@ -17,15 +22,22 @@ export interface BuildOptions {
   providers?: Map<ProviderName, Provider>;
 }
 
-interface Caller { product: Product; orgId: string | null; idempotencyKey: string | null; jobId: string | null }
+interface Caller {
+  product: Product;
+  orgId: string | null;
+  idempotencyKey: string | null;
+  jobId: string | null;
+}
 
 export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store: Store } {
   const cfg: GatewayConfig = { ...loadConfig(), ...opts.config };
   const store = opts.store ?? new MemoryStore();
-  const providers = opts.providers ?? buildProviders(cfg.providerKeys, {
-    allowedHosts: cfg.assetAllowedHosts,
-    maxBytes: cfg.maxAssetBytes,
-  });
+  const providers =
+    opts.providers ??
+    buildProviders(cfg.providerKeys, {
+      allowedHosts: cfg.assetAllowedHosts,
+      maxBytes: cfg.maxAssetBytes,
+    });
   const router = new Router(cfg, providers, store);
 
   const app = Fastify({ logger: false, bodyLimit: 8 * 1024 * 1024 });
@@ -38,14 +50,19 @@ export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store:
     }
     const declared = req.headers['x-product'];
     if (declared && String(declared) !== product) {
-      throw new GatewayError('INVALID_API_KEY',
-        'A chave usada não pertence ao produto informado.', { product: String(declared) });
+      throw new GatewayError(
+        'INVALID_API_KEY',
+        'A chave usada não pertence ao produto informado.',
+        { product: String(declared) },
+      );
     }
     const orgId = req.headers['x-org-id'] ? String(req.headers['x-org-id']) : null;
     return {
       product,
       orgId,
-      idempotencyKey: req.headers['x-idempotency-key'] ? String(req.headers['x-idempotency-key']) : null,
+      idempotencyKey: req.headers['x-idempotency-key']
+        ? String(req.headers['x-idempotency-key'])
+        : null,
       jobId: req.headers['x-job-id'] ? String(req.headers['x-job-id']) : null,
     };
   }
@@ -59,8 +76,7 @@ export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store:
    */
   function requireOrg(caller: Caller): string {
     if (!caller.orgId) {
-      throw new GatewayError('INVALID_REQUEST',
-        'Informe a organização no cabeçalho x-org-id.');
+      throw new GatewayError('INVALID_REQUEST', 'Informe a organização no cabeçalho x-org-id.');
     }
     return caller.orgId;
   }
@@ -76,8 +92,10 @@ export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store:
 
   function requireTask(value: unknown): Task {
     if (typeof value !== 'string' || !(TASKS as readonly string[]).includes(value)) {
-      throw new GatewayError('INVALID_REQUEST',
-        'Tarefa desconhecida.', { task: value, aceitas: TASKS });
+      throw new GatewayError('INVALID_REQUEST', 'Tarefa desconhecida.', {
+        task: value,
+        aceitas: TASKS,
+      });
     }
     return value as Task;
   }
@@ -90,9 +108,9 @@ export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store:
   app.setErrorHandler((err, _req, reply) => {
     if (err instanceof GatewayError) return reply.status(err.status).send(err.toBody());
     if ((err as any).statusCode === 400) {
-      return reply.status(400).send(
-        new GatewayError('INVALID_REQUEST', 'Requisição malformada.').toBody(),
-      );
+      return reply
+        .status(400)
+        .send(new GatewayError('INVALID_REQUEST', 'Requisição malformada.').toBody());
     }
     return reply.status(500).send({
       error: { code: 'INTERNAL', message: 'Erro interno no gateway.', details: {} },
@@ -101,9 +119,7 @@ export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store:
 
   app.get('/health', async () => ({
     status: 'ok',
-    providers: [...providers.entries()]
-      .filter(([, p]) => p.isConfigured())
-      .map(([name]) => name),
+    providers: [...providers.entries()].filter(([, p]) => p.isConfigured()).map(([name]) => name),
     prices_reviewed_at: PRICES_REVIEWED_AT,
   }));
 
@@ -161,7 +177,9 @@ export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store:
       quality: quality(body.policy),
       schema: body.schema as Record<string, unknown> | undefined,
       payload: {
-        messages: body.messages ?? [{ role: 'user', content: String(body.prompt ?? 'Analise a imagem.') }],
+        messages: body.messages ?? [
+          { role: 'user', content: String(body.prompt ?? 'Analise a imagem.') },
+        ],
         image_urls: (body.image_urls as unknown[]).map((u) => requireAssetUrl(u, 'image_urls')),
       },
     });
@@ -213,14 +231,16 @@ export function buildServer(opts: BuildOptions = {}): FastifyInstance & { store:
       product: caller.product,
       day_cost_usd: spentUsd,
       day_cap_usd: cfg.dailyCostCapUsd,
-      org: budget ? {
-        org_id: caller.orgId,
-        budget_brl: budget.budgetBrl,
-        spent_brl: budget.spentBrl,
-        ratio: budget.ratio,
-        warning: budget.warning,
-        exceeded: budget.exceeded,
-      } : null,
+      org: budget
+        ? {
+            org_id: caller.orgId,
+            budget_brl: budget.budgetBrl,
+            spent_brl: budget.spentBrl,
+            ratio: budget.ratio,
+            warning: budget.warning,
+            exceeded: budget.exceeded,
+          }
+        : null,
     };
   });
 

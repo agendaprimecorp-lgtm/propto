@@ -6,20 +6,20 @@
 
 ## Linha do tempo
 
-| Sprint | Período | Tema | Entregável verificável |
-|---|---|---|---|
-| **0** | 08/09 – 19/09 | Infraestrutura | Monorepo rodando, CI verde, deploy em staging |
-| **1** | 22/09 – 03/10 | Autenticação e perfil | Login por OTP, org criada, CRECI no perfil |
-| **2** | 06/10 – 17/10 | Cadastro de imóvel | CRUD completo com RLS, no app e na web |
-| **3** | 20/10 – 07/11 ⚠️ | Captura por voz (**3 semanas**) | Falar 3 min → rascunho revisável com áudio-âncora |
-| **4** | 03/11 – 14/11 | Fotos | 20 fotos → tratadas, classificadas, anonimizadas |
-| **5** | 17/11 – 28/11 | IA de conteúdo | Título, descrição e variações por canal, com compliance |
-| **6** | 01/12 – 12/12 | Página pública | URL própria, SEO, WhatsApp, lead gravado |
-| **🚦** | 15/12 – 26/12 | **Piloto Zero (ADR-011)** | **3 corretores reais, 2 semanas, portão comercial** |
-| **7** | 05/01 – 16/01 | CRM | Contatos, kanban, atividades, tarefas |
-| **8** | 19/01 – 30/01 | Matching | Score comprador × imóvel com justificativa |
-| **9** | 02/02 – 13/02 | AI Gateway completo | Orçamento, cache, painel de custo, multi-produto |
-| **10** | 16/02 – 27/02 | Piloto | 10 corretores, cobrança real, métricas do PRD §12 |
+| Sprint | Período          | Tema                            | Entregável verificável                                  |
+| ------ | ---------------- | ------------------------------- | ------------------------------------------------------- |
+| **0**  | 08/09 – 19/09    | Infraestrutura                  | Monorepo rodando, CI verde, deploy em staging           |
+| **1**  | 22/09 – 03/10    | Autenticação e perfil           | Login por OTP, org criada, CRECI no perfil              |
+| **2**  | 06/10 – 17/10    | Cadastro de imóvel              | CRUD completo com RLS, no app e na web                  |
+| **3**  | 20/10 – 07/11 ⚠️ | Captura por voz (**3 semanas**) | Falar 3 min → rascunho revisável com áudio-âncora       |
+| **4**  | 03/11 – 14/11    | Fotos                           | 20 fotos → tratadas, classificadas, anonimizadas        |
+| **5**  | 17/11 – 28/11    | IA de conteúdo                  | Título, descrição e variações por canal, com compliance |
+| **6**  | 01/12 – 12/12    | Página pública                  | URL própria, SEO, WhatsApp, lead gravado                |
+| **🚦** | 15/12 – 26/12    | **Piloto Zero (ADR-011)**       | **3 corretores reais, 2 semanas, portão comercial**     |
+| **7**  | 05/01 – 16/01    | CRM                             | Contatos, kanban, atividades, tarefas                   |
+| **8**  | 19/01 – 30/01    | Matching                        | Score comprador × imóvel com justificativa              |
+| **9**  | 02/02 – 13/02    | AI Gateway completo             | Orçamento, cache, painel de custo, multi-produto        |
+| **10** | 16/02 – 27/02    | Piloto                          | 10 corretores, cobrança real, métricas do PRD §12       |
 
 > ⚠️ As datas dos Sprints 4 a 10 acima já consideram o Sprint 3 de duas semanas. Com a extensão para três semanas (ver abaixo), **todas elas deslocam uma semana** — MVP em 06/03/2027. Ajustar a tabela ao fechar o Sprint 2.
 
@@ -32,6 +32,7 @@
 **Objetivo:** um desenvolvedor novo clona, roda `pnpm install && pnpm dev` e tem tudo de pé em menos de 10 minutos.
 
 **Escopo**
+
 - Monorepo Turborepo + pnpm; TypeScript estrito, ESLint, Prettier, Husky, commitlint
 - `apps/web` (Next.js 15) e `apps/admin` esqueleto; `apps/mobile` (Expo) rodando no dispositivo
 - `packages/`: `types`, `validation`, `utils`, `ui` (tokens), `database`, `ai` (esqueleto)
@@ -43,6 +44,7 @@
 - Registro do domínio + verificação de disponibilidade da marca Propto no INPI (P-02)
 
 **Definição de pronto**
+
 - [ ] `pnpm dev` sobe web, admin e Supabase local
 - [ ] Expo abre no dispositivo físico
 - [ ] CI verde em PR limpo e vermelho em PR com erro de tipo
@@ -56,6 +58,7 @@
 **Objetivo:** o corretor entra, tem organização e perfil completo.
 
 **Escopo**
+
 - Magic link (e-mail) e OTP SMS (decidir P-01 nesta sprint)
 - Hook `on-auth-user-created`: cria `organizations`, `memberships`, claim `org_id`
 - Migration 0002 + RLS de `organizations`, `profiles`, `memberships`
@@ -65,6 +68,7 @@
 - **Suíte `tests/rls/` nasce aqui** e passa a bloquear merge
 
 **DoD**
+
 - [ ] Fluxo completo de entrada nas duas plataformas
 - [ ] Teste automatizado prova que org A não lê dado de org B
 - [ ] Token guardado em armazenamento seguro
@@ -77,6 +81,7 @@
 **Objetivo:** cadastro manual completo — a base sobre a qual a voz vai escrever.
 
 **Escopo**
+
 - Migration 0003: `properties`, `property_features`, `property_owners`, RLS, trigger de `search_vector` e de `reference_code`
 - Schema Zod `PropertySchema` em `packages/validation` (ADR-009)
 - Formulário em etapas (web e mobile) com salvamento automático de rascunho
@@ -86,6 +91,7 @@
 - Ficha do proprietário com CPF criptografado
 
 **DoD**
+
 - [ ] Imóvel criado, editado e arquivado nas duas plataformas
 - [ ] Rascunho não se perde ao fechar o app
 - [ ] Toda transição de estado registrada em `audit_log`
@@ -100,6 +106,7 @@
 **Objetivo:** falar 3 minutos e receber um rascunho revisável, com o áudio como prova de cada campo.
 
 **Escopo**
+
 - `RecordButton` com gravação em segundo plano e tela bloqueada
 - Fila offline em SQLite; upload retomável (TUS); nunca perder áudio
 - Migrations 0004 e 0006 (`capture_sessions`, `transcriptions`, `property_drafts`, `ai_jobs`)
@@ -111,6 +118,7 @@
 - Suíte dourada `tests/ai/extract/` com 30 áudios reais
 
 **DoD**
+
 - [ ] Gravar 3 min offline, sair da área de cobertura, voltar e o áudio subir sozinho
 - [ ] Rascunho pronto em menos de 90 s (p95) após o upload — transcrição < 60 s (RNF-02) + extração
 - [ ] Todo campo extraído toca o trecho de áudio que o originou
@@ -126,6 +134,7 @@
 **Objetivo:** fotografar e esquecer.
 
 **Escopo**
+
 - Captura múltipla e seleção de galeria (até 40)
 - Upload resiliente com `UploadQueue` persistente
 - Migration 0005 + buckets e políticas de storage
@@ -137,6 +146,7 @@
 - Suíte `tests/ai/classify/` com 100 fotos rotuladas
 
 **DoD**
+
 - [ ] 20 fotos processadas em menos de 5 min (p95)
 - [ ] Recall de rosto e placa ≥ 95 % nas fotos de teste
 - [ ] Nenhuma imagem chega a `public/` sem `anonymized = true`
@@ -150,6 +160,7 @@
 **Objetivo:** anúncio pronto para publicar, sem número inventado.
 
 **Escopo**
+
 - Agente A4 (redator) com variações portal / Instagram / WhatsApp
 - Agente A5 (compliance) — verificação programática **antes** da semântica
 - Migration 0007 parcial (`listings`)
@@ -158,6 +169,7 @@
 - Suítes douradas `write/` e `compliance/`
 
 **DoD**
+
 - [ ] Conteúdo gerado em menos de 30 s
 - [ ] 100 % de bloqueio nos 15 textos-armadilha da suíte de compliance
 - [ ] Zero divergência numérica em 20 imóveis de teste
@@ -171,6 +183,7 @@
 **Objetivo:** um link que vende.
 
 **Escopo**
+
 - Rota `/i/[slug]` com SSR/ISR, meta tags e OG image gerada
 - Galeria com lightbox, ficha técnica, mapa conforme privacidade
 - CTA WhatsApp com mensagem pré-preenchida; formulário com consentimento LGPD
@@ -182,6 +195,7 @@
 - **Cobrança:** decidir P-03 e ligar checkout com PIX
 
 **DoD**
+
 - [ ] LCP < 2,5 s em 4G real (não Lighthouse em desktop)
 - [ ] Lead cai no banco com consentimento versionado
 - [ ] Compartilhar no WhatsApp mostra prévia correta
@@ -195,12 +209,14 @@
 Não é sprint de código. É teste de mercado.
 
 **O que fazer**
+
 - 3 corretores reais (um deles Rodrigo) usando por 2 semanas na carteira de verdade
 - Cobrar valor simbólico — o objetivo é medir disposição a pagar, não faturar
 - Instrumentar tudo: tempo por etapa, taxa de edição do texto, custo por imóvel
 - Entrevista de 30 min com cada um ao fim
 
 **Portão — Sprints 7–10 só começam com:**
+
 - [ ] ≥ 70 % dos imóveis do período cadastrados por voz
 - [ ] Mediana da porta ao anúncio < 15 min
 - [ ] ≥ 60 % das descrições publicadas com edição leve (< 20 % alterado)
@@ -217,6 +233,7 @@ Duas semanas de folga aqui são usadas para dívida técnica e cobertura de test
 **Objetivo:** o funil que nasce do dado que já existe.
 
 **Escopo**
+
 - Migration 0008: `contacts`, `deals`, `activities`, `tasks` + RLS
 - Kanban com arrastar entre estágios, sincronizado por Realtime
 - Ficha do contato com linha do tempo unificada (visitas na página pública inclusive)
@@ -226,6 +243,7 @@ Duas semanas de folga aqui são usadas para dívida técnica e cobertura de test
 - Importação de contatos por CSV
 
 **DoD**
+
 - [ ] Lead da página pública aparece no kanban automaticamente
 - [ ] Alerta dispara para lead sem contato há mais de 24 h
 - [ ] Kanban sincroniza entre celular e desktop em menos de 2 s
@@ -238,6 +256,7 @@ Duas semanas de folga aqui são usadas para dívida técnica e cobertura de test
 **Objetivo:** o sistema avisa qual comprador quer qual imóvel.
 
 **Escopo**
+
 - Migration 0009: `buyer_requirements`, `property_embeddings`, `matches`, índice HNSW
 - Agente A7 (perfil de comprador por voz ou texto)
 - `matching-worker`: embeddings, score por regras + semântico, varredura nos dois sentidos
@@ -247,6 +266,7 @@ Duas semanas de folga aqui são usadas para dívida técnica e cobertura de test
 - Suíte `tests/ai/match/`
 
 **DoD**
+
 - [ ] Imóvel novo gera matches em menos de 60 s
 - [ ] Todo match traz razões e bloqueios em texto
 - [ ] Correlação de Spearman ≥ 0,7 com ranking humano
@@ -259,6 +279,7 @@ Duas semanas de folga aqui são usadas para dívida técnica e cobertura de test
 **Objetivo:** transformar o gateway em ativo de infraestrutura da PrimeCorp.
 
 **Escopo**
+
 - Orçamento por organização com alerta em 80 % e corte em 100 %
 - Cache semântico (embedding da requisição + limiar de similaridade)
 - Painel em `apps/admin`: custo por produto, org, tarefa, modelo, dia
@@ -268,6 +289,7 @@ Duas semanas de folga aqui são usadas para dívida técnica e cobertura de test
 - **Documentação de integração para VeriMulta e PrimeGov IA**
 
 **DoD**
+
 - [ ] Corte de orçamento testado em staging
 - [ ] Cache reduz custo em ≥ 20 % nas tarefas repetitivas
 - [ ] Painel bate com a soma de `ai_usage_events`
@@ -280,6 +302,7 @@ Duas semanas de folga aqui são usadas para dívida técnica e cobertura de test
 **Objetivo:** 10 corretores pagando e usando.
 
 **Escopo**
+
 - Onboarding guiado com primeiro imóvel assistido
 - Cobrança real ativa (planos do PRD §9)
 - Central de ajuda e canal de suporte
@@ -288,6 +311,7 @@ Duas semanas de folga aqui são usadas para dívida técnica e cobertura de test
 - Publicação nas lojas (App Store e Google Play)
 
 **DoD**
+
 - [ ] Todos os critérios do PRD §12 medidos e reportados
 - [ ] Apps aprovados nas lojas
 - [ ] Zero incidente P0 aberto
@@ -297,15 +321,15 @@ Duas semanas de folga aqui são usadas para dívida técnica e cobertura de test
 
 ## Depois do MVP (v2 — a partir de março/2027)
 
-| Prioridade | Item | Depende de |
-|---|---|---|
-| 1 | Integração com portais (VivaReal, ZAP, OLX) | Contrato comercial |
-| 2 | Perfil imobiliária: multiusuário, carteira compartilhada, split | ADR-004 (já preparado) |
-| 3 | Vídeo/reel automático a partir das fotos (`video-worker`) | P-04 |
-| 4 | Tour virtual 360° | Hardware do corretor |
-| 5 | Assinatura eletrônica de autorização de venda | Provedor |
-| 6 | WhatsApp Business API oficial com atendimento assistido | Aprovação Meta |
-| 7 | App do comprador com alertas de imóvel novo | Liquidez de carteira |
+| Prioridade | Item                                                            | Depende de             |
+| ---------- | --------------------------------------------------------------- | ---------------------- |
+| 1          | Integração com portais (VivaReal, ZAP, OLX)                     | Contrato comercial     |
+| 2          | Perfil imobiliária: multiusuário, carteira compartilhada, split | ADR-004 (já preparado) |
+| 3          | Vídeo/reel automático a partir das fotos (`video-worker`)       | P-04                   |
+| 4          | Tour virtual 360°                                               | Hardware do corretor   |
+| 5          | Assinatura eletrônica de autorização de venda                   | Provedor               |
+| 6          | WhatsApp Business API oficial com atendimento assistido         | Aprovação Meta         |
+| 7          | App do comprador com alertas de imóvel novo                     | Liquidez de carteira   |
 
 ## Regras de execução
 

@@ -70,7 +70,7 @@ Parte 4.
 1. Abra [supabase.com/dashboard](https://supabase.com/dashboard) → **Sign up**
 2. **New project**
    - **Name:** `propto`
-   - **Database Password:** clique em *Generate a password* e **guarde num
+   - **Database Password:** clique em _Generate a password_ e **guarde num
      lugar seguro**. Essa é a senha de administrador do banco. Se perder,
      dá para redefinir, mas é chato.
    - **Region:** `South America (São Paulo)` — é onde seus clientes estão,
@@ -201,6 +201,7 @@ Next.js. Se você nunca usou GitHub, são 5 minutos a mais e vale para sempre.
    `node_modules`, se existirem).
 
 > Se você tiver o Git instalado, o caminho normal é melhor:
+>
 > ```bash
 > cd propto
 > git init && git add . && git commit -m "Propto"
@@ -219,11 +220,11 @@ Next.js. Se você nunca usou GitHub, são 5 minutos a mais e vale para sempre.
    - **Publish directory:** `apps/web/.next`
 3. Clique em **Add environment variables** e cadastre as quatro:
 
-| Nome | Valor |
-|---|---|
-| `PUBLIC_DB_URL` | a string que você montou no passo 2.6 |
-| `NEXT_PUBLIC_SITE_URL` | `https://imoveis.propto.com.br` |
-| `SESSION_HASH_SALT` | qualquer texto longo e aleatório, só seu |
+| Nome                      | Valor                                                            |
+| ------------------------- | ---------------------------------------------------------------- |
+| `PUBLIC_DB_URL`           | a string que você montou no passo 2.6                            |
+| `NEXT_PUBLIC_SITE_URL`    | `https://imoveis.propto.com.br`                                  |
+| `SESSION_HASH_SALT`       | qualquer texto longo e aleatório, só seu                         |
 | `NEXT_PUBLIC_STORAGE_URL` | `https://SEUPROJETO.supabase.co/storage/v1/object/public/public` |
 
 > No `NEXT_PUBLIC_STORAGE_URL`, troque `SEUPROJETO` pelo código do seu projeto
@@ -236,7 +237,7 @@ O primeiro build leva uns 3 minutos. Quando terminar, abra o endereço que a
 Netlify deu. Você vai ver a vitrine — **vazia**, porque ainda não há imóvel
 publicado. Isso é o esperado.
 
-> **Se o build falhar:** clique em *Deploy log*, copie as últimas 30 linhas e
+> **Se o build falhar:** clique em _Deploy log_, copie as últimas 30 linhas e
 > me mande.
 
 ### 3.3 Dar nome ao site
@@ -277,10 +278,10 @@ Como o DNS já está na Netlify, ela configura sozinha, inclusive o HTTPS.
 
 **Resultado final:**
 
-| Endereço | O que é |
-|---|---|
-| `propto.com.br` | site de vendas — o que o corretor vê antes de assinar |
-| `imoveis.propto.com.br/i/...` | o anúncio — o que o comprador vê |
+| Endereço                      | O que é                                               |
+| ----------------------------- | ----------------------------------------------------- |
+| `propto.com.br`               | site de vendas — o que o corretor vê antes de assinar |
+| `imoveis.propto.com.br/i/...` | o anúncio — o que o comprador vê                      |
 
 > Depois dá para unificar tudo em `propto.com.br/i/...` com três linhas de
 > configuração. Deixei separado agora porque é o que sobe hoje sem risco.
@@ -302,6 +303,7 @@ Como o DNS já está na Netlify, ela configura sozinha, inclusive o HTTPS.
 > está rodando**, então por enquanto a foto vai ao ar como está.
 >
 > Em cada foto, olhe:
+>
 > - pessoa reconhecível — inclusive **você refletido no espelho do banheiro**,
 >   que é o caso mais comum e o mais esquecido
 > - placa de carro legível
@@ -356,30 +358,30 @@ Se os cinco passos funcionarem, o sistema está no ar.
 
 ## Depois: o que vem e quanto custa
 
-| Quando | O quê | Custo/mês |
-|---|---|---|
-| Hoje | Site + anúncios + leads | R$ 0 |
-| Quando eu terminar o painel | Login, gravar, fotografar, publicar sozinho | R$ 0 |
-| Quando ligar a IA | Transcrição e redação do anúncio | ~US$ 5–20 de API |
-| Quando ligar o tratamento de foto | Blur de rosto e placa automático | ~US$ 5 de servidor |
-| Quando tiver cliente pagando | Supabase Pro, com backup diário | US$ 25 |
+| Quando                            | O quê                                       | Custo/mês          |
+| --------------------------------- | ------------------------------------------- | ------------------ |
+| Hoje                              | Site + anúncios + leads                     | R$ 0               |
+| Quando eu terminar o painel       | Login, gravar, fotografar, publicar sozinho | R$ 0               |
+| Quando ligar a IA                 | Transcrição e redação do anúncio            | ~US$ 5–20 de API   |
+| Quando ligar o tratamento de foto | Blur de rosto e placa automático            | ~US$ 5 de servidor |
+| Quando tiver cliente pagando      | Supabase Pro, com backup diário             | US$ 25             |
 
 Enquanto forem só você e sua esposa testando, o plano gratuito do Supabase dá
 conta. Ele pausa o projeto depois de 7 dias sem acesso — se isso acontecer,
-basta abrir o painel e clicar em *Restore*.
+basta abrir o painel e clicar em _Restore_.
 
 ---
 
 ## Quando algo der errado
 
-| Sintoma | Causa provável |
-|---|---|
-| O SQL da Parte 2.2 para no meio | Copiou o arquivo pela metade. Ctrl+A antes de copiar. |
-| "Database error creating new user" | Rode de novo o `00_estrutura_completa.sql` — o gatilho que cria a organização não foi criado. |
-| A vitrine abre vazia | Nenhum imóvel publicado ainda, ou a `PUBLIC_DB_URL` está errada. Veja *Functions → logs* na Netlify. |
-| "password authentication failed" | O usuário na string de conexão tem que ser `propto_public.SEUPROJETO`, com o código do projeto. |
-| O anúncio abre sem foto | Confira o `NEXT_PUBLIC_STORAGE_URL` e se o bucket `public` está marcado como público. |
-| Build da Netlify falha | Confira *Base directory* = `apps/web`. |
+| Sintoma                            | Causa provável                                                                                       |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| O SQL da Parte 2.2 para no meio    | Copiou o arquivo pela metade. Ctrl+A antes de copiar.                                                |
+| "Database error creating new user" | Rode de novo o `00_estrutura_completa.sql` — o gatilho que cria a organização não foi criado.        |
+| A vitrine abre vazia               | Nenhum imóvel publicado ainda, ou a `PUBLIC_DB_URL` está errada. Veja _Functions → logs_ na Netlify. |
+| "password authentication failed"   | O usuário na string de conexão tem que ser `propto_public.SEUPROJETO`, com o código do projeto.      |
+| O anúncio abre sem foto            | Confira o `NEXT_PUBLIC_STORAGE_URL` e se o bucket `public` está marcado como público.                |
+| Build da Netlify falha             | Confira _Base directory_ = `apps/web`.                                                               |
 
 Em qualquer um deles: copie a mensagem inteira e me mande. Não remende no
 escuro — quase sempre é uma linha, e adivinhar custa mais caro que perguntar.

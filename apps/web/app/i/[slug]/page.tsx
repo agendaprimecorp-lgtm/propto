@@ -1,9 +1,19 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
-  getProperty, getMedia, money, area, mediaUrl, placeholderGradient, whatsappLink,
-  safeJsonLd, TYPE_LABEL, ROOM_LABEL, DEED_LABEL,
-  type PublicProperty, type PublicMedia,
+  getProperty,
+  getMedia,
+  money,
+  area,
+  mediaUrl,
+  placeholderGradient,
+  whatsappLink,
+  safeJsonLd,
+  TYPE_LABEL,
+  ROOM_LABEL,
+  DEED_LABEL,
+  type PublicProperty,
+  type PublicMedia,
 } from '@/lib/property';
 import { CONSENT_TEXT, CONSENT_VERSION } from '@/lib/consent';
 import { Logo } from '@/components/Logo';
@@ -21,9 +31,7 @@ function heading(p: PublicProperty): string {
 }
 
 function local(p: PublicProperty): string {
-  return [p.public_address, p.neighborhood, `${p.city} — ${p.state}`]
-    .filter(Boolean)
-    .join(' · ');
+  return [p.public_address, p.neighborhood, `${p.city} — ${p.state}`].filter(Boolean).join(' · ');
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -34,8 +42,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: heading(p),
     description:
-      p.description?.slice(0, 180) ??
-      `${heading(p)} — ${local(p)}${preco ? `. ${preco}.` : ''}`,
+      p.description?.slice(0, 180) ?? `${heading(p)} — ${local(p)}${preco ? `. ${preco}.` : ''}`,
     alternates: { canonical: `/i/${p.slug}` },
     openGraph: { title: heading(p), description: local(p), type: 'article' },
     // Anúncio vendido sai do ar; enquanto está no ar, deve ser indexado.
@@ -77,7 +84,9 @@ function Gallery({ media, alt }: { media: PublicMedia[]; alt: string }) {
             )}
             {legenda && <figcaption>{legenda}</figcaption>}
             {i === mostradas.length - 1 && resto > 0 && (
-              <span className="more">+{resto} foto{resto > 1 ? 's' : ''}</span>
+              <span className="more">
+                +{resto} foto{resto > 1 ? 's' : ''}
+              </span>
             )}
           </figure>
         );
@@ -144,10 +153,7 @@ export default async function PropertyPage({ params }: Params) {
   return (
     <>
       <Track slug={p.slug} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
 
       <header className="public-top">
         <div className="wrap row">
@@ -227,7 +233,10 @@ export default async function PropertyPage({ params }: Params) {
           <Fact label="Ano de construção" value={p.year_built ? String(p.year_built) : null} />
           <Fact label="Condomínio" value={money(p.condo_fee)} />
           <Fact label="IPTU (ano)" value={money(p.iptu_year)} />
-          <Fact label="Documentação" value={p.deed_status ? (DEED_LABEL[p.deed_status] ?? null) : null} />
+          <Fact
+            label="Documentação"
+            value={p.deed_status ? (DEED_LABEL[p.deed_status] ?? null) : null}
+          />
         </div>
 
         <div className="broker">
@@ -254,9 +263,9 @@ export default async function PropertyPage({ params }: Params) {
 
         <p className="legal">
           Anúncio publicado por {p.broker_name ?? p.org_name ?? 'corretor'} sob responsabilidade do
-          CRECI informado. Valores e características podem mudar sem aviso; confirme antes de
-          fechar negócio. Seus dados são usados apenas para o retorno sobre este anúncio, conforme
-          a Lei 13.709/2018. Página gerada pelo Propto.
+          CRECI informado. Valores e características podem mudar sem aviso; confirme antes de fechar
+          negócio. Seus dados são usados apenas para o retorno sobre este anúncio, conforme a Lei
+          13.709/2018. Página gerada pelo Propto.
         </p>
       </main>
 
@@ -266,7 +275,13 @@ export default async function PropertyPage({ params }: Params) {
           <div className="r">{p.reference_code}</div>
         </div>
         {wa ? (
-          <a className="btn wa" href={wa} target="_blank" rel="noopener" data-track="whatsapp_click">
+          <a
+            className="btn wa"
+            href={wa}
+            target="_blank"
+            rel="noopener"
+            data-track="whatsapp_click"
+          >
             Falar no WhatsApp
           </a>
         ) : (

@@ -11,7 +11,12 @@ export const dynamic = 'force-dynamic';
 const EVENTOS = new Set(['view', 'whatsapp_click', 'phone_click', 'gallery_open', 'share']);
 
 export async function POST(req: Request) {
-  let corpo: { slug?: string; event?: string; referrer?: string | null; utm?: Record<string, string> };
+  let corpo: {
+    slug?: string;
+    event?: string;
+    referrer?: string | null;
+    utm?: Record<string, string>;
+  };
   try {
     corpo = await req.json();
   } catch {

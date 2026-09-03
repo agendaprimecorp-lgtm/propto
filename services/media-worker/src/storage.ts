@@ -14,7 +14,9 @@ export interface Storage {
 
 export class MemoryStorage implements Storage {
   private files = new Map<string, Buffer>();
-  private key(bucket: string, path: string) { return `${bucket}/${path}`; }
+  private key(bucket: string, path: string) {
+    return `${bucket}/${path}`;
+  }
 
   async get(bucket: string, path: string): Promise<Buffer> {
     const f = this.files.get(this.key(bucket, path));
@@ -27,12 +29,16 @@ export class MemoryStorage implements Storage {
   async exists(bucket: string, path: string): Promise<boolean> {
     return this.files.has(this.key(bucket, path));
   }
-  list(): string[] { return [...this.files.keys()].sort(); }
+  list(): string[] {
+    return [...this.files.keys()].sort();
+  }
 }
 
 export class FileStorage implements Storage {
   constructor(private readonly root: string) {}
-  private full(bucket: string, path: string) { return join(this.root, bucket, path); }
+  private full(bucket: string, path: string) {
+    return join(this.root, bucket, path);
+  }
 
   async get(bucket: string, path: string): Promise<Buffer> {
     return readFile(this.full(bucket, path));
@@ -43,7 +49,12 @@ export class FileStorage implements Storage {
     await writeFile(target, data);
   }
   async exists(bucket: string, path: string): Promise<boolean> {
-    try { await readFile(this.full(bucket, path)); return true; } catch { return false; }
+    try {
+      await readFile(this.full(bucket, path));
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
 
@@ -70,7 +81,12 @@ export class SupabaseStorage implements Storage {
     return Buffer.from(await res.arrayBuffer());
   }
 
-  async put(bucket: string, path: string, data: Buffer, contentType = 'application/octet-stream'): Promise<void> {
+  async put(
+    bucket: string,
+    path: string,
+    data: Buffer,
+    contentType = 'application/octet-stream',
+  ): Promise<void> {
     const res = await fetch(`${this.url}/storage/v1/object/${bucket}/${path}`, {
       method: 'POST',
       headers: this.headers({ 'content-type': contentType, 'x-upsert': 'true' }),
@@ -83,7 +99,8 @@ export class SupabaseStorage implements Storage {
 
   async exists(bucket: string, path: string): Promise<boolean> {
     const res = await fetch(`${this.url}/storage/v1/object/info/${bucket}/${path}`, {
-      method: 'HEAD', headers: this.headers(),
+      method: 'HEAD',
+      headers: this.headers(),
     });
     return res.ok;
   }

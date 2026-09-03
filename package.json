@@ -29,8 +29,8 @@
     "db:diff": "supabase db diff -f",
     "db:types": "supabase gen types typescript --local > packages/types/src/database.ts",
     "clean": "turbo run clean && rm -rf node_modules",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,sql}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,sql}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,json,md}\"",
     "prepare": "husky",
     "db:seed": "psql \"$SUPABASE_DB_URL\" -f supabase/seed/seed_dev.sql",
     "check:schema": "node scripts/check-rls-coverage.mjs && node scripts/check-transition-parity.mjs",
@@ -52,7 +52,7 @@
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
-    "supabase": "^1.200.0",
+    "supabase": "^2.34.3",
     "turbo": "^2.1.3",
     "typescript": "^5.6.3",
     "vitest": "^3.2.6"
@@ -62,7 +62,7 @@
       "eslint --fix",
       "prettier --write"
     ],
-    "*.{json,md,sql}": [
+    "*.{json,md}": [
       "prettier --write"
     ]
   },

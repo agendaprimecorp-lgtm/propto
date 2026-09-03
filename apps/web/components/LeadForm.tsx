@@ -9,7 +9,11 @@ interface Props {
   consentVersion: string;
 }
 
-type Estado = { tipo: 'parado' } | { tipo: 'enviando' } | { tipo: 'ok' } | { tipo: 'erro'; msg: string };
+type Estado =
+  | { tipo: 'parado' }
+  | { tipo: 'enviando' }
+  | { tipo: 'ok' }
+  | { tipo: 'erro'; msg: string };
 
 /** Máscara leve: o visitante digita como quiser, o servidor recebe E.164. */
 function telefoneE164(entrada: string): string | null {
@@ -39,7 +43,10 @@ export function LeadForm({ slug, whatsapp, consentText, consentVersion }: Props)
     if (!phone && !email)
       return setEstado({ tipo: 'erro', msg: 'Informe um telefone ou um e-mail para o retorno.' });
     if (!consent)
-      return setEstado({ tipo: 'erro', msg: 'Marque a autorização para o corretor entrar em contato.' });
+      return setEstado({
+        tipo: 'erro',
+        msg: 'Marque a autorização para o corretor entrar em contato.',
+      });
 
     setEstado({ tipo: 'enviando' });
     try {
@@ -76,7 +83,13 @@ export function LeadForm({ slug, whatsapp, consentText, consentVersion }: Props)
           Mensagem enviada. O corretor responsável recebeu seu contato e retorna em breve.
         </p>
         {whatsapp && (
-          <a className="btn wa" href={whatsapp} target="_blank" rel="noopener" data-track="whatsapp_click">
+          <a
+            className="btn wa"
+            href={whatsapp}
+            target="_blank"
+            rel="noopener"
+            data-track="whatsapp_click"
+          >
             Falar agora no WhatsApp
           </a>
         )}
@@ -92,7 +105,13 @@ export function LeadForm({ slug, whatsapp, consentText, consentVersion }: Props)
       </div>
       <div className="field">
         <label htmlFor="lf-phone">WhatsApp</label>
-        <input id="lf-phone" name="phone" inputMode="tel" autoComplete="tel" placeholder="(19) 99999-0000" />
+        <input
+          id="lf-phone"
+          name="phone"
+          inputMode="tel"
+          autoComplete="tel"
+          placeholder="(19) 99999-0000"
+        />
       </div>
       <div className="field">
         <label htmlFor="lf-email">E-mail (opcional)</label>
@@ -125,7 +144,13 @@ export function LeadForm({ slug, whatsapp, consentText, consentVersion }: Props)
           {estado.tipo === 'enviando' ? 'Enviando…' : 'Enviar mensagem'}
         </button>
         {whatsapp && (
-          <a className="btn wa" href={whatsapp} target="_blank" rel="noopener" data-track="whatsapp_click">
+          <a
+            className="btn wa"
+            href={whatsapp}
+            target="_blank"
+            rel="noopener"
+            data-track="whatsapp_click"
+          >
             WhatsApp
           </a>
         )}

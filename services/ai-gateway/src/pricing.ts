@@ -23,19 +23,24 @@ export interface ModelPrice {
 }
 
 const TABLE: Record<string, ModelPrice> = {
-  'whisper-1':               { inPerM: 0,    outPerM: 0,    perAudioMinute: 0.006 },
-  'gpt-4.1':                 { inPerM: 2.0,  outPerM: 8.0 },
-  'gpt-4.1-mini':            { inPerM: 0.4,  outPerM: 1.6 },
-  'text-embedding-3-small':  { inPerM: 0.02, outPerM: 0 },
-  'claude-sonnet-4-5':       { inPerM: 3.0,  outPerM: 15.0 },
-  'gemini-2.0-flash':        { inPerM: 0.1,  outPerM: 0.4, perImage: 0.0002 },
-  'text-embedding-004':      { inPerM: 0,    outPerM: 0 },
+  'whisper-1': { inPerM: 0, outPerM: 0, perAudioMinute: 0.006 },
+  'gpt-4.1': { inPerM: 2.0, outPerM: 8.0 },
+  'gpt-4.1-mini': { inPerM: 0.4, outPerM: 1.6 },
+  'text-embedding-3-small': { inPerM: 0.02, outPerM: 0 },
+  'claude-sonnet-4-5': { inPerM: 3.0, outPerM: 15.0 },
+  'gemini-2.0-flash': { inPerM: 0.1, outPerM: 0.4, perImage: 0.0002 },
+  'text-embedding-004': { inPerM: 0, outPerM: 0 },
   'anthropic/claude-sonnet-4.5': { inPerM: 3.3, outPerM: 16.5 },
-  mock:                      { inPerM: 1.0,  outPerM: 2.0, perAudioMinute: 0.01, perImage: 0.001 },
+  mock: { inPerM: 1.0, outPerM: 2.0, perAudioMinute: 0.01, perImage: 0.001 },
 };
 
 /** Modelo desconhecido não custa zero — custa a média, para não sumir do painel. */
-const FALLBACK_PRICE: ModelPrice = { inPerM: 3.0, outPerM: 15.0, perAudioMinute: 0.006, perImage: 0.001 };
+const FALLBACK_PRICE: ModelPrice = {
+  inPerM: 3.0,
+  outPerM: 15.0,
+  perAudioMinute: 0.006,
+  perImage: 0.001,
+};
 
 export function priceOf(model: string): ModelPrice {
   return TABLE[model] ?? FALLBACK_PRICE;
@@ -43,7 +48,8 @@ export function priceOf(model: string): ModelPrice {
 
 export function costUsd(model: string, usage: Usage): number {
   const p = priceOf(model);
-  const tokens = (usage.tokensIn / 1_000_000) * p.inPerM + (usage.tokensOut / 1_000_000) * p.outPerM;
+  const tokens =
+    (usage.tokensIn / 1_000_000) * p.inPerM + (usage.tokensOut / 1_000_000) * p.outPerM;
   const audio = ((usage.audioSeconds ?? 0) / 60) * (p.perAudioMinute ?? 0);
   const images = (usage.images ?? 0) * (p.perImage ?? 0);
   return round6(tokens + audio + images);

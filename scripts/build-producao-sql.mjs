@@ -19,7 +19,9 @@ const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dirMig = join(raiz, 'supabase', 'migrations');
 const saida = join(raiz, 'supabase', 'producao');
 
-const migrations = readdirSync(dirMig).filter((f) => f.endsWith('.sql')).sort();
+const migrations = readdirSync(dirMig)
+  .filter((f) => f.endsWith('.sql'))
+  .sort();
 if (migrations.length === 0) {
   console.error('Nenhuma migration encontrada em supabase/migrations.');
   process.exit(1);

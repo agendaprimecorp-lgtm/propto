@@ -13,8 +13,8 @@ export default function NotFound() {
       <main className="sheet" style={{ paddingTop: 60 }}>
         <h1 style={{ fontSize: 28 }}>Este anúncio não está no ar</h1>
         <p className="lead" style={{ marginTop: 12 }}>
-          O imóvel pode ter sido vendido, alugado ou retirado pelo corretor. O link continua o
-          mesmo se ele voltar a ser publicado.
+          O imóvel pode ter sido vendido, alugado ou retirado pelo corretor. O link continua o mesmo
+          se ele voltar a ser publicado.
         </p>
         <p style={{ marginTop: 24 }}>
           <a className="btn primary" href="/">

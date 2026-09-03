@@ -1,11 +1,19 @@
-import { listProperties, getCovers, money, mediaUrl, placeholderGradient, TYPE_LABEL } from '@/lib/property';
+import {
+  listProperties,
+  getCovers,
+  money,
+  mediaUrl,
+  placeholderGradient,
+  TYPE_LABEL,
+} from '@/lib/property';
 import { Logo } from '@/components/Logo';
 
 export const revalidate = 300;
 
 export const metadata = {
   title: 'Imóveis publicados',
-  description: 'Anúncios publicados com o Propto: fotos tratadas, ficha conferida e corretor responsável identificado.',
+  description:
+    'Anúncios publicados com o Propto: fotos tratadas, ficha conferida e corretor responsável identificado.',
 };
 
 export default async function Home() {
@@ -45,7 +53,8 @@ export default async function Home() {
                 const capa = capas.get(p.id);
                 const url = capa ? mediaUrl(capa.path) : null;
                 const titulo =
-                  p.title?.trim() || `${TYPE_LABEL[p.type] ?? 'Imóvel'} em ${p.neighborhood ?? p.city}`;
+                  p.title?.trim() ||
+                  `${TYPE_LABEL[p.type] ?? 'Imóvel'} em ${p.neighborhood ?? p.city}`;
                 return (
                   <a className="pcard" key={p.id} href={`/i/${p.slug}`}>
                     <div className="thumb">
@@ -63,7 +72,9 @@ export default async function Home() {
                       )}
                     </div>
                     <div className="body">
-                      <div className="pr">{money(p.price) ?? money(p.rent_price) ?? 'Sob consulta'}</div>
+                      <div className="pr">
+                        {money(p.price) ?? money(p.rent_price) ?? 'Sob consulta'}
+                      </div>
                       <div className="ti">{titulo}</div>
                       <div className="lo">
                         {[p.neighborhood, p.city].filter(Boolean).join(', ')} — {p.state}

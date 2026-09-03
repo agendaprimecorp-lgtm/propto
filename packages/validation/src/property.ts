@@ -12,14 +12,32 @@ import { UF, PhoneBR } from './organization';
  */
 
 export const PropertyStatus = z.enum([
-  'rascunho', 'em_processamento', 'revisao', 'publicado', 'pausado', 'vendido', 'arquivado',
+  'rascunho',
+  'em_processamento',
+  'revisao',
+  'publicado',
+  'pausado',
+  'vendido',
+  'arquivado',
 ]);
 
 export const PropertyPurpose = z.enum(['venda', 'locacao', 'venda_locacao']);
 
 export const PropertyType = z.enum([
-  'apartamento', 'casa', 'casa_condominio', 'terreno', 'chacara', 'sitio', 'fazenda',
-  'sala_comercial', 'loja', 'galpao', 'predio', 'cobertura', 'flat', 'outro',
+  'apartamento',
+  'casa',
+  'casa_condominio',
+  'terreno',
+  'chacara',
+  'sitio',
+  'fazenda',
+  'sala_comercial',
+  'loja',
+  'galpao',
+  'predio',
+  'cobertura',
+  'flat',
+  'outro',
 ]);
 
 export const AddressPrivacy = z.enum(['exato', 'rua', 'bairro']);
@@ -94,10 +112,10 @@ export const PropertySchema = z.object({
 /** Regras cruzadas — as mesmas que o banco impõe, para falhar antes da ida ao servidor. */
 const crossFieldRules = <T extends z.ZodTypeAny>(schema: T) =>
   schema
-    .refine(
-      (p: any) => p.suites == null || p.bedrooms == null || p.suites <= p.bedrooms,
-      { message: 'O número de suítes não pode passar o de dormitórios.', path: ['suites'] },
-    )
+    .refine((p: any) => p.suites == null || p.bedrooms == null || p.suites <= p.bedrooms, {
+      message: 'O número de suítes não pode passar o de dormitórios.',
+      path: ['suites'],
+    })
     .refine(
       (p: any) => p.area_useful == null || p.area_total == null || p.area_useful <= p.area_total,
       { message: 'A área útil não pode ser maior que a área total.', path: ['area_useful'] },
@@ -109,16 +127,28 @@ const crossFieldRules = <T extends z.ZodTypeAny>(schema: T) =>
 
 /** Campos que o cliente pode escrever. O resto é do servidor. */
 export const PropertyWritableSchema = PropertySchema.omit({
-  id: true, org_id: true, reference_code: true, status: true, slug: true,
-  published_at: true, published_by: true, cover_media_id: true,
-  ai_generated: true, ai_confidence: true,
-  created_at: true, updated_at: true, deleted_at: true,
+  id: true,
+  org_id: true,
+  reference_code: true,
+  status: true,
+  slug: true,
+  published_at: true,
+  published_by: true,
+  cover_media_id: true,
+  ai_generated: true,
+  ai_confidence: true,
+  created_at: true,
+  updated_at: true,
+  deleted_at: true,
 });
 
 /** Criar: obrigatórios finalidade, tipo, cidade e UF; o restante entra aos poucos. */
 export const PropertyCreateSchema = crossFieldRules(
   PropertyWritableSchema.partial().required({
-    purpose: true, type: true, city: true, state: true,
+    purpose: true,
+    type: true,
+    city: true,
+    state: true,
   }),
 );
 
@@ -131,10 +161,20 @@ export const PropertyUpdateSchema = crossFieldRules(PropertyWritableSchema.parti
  * diz ao corretor o que falta, campo a campo.
  */
 export const PropertyPublishableSchema = PropertySchema.superRefine((p, ctx) => {
-  if (!p.title) ctx.addIssue({ code: 'custom', path: ['title'], message: 'Dê um título ao anúncio.' });
-  if (!p.description) ctx.addIssue({ code: 'custom', path: ['description'], message: 'Escreva a descrição do imóvel.' });
+  if (!p.title)
+    ctx.addIssue({ code: 'custom', path: ['title'], message: 'Dê um título ao anúncio.' });
+  if (!p.description)
+    ctx.addIssue({
+      code: 'custom',
+      path: ['description'],
+      message: 'Escreva a descrição do imóvel.',
+    });
   if (p.price == null && p.rent_price == null)
-    ctx.addIssue({ code: 'custom', path: ['price'], message: 'Informe o preço de venda ou o valor do aluguel.' });
+    ctx.addIssue({
+      code: 'custom',
+      path: ['price'],
+      message: 'Informe o preço de venda ou o valor do aluguel.',
+    });
 });
 
 export const PropertyOwnerSchema = z.object({

@@ -738,19 +738,19 @@ select org_id, date_trunc('month', created_at) as month,
 
 ## 15. Ordem das migrations
 
-| # | Arquivo | Sprint |
-|---|---|---|
-| 0001 | `extensions_and_helpers.sql` | 0 ✅ |
-| 0002 | `organizations_profiles_memberships.sql` + RLS + `handle_new_user` | 1 ✅ |
-| 0003 | `properties_features_owners.sql` + `audit_log` + RLS + busca + máquina de estados | 2 ✅ |
-| 0004 | `ai_jobs_and_usage.sql` — fila, custo e orçamento + RLS | 3 ✅ |
-| 0005 | `capture_sessions_transcriptions_drafts.sql` + RLS + `create_property_from_draft` | 3 ✅ |
-| 0006 | `property_media_and_storage.sql` + RLS + permissão por coluna + buckets | 4 ✅ |
-| 0007 | `listings_public_view_property_views.sql` | 5 (parcial: `listings`) / 6 (completa) |
-| 0008 | `contacts_deals_activities_tasks.sql` + RLS | 7 |
-| 0009 | `buyer_requirements_embeddings_matches.sql` + HNSW | 8 |
-| 0010 | `subscriptions_analytics.sql` (`audit_log` foi antecipada para 0003) | 6 |
-| — | `supabase/seed/seed_dev.sql` — seed, não migration (somente local/staging) | 0 |
+| #    | Arquivo                                                                           | Sprint                                 |
+| ---- | --------------------------------------------------------------------------------- | -------------------------------------- |
+| 0001 | `extensions_and_helpers.sql`                                                      | 0 ✅                                   |
+| 0002 | `organizations_profiles_memberships.sql` + RLS + `handle_new_user`                | 1 ✅                                   |
+| 0003 | `properties_features_owners.sql` + `audit_log` + RLS + busca + máquina de estados | 2 ✅                                   |
+| 0004 | `ai_jobs_and_usage.sql` — fila, custo e orçamento + RLS                           | 3 ✅                                   |
+| 0005 | `capture_sessions_transcriptions_drafts.sql` + RLS + `create_property_from_draft` | 3 ✅                                   |
+| 0006 | `property_media_and_storage.sql` + RLS + permissão por coluna + buckets           | 4 ✅                                   |
+| 0007 | `listings_public_view_property_views.sql`                                         | 5 (parcial: `listings`) / 6 (completa) |
+| 0008 | `contacts_deals_activities_tasks.sql` + RLS                                       | 7                                      |
+| 0009 | `buyer_requirements_embeddings_matches.sql` + HNSW                                | 8                                      |
+| 0010 | `subscriptions_analytics.sql` (`audit_log` foi antecipada para 0003)              | 6                                      |
+| —    | `supabase/seed/seed_dev.sql` — seed, não migration (somente local/staging)        | 0                                      |
 
 ## 16. Seed de desenvolvimento
 

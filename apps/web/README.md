@@ -10,11 +10,11 @@ parte do Propto aberta à internet, então tudo aqui parte de uma pergunta:
 O app não conecta como `postgres` nem com a `service_role`. Conecta com o papel
 `propto_public`, criado na migration `0007`, que tem exatamente:
 
-| Permissão | Objeto |
-|---|---|
-| `select` | `public_properties`, `public_property_media` (views `security_invoker = off`) |
-| `execute` | `record_property_event`, `submit_lead` |
-| nada | `properties`, `property_media`, `property_owners`, `contacts`, `property_views`, `organizations`, `profiles` |
+| Permissão | Objeto                                                                                                       |
+| --------- | ------------------------------------------------------------------------------------------------------------ |
+| `select`  | `public_properties`, `public_property_media` (views `security_invoker = off`)                                |
+| `execute` | `record_property_event`, `submit_lead`                                                                       |
+| nada      | `properties`, `property_media`, `property_owners`, `contacts`, `property_views`, `organizations`, `profiles` |
 
 Isso é verificado, não presumido: `tests/rls/sql/050_public.sql` tenta ler cada
 uma dessas tabelas como anônimo e falha o teste se **conseguir**.
@@ -41,14 +41,14 @@ Outras decisões que valem explicar:
 
 ## Rotas
 
-| Rota | O que é |
-|---|---|
-| `/` | vitrine dos imóveis publicados (ISR, 5 min) |
-| `/i/[slug]` | a página do imóvel (ISR, 5 min) |
-| `/i/[slug]/opengraph-image` | cartão 1200×630 para WhatsApp e redes |
-| `/api/event` | registra visita e clique — responde `204`, sem corpo |
-| `/api/lead` | recebe a mensagem do interessado |
-| `/sitemap.xml`, `/robots.txt` | gerados a partir do banco |
+| Rota                          | O que é                                              |
+| ----------------------------- | ---------------------------------------------------- |
+| `/`                           | vitrine dos imóveis publicados (ISR, 5 min)          |
+| `/i/[slug]`                   | a página do imóvel (ISR, 5 min)                      |
+| `/i/[slug]/opengraph-image`   | cartão 1200×630 para WhatsApp e redes                |
+| `/api/event`                  | registra visita e clique — responde `204`, sem corpo |
+| `/api/lead`                   | recebe a mensagem do interessado                     |
+| `/sitemap.xml`, `/robots.txt` | gerados a partir do banco                            |
 
 ## Rodar
 

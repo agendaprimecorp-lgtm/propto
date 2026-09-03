@@ -57,7 +57,16 @@ function runWorker(id) {
   return new Promise((resolve) => {
     const p = spawn(
       'psql',
-      [DB_URL, '-v', 'ON_ERROR_STOP=1', '-q', '-v', `worker=w${id}`, '-f', join(SQL_DIR, 'worker.sql')],
+      [
+        DB_URL,
+        '-v',
+        'ON_ERROR_STOP=1',
+        '-q',
+        '-v',
+        `worker=w${id}`,
+        '-f',
+        join(SQL_DIR, 'worker.sql'),
+      ],
       { env: PSQL_ENV },
     );
     let out = '';
@@ -82,9 +91,7 @@ runSync(['-f', join(SQL_DIR, '000_setup.sql')], '000_setup.sql');
 
 console.log(`▸ soltando ${WORKERS} workers ao mesmo tempo`);
 const started = Date.now();
-const results = await Promise.all(
-  Array.from({ length: WORKERS }, (_, i) => runWorker(i + 1)),
-);
+const results = await Promise.all(Array.from({ length: WORKERS }, (_, i) => runWorker(i + 1)));
 const elapsed = Date.now() - started;
 
 const failed = results.filter((r) => r.code !== 0);

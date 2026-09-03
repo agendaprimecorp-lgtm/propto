@@ -24,13 +24,13 @@ SUPABASE_DB_URL=postgresql://... pnpm test:queue
 
 **Comportamento** (`800_behavior.sql`)
 
-| Área | Assertivas |
-|---|---|
-| Idempotência | mesma chave devolve o job existente; a unicidade é por organização |
-| Orçamento | gasto acumulado pelo banco; corte ao esgotar; corte não vaza para outra organização |
-| Falha | backoff empurra `run_after`; `dead_letter` ao esgotar tentativas; job em `dead_letter` não volta |
-| Lock órfão | worker morto devolve o job; worker vivo não é interrompido |
-| Permissões | cliente não insere nem altera `ai_jobs`; não executa funções de worker; corretor não lê custo; anônimo não lê nada |
+| Área         | Assertivas                                                                                                         |
+| ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| Idempotência | mesma chave devolve o job existente; a unicidade é por organização                                                 |
+| Orçamento    | gasto acumulado pelo banco; corte ao esgotar; corte não vaza para outra organização                                |
+| Falha        | backoff empurra `run_after`; `dead_letter` ao esgotar tentativas; job em `dead_letter` não volta                   |
+| Lock órfão   | worker morto devolve o job; worker vivo não é interrompido                                                         |
+| Permissões   | cliente não insere nem altera `ai_jobs`; não executa funções de worker; corretor não lê custo; anônimo não lê nada |
 
 ## Verifique que o teste testa
 
@@ -52,10 +52,10 @@ Se passar, o teste está mentindo.
 
 ## Arquivos
 
-| Arquivo | Conteúdo |
-|---|---|
-| `run.mjs` | Orquestrador — comportamento, preparo, workers concorrentes, verificação, limpeza |
-| `sql/800_behavior.sql` | Idempotência, orçamento, `dead_letter`, lock órfão, RLS (com rollback) |
-| `sql/000_setup.sql` | 200 jobs e o sinal de largada |
-| `sql/worker.sql` | Um worker: reserva, processa, falha 1 em cada 10 |
-| `sql/900_assert.sql` | Verificação após a disputa |
+| Arquivo                | Conteúdo                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| `run.mjs`              | Orquestrador — comportamento, preparo, workers concorrentes, verificação, limpeza |
+| `sql/800_behavior.sql` | Idempotência, orçamento, `dead_letter`, lock órfão, RLS (com rollback)            |
+| `sql/000_setup.sql`    | 200 jobs e o sinal de largada                                                     |
+| `sql/worker.sql`       | Um worker: reserva, processa, falha 1 em cada 10                                  |
+| `sql/900_assert.sql`   | Verificação após a disputa                                                        |

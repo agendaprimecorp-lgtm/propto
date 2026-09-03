@@ -7,18 +7,18 @@
 
 ## 1. Modelo de ameaças — o que realmente pode dar errado
 
-| # | Ameaça | Probabilidade | Impacto | Prioridade |
-|---|---|---|---|---|
-| T1 | Corretor A enxerga a carteira do corretor B (falha de RLS) | Média | **Fatal para o produto** | P0 |
-| T2 | Dado de proprietário (nome, CPF, telefone) vaza por rota pública | Média | Alto — sanção LGPD | P0 |
-| T3 | IA gera afirmação falsa sobre o imóvel e é publicada | **Alta** | Alto — CDC, CRECI, ação do comprador | P0 |
-| T4 | Foto publicada com rosto de terceiro ou placa de veículo | Alta | Médio-alto — direito de imagem | P0 |
-| T5 | Chave de provedor de IA vaza no bundle do app | Média | Alto — prejuízo financeiro direto | P0 |
-| T6 | Abuso do formulário público (spam/enumeração de imóveis) | Alta | Médio | P1 |
-| T7 | Storage com bucket público por engano | Média | Alto | P1 |
-| T8 | Prompt injection via texto de descrição ou nome de contato | Média | Médio | P1 |
-| T9 | Estouro de custo de IA por loop de retry | Média | Médio | P1 |
-| T10 | Áudio de captura retido além do necessário | Alta | Médio — LGPD, minimização | P2 |
+| #   | Ameaça                                                           | Probabilidade | Impacto                              | Prioridade |
+| --- | ---------------------------------------------------------------- | ------------- | ------------------------------------ | ---------- |
+| T1  | Corretor A enxerga a carteira do corretor B (falha de RLS)       | Média         | **Fatal para o produto**             | P0         |
+| T2  | Dado de proprietário (nome, CPF, telefone) vaza por rota pública | Média         | Alto — sanção LGPD                   | P0         |
+| T3  | IA gera afirmação falsa sobre o imóvel e é publicada             | **Alta**      | Alto — CDC, CRECI, ação do comprador | P0         |
+| T4  | Foto publicada com rosto de terceiro ou placa de veículo         | Alta          | Médio-alto — direito de imagem       | P0         |
+| T5  | Chave de provedor de IA vaza no bundle do app                    | Média         | Alto — prejuízo financeiro direto    | P0         |
+| T6  | Abuso do formulário público (spam/enumeração de imóveis)         | Alta          | Médio                                | P1         |
+| T7  | Storage com bucket público por engano                            | Média         | Alto                                 | P1         |
+| T8  | Prompt injection via texto de descrição ou nome de contato       | Média         | Médio                                | P1         |
+| T9  | Estouro de custo de IA por loop de retry                         | Média         | Médio                                | P1         |
+| T10 | Áudio de captura retido além do necessário                       | Alta          | Médio — LGPD, minimização            | P2         |
 
 ## 2. Autenticação e sessão
 
@@ -31,12 +31,12 @@
 
 ### Papéis
 
-| Papel | Ler | Criar/editar imóvel | Publicar | Ver proprietário | Billing | Excluir org |
-|---|---|---|---|---|---|---|
-| `owner` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `admin` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| `corretor` | ✅ | ✅ | ✅ | ✅ (toda a org) | ❌ | ❌ |
-| `assistente` | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Papel        | Ler | Criar/editar imóvel | Publicar | Ver proprietário | Billing | Excluir org |
+| ------------ | --- | ------------------- | -------- | ---------------- | ------- | ----------- |
+| `owner`      | ✅  | ✅                  | ✅       | ✅               | ✅      | ✅          |
+| `admin`      | ✅  | ✅                  | ✅       | ✅               | ❌      | ❌          |
+| `corretor`   | ✅  | ✅                  | ✅       | ✅ (toda a org)  | ❌      | ❌          |
+| `assistente` | ✅  | ✅                  | ❌       | ❌               | ❌      | ❌          |
 
 ## 3. Isolamento multi-tenant (contra T1)
 
@@ -58,15 +58,15 @@ export function orgScoped(client: SupabaseClient, orgId: string) {
 
 ### Inventário e base legal
 
-| Dado | Titular | Base legal | Retenção |
-|---|---|---|---|
-| Nome, e-mail, telefone, CRECI do corretor | Usuário | Execução de contrato | Conta ativa + 5 anos (fiscal) |
-| Nome, telefone, CPF do proprietário | Terceiro | Legítimo interesse + autorização de venda | Enquanto houver autorização + 2 anos |
-| Nome, telefone, e-mail do lead | Terceiro | **Consentimento explícito** no formulário | 24 meses sem interação → expurgo |
-| Áudio da captura | Corretor / terceiros citados | Execução de contrato | **90 dias** após aplicação do rascunho (ADR-013) |
-| Transcrição | idem | idem | Enquanto o imóvel existir |
-| Foto do imóvel | Proprietário / terceiros na imagem | Autorização de venda + anonimização | Enquanto o imóvel existir |
-| `session_hash` de visita | Visitante | Legítimo interesse (métrica) | 12 meses |
+| Dado                                      | Titular                            | Base legal                                | Retenção                                         |
+| ----------------------------------------- | ---------------------------------- | ----------------------------------------- | ------------------------------------------------ |
+| Nome, e-mail, telefone, CRECI do corretor | Usuário                            | Execução de contrato                      | Conta ativa + 5 anos (fiscal)                    |
+| Nome, telefone, CPF do proprietário       | Terceiro                           | Legítimo interesse + autorização de venda | Enquanto houver autorização + 2 anos             |
+| Nome, telefone, e-mail do lead            | Terceiro                           | **Consentimento explícito** no formulário | 24 meses sem interação → expurgo                 |
+| Áudio da captura                          | Corretor / terceiros citados       | Execução de contrato                      | **90 dias** após aplicação do rascunho (ADR-013) |
+| Transcrição                               | idem                               | idem                                      | Enquanto o imóvel existir                        |
+| Foto do imóvel                            | Proprietário / terceiros na imagem | Autorização de venda + anonimização       | Enquanto o imóvel existir                        |
+| `session_hash` de visita                  | Visitante                          | Legítimo interesse (métrica)              | 12 meses                                         |
 
 ### Regras técnicas
 
@@ -78,6 +78,7 @@ export function orgScoped(client: SupabaseClient, orgId: string) {
 - **Sem dado real fora de produção.** Seed sintético em local e staging (violação disso é incidente).
 
 ### Encarregado (DPO)
+
 Rodrigo França Viana, `privacidade@primecorp.com.br`, publicado na política de privacidade da página pública.
 
 ## 5. Conteúdo gerado por IA (contra T3) — o risco mais subestimado
@@ -86,11 +87,11 @@ Descrição de imóvel é oferta. Afirmação falsa é propaganda enganosa (CDC 
 
 **Controles obrigatórios, em ordem:**
 
-1. **Aterramento estrito.** O prompt do redator recebe apenas os campos confirmados do imóvel. Instrução explícita: *"Não afirme nada que não esteja nos dados fornecidos. Se um dado estiver ausente, omita — nunca estime, nunca suponha."*
+1. **Aterramento estrito.** O prompt do redator recebe apenas os campos confirmados do imóvel. Instrução explícita: _"Não afirme nada que não esteja nos dados fornecidos. Se um dado estiver ausente, omita — nunca estime, nunca suponha."_
 2. **Lista negra de afirmações.** O agente de compliance rejeita texto contendo, sem dado de respaldo: garantia de valorização, promessa de rentabilidade, "documentação 100 % ok", "aprovado pelo banco", "melhor da região", "imperdível", "última unidade", superlativo sem base, e qualquer termo discriminatório (RF-42).
 3. **Verificação numérica programática.** Antes de liberar, um teste compara todo número presente no texto com o registro do imóvel. Divergência = bloqueio automático, não aviso.
 4. **Confirmação humana obrigatória** (ADR-010). `published_by` e `published_at` gravados.
-5. **Rodapé legal na página pública:** *"Informações fornecidas pelo anunciante e sujeitas a confirmação. Valores e condições podem sofrer alteração sem aviso prévio. Descrição gerada com auxílio de inteligência artificial e revisada pelo corretor responsável."*
+5. **Rodapé legal na página pública:** _"Informações fornecidas pelo anunciante e sujeitas a confirmação. Valores e condições podem sofrer alteração sem aviso prévio. Descrição gerada com auxílio de inteligência artificial e revisada pelo corretor responsável."_
 6. **CRECI visível** em toda página pública (Lei 6.530/1978).
 
 ## 6. Imagem e mídia (contra T4)
@@ -99,15 +100,16 @@ Descrição de imóvel é oferta. Afirmação falsa é propaganda enganosa (CDC 
 - Metadado EXIF é removido de toda imagem publicada — GPS embutido em foto revela endereço que o corretor escolheu ocultar.
 - Buckets:
 
-| Bucket | Acesso | Conteúdo |
-|---|---|---|
-| `audio` | privado, signed URL 15 min | Áudio de captura |
-| `raw` | privado | Original, nunca servido |
-| `processed` | privado, signed URL 1 h | Derivadas de trabalho |
-| `public` | público, somente leitura | Apenas mídia de imóvel publicado |
-| `docs` | privado, signed URL 5 min | CRECI, autorizações |
+| Bucket      | Acesso                     | Conteúdo                         |
+| ----------- | -------------------------- | -------------------------------- |
+| `audio`     | privado, signed URL 15 min | Áudio de captura                 |
+| `raw`       | privado                    | Original, nunca servido          |
+| `processed` | privado, signed URL 1 h    | Derivadas de trabalho            |
+| `public`    | público, somente leitura   | Apenas mídia de imóvel publicado |
+| `docs`      | privado, signed URL 5 min  | CRECI, autorizações              |
 
 Política de storage compara o **primeiro segmento do caminho** com o `org_id` do JWT:
+
 ```sql
 create policy "org owns folder" on storage.objects for all
   using ((storage.foldername(name))[1] = auth_org_id()::text);
@@ -127,15 +129,15 @@ Auditoria semanal automatizada verifica que nenhum bucket além de `public` est�
 
 ## 8. Endpoints públicos (contra T6)
 
-| Controle | Aplicação |
-|---|---|
-| Rate limit | 5/min por IP no lead; 60/min em eventos |
-| CAPTCHA invisível | Turnstile no formulário de lead |
-| Honeypot | Campo oculto; preenchido = descarte silencioso |
-| Slug não sequencial | `apto-3-dorms-cambui-campinas-imb000123` — sem enumeração de UUID |
-| CORS | Origem restrita ao domínio próprio nas rotas de mutação |
-| Sem PII em erro | Mensagem genérica; detalhe só no log |
-| Headers | HSTS, CSP, `X-Content-Type-Options`, `Referrer-Policy: strict-origin-when-cross-origin` |
+| Controle            | Aplicação                                                                               |
+| ------------------- | --------------------------------------------------------------------------------------- |
+| Rate limit          | 5/min por IP no lead; 60/min em eventos                                                 |
+| CAPTCHA invisível   | Turnstile no formulário de lead                                                         |
+| Honeypot            | Campo oculto; preenchido = descarte silencioso                                          |
+| Slug não sequencial | `apto-3-dorms-cambui-campinas-imb000123` — sem enumeração de UUID                       |
+| CORS                | Origem restrita ao domínio próprio nas rotas de mutação                                 |
+| Sem PII em erro     | Mensagem genérica; detalhe só no log                                                    |
+| Headers             | HSTS, CSP, `X-Content-Type-Options`, `Referrer-Policy: strict-origin-when-cross-origin` |
 
 ## 9. Prompt injection (contra T8)
 

@@ -76,5 +76,9 @@ export function toPublicError(err: unknown): PublicError {
   if (e?.code === 'P0002' || e?.code === '02000') {
     return new PublicError('NOT_FOUND', 'Anúncio não encontrado.', 404);
   }
-  return new PublicError('INTERNAL', 'Não foi possível concluir agora. Tente de novo em instantes.', 500);
+  return new PublicError(
+    'INTERNAL',
+    'Não foi possível concluir agora. Tente de novo em instantes.',
+    500,
+  );
 }

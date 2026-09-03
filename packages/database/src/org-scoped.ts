@@ -57,12 +57,10 @@ export function orgScoped<T extends ScopableClient>(client: T, orgId: string) {
     from(table: string) {
       const t = client.from(table);
       return {
-        select: (...args: unknown[]) =>
-          (t.select(...args) as FilterBuilder).eq('org_id', orgId),
+        select: (...args: unknown[]) => (t.select(...args) as FilterBuilder).eq('org_id', orgId),
         update: (values: Record<string, unknown>, ...args: unknown[]) =>
           (t.update(values, ...args) as FilterBuilder).eq('org_id', orgId),
-        delete: (...args: unknown[]) =>
-          (t.delete(...args) as FilterBuilder).eq('org_id', orgId),
+        delete: (...args: unknown[]) => (t.delete(...args) as FilterBuilder).eq('org_id', orgId),
         insert: (values: Record<string, unknown> | Record<string, unknown>[], ...args: unknown[]) =>
           t.insert(Array.isArray(values) ? values.map(withOrg) : withOrg(values), ...args),
       };

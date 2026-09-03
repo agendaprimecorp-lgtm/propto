@@ -14,7 +14,7 @@ const MIGRATIONS_DIR = 'supabase/migrations';
 
 /** Tabelas isentas de toda a verificação. */
 const EXEMPT = new Set([
-  'organizations',   // é o próprio tenant
+  'organizations', // é o próprio tenant
   'schema_migrations',
 ]);
 
@@ -70,7 +70,10 @@ for (const { name, body } of found) {
     failures.push(`${name}: falta "alter table ${name} enable row level security"`);
   }
 
-  const policyRe = new RegExp(`create\\s+policy[\\s\\S]{0,200}?on\\s+(?:public\\.)?"?${name}"?`, 'i');
+  const policyRe = new RegExp(
+    `create\\s+policy[\\s\\S]{0,200}?on\\s+(?:public\\.)?"?${name}"?`,
+    'i',
+  );
   if (!policyRe.test(normalized)) {
     failures.push(`${name}: nenhuma política de RLS encontrada`);
   }
@@ -86,4 +89,6 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`✅ ${tables.length} tabela(s) de negócio verificada(s): org_id, RLS e políticas presentes.`);
+console.log(
+  `✅ ${tables.length} tabela(s) de negócio verificada(s): org_id, RLS e políticas presentes.`,
+);

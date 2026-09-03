@@ -6,13 +6,13 @@
 
 ## 1. Superfícies
 
-| Superfície | Base | Autenticação | Uso |
-|---|---|---|---|
-| PostgREST (Supabase) | `https://<proj>.supabase.co/rest/v1` | JWT do usuário | CRUD com RLS — 80 % das operações |
-| RPC (funções SQL) | `.../rest/v1/rpc/<fn>` | JWT do usuário | Operações transacionais de domínio |
-| Edge Functions | `.../functions/v1/<fn>` | JWT ou assinatura de webhook | Callbacks, webhooks, orquestração leve |
-| Next.js Route Handlers | `https://propto.com.br/api` | JWT ou público | Página pública, OG image, formulário de lead |
-| AI Gateway | `https://ai.primecorp.dev/v1` | `X-Api-Key` | Somente serviços — nunca do cliente |
+| Superfície             | Base                                 | Autenticação                 | Uso                                          |
+| ---------------------- | ------------------------------------ | ---------------------------- | -------------------------------------------- |
+| PostgREST (Supabase)   | `https://<proj>.supabase.co/rest/v1` | JWT do usuário               | CRUD com RLS — 80 % das operações            |
+| RPC (funções SQL)      | `.../rest/v1/rpc/<fn>`               | JWT do usuário               | Operações transacionais de domínio           |
+| Edge Functions         | `.../functions/v1/<fn>`              | JWT ou assinatura de webhook | Callbacks, webhooks, orquestração leve       |
+| Next.js Route Handlers | `https://propto.com.br/api`          | JWT ou público               | Página pública, OG image, formulário de lead |
+| AI Gateway             | `https://ai.primecorp.dev/v1`        | `X-Api-Key`                  | Somente serviços — nunca do cliente          |
 
 **Regra:** o cliente nunca fala com o AI Gateway. O app cria um `ai_job`; o worker consome; o gateway responde ao worker.
 
@@ -76,6 +76,7 @@ DELETE → não use. Use rpc/archive_property.
 ## 5. RPC de domínio
 
 ### `rpc/create_property_from_draft`
+
 Aplica um `property_drafts` confirmado sobre um imóvel, em transação, registrando autoria.
 
 ```json
@@ -86,15 +87,18 @@ Aplica um `property_drafts` confirmado sobre um imóvel, em transação, registr
 ```
 
 ### `rpc/publish_property`
+
 Valida pré-condições e publica.
 
 ```json
 { "p_property_id": "uuid" }
 ```
+
 Pré-condições: título, descrição, preço, cidade, tipo, ≥ 1 mídia com `status='pronta'` e `anonymized=true`, CRECI informado no perfil, texto aprovado pelo compliance.
 Erros: `MISSING_REQUIRED_FIELDS`, `NO_MEDIA_READY`, `CRECI_REQUIRED`, `COMPLIANCE_BLOCKED`.
 
 ### `rpc/enqueue_ai_job`
+
 Único caminho pelo qual o cliente pede trabalho de IA.
 
 ```json
@@ -102,12 +106,15 @@ Erros: `MISSING_REQUIRED_FIELDS`, `NO_MEDIA_READY`, `CRECI_REQUIRED`, `COMPLIANC
   "p_idempotency_key": "session:uuid:extract" }
 → { "job_id": "uuid", "status": "pendente", "queue_position": 3 }
 ```
+
 Erro `AI_BUDGET_EXCEEDED` quando `organizations.ai_spent_brl >= ai_budget_brl`.
 
 ### `rpc/upsert_lead`
+
 Cria/atualiza contato + negócio a partir de um lead público, de forma idempotente por telefone.
 
 ### `rpc/score_matches_for_property` / `rpc/score_matches_for_requirement`
+
 Dispara varredura de matching e devolve o topo do ranking.
 
 ### `rpc/archive_property`, `rpc/mark_property_sold`
@@ -144,6 +151,7 @@ POST /rest/v1/rpc/enqueue_media_job { p_type:"analyze", p_payload:{ media_id } }
 Realtime em `property_media:property_id=eq.{id}` acompanha `enviada → analisando → processando → pronta`.
 
 **Reordenar / definir capa:**
+
 ```http
 POST /rest/v1/rpc/reorder_media { "p_property_id":"uuid", "p_order":["m1","m2","m3"] }
 POST /rest/v1/rpc/set_cover_media { "p_media_id":"uuid" }
@@ -162,6 +170,7 @@ GET  /sitemap.xml                       → todos os imóveis publicados
 ```
 
 `POST /api/public/lead`:
+
 ```json
 { "slug": "apto-3-dorms-cambui-campinas-imb000123",
   "name": "Maria Silva", "phone": "+5519988887777",
@@ -169,6 +178,7 @@ GET  /sitemap.xml                       → todos os imóveis publicados
   "consent": true, "utm": {"source":"instagram"} }
 → 201 { "ok": true }
 ```
+
 `consent: false` → `400 LGPD_CONSENT_REQUIRED`. O consentimento é gravado com o texto exibido no momento.
 
 Protegido por Turnstile/hCaptcha + honeypot + rate limit por IP e por slug.
@@ -178,6 +188,7 @@ Protegido por Turnstile/hCaptcha + honeypot + rate limit por IP e por slug.
 Headers obrigatórios: `X-Api-Key`, `X-Product`, `X-Org-Id`, `X-Idempotency-Key`.
 
 ### `POST /v1/complete`
+
 ```json
 {
   "task": "extract_property",
@@ -186,16 +197,26 @@ Headers obrigatórios: `X-Api-Key`, `X-Product`, `X-Org-Id`, `X-Idempotency-Key`
   "policy": { "quality": "alta", "max_cost_usd": 0.05, "timeout_ms": 45000 }
 }
 ```
+
 ```json
 {
   "output": { "...": "objeto validado" },
-  "meta": { "provider":"anthropic", "model":"claude-...", "tokens_in":1840,
-            "tokens_out":620, "cost_usd":0.0184, "latency_ms":3120,
-            "cached":false, "fallback_from":null, "attempts":1 }
+  "meta": {
+    "provider": "anthropic",
+    "model": "claude-...",
+    "tokens_in": 1840,
+    "tokens_out": 620,
+    "cost_usd": 0.0184,
+    "latency_ms": 3120,
+    "cached": false,
+    "fallback_from": null,
+    "attempts": 1
+  }
 }
 ```
 
 ### `POST /v1/transcribe`
+
 ```json
 { "audio_url": "https://...signed...", "language": "pt-BR",
   "prompt": "Vocabulário imobiliário brasileiro: suíte, vaga, IPTU, condomínio, permuta, escritura, matrícula, ITBI, quitado, averbação." }
@@ -203,63 +224,67 @@ Headers obrigatórios: `X-Api-Key`, `X-Product`, `X-Org-Id`, `X-Idempotency-Key`
 ```
 
 ### `POST /v1/vision`
+
 ```json
 { "image_urls": ["https://..."], "task": "classify_photo", "schema": {...} }
 ```
 
 ### `POST /v1/embed`
+
 ```json
 { "input": ["texto 1","texto 2"], "model_hint": "small" }
 → { "vectors": [[...],[...]], "meta": {...} }
 ```
 
 ### `GET /v1/usage`
+
 `?product=propto&org_id=<uuid>&from=2026-09-01&to=2026-09-30`
 → agregado por dia, tarefa, provedor e modelo.
 
 ### `GET /health` · `GET /ready`
 
 ### Erros do gateway
-| HTTP | Código | Significado |
-|---|---|---|
-| 401 | `INVALID_API_KEY` | Chave inválida ou revogada |
-| 402 | `BUDGET_EXCEEDED` | Orçamento da organização esgotado |
-| 422 | `SCHEMA_VALIDATION_FAILED` | Saída do modelo não bate com o schema após 2 tentativas |
-| 429 | `RATE_LIMITED` | Limite por produto/org |
-| 503 | `ALL_PROVIDERS_FAILED` | Primário e fallbacks falharam |
+
+| HTTP | Código                     | Significado                                             |
+| ---- | -------------------------- | ------------------------------------------------------- |
+| 401  | `INVALID_API_KEY`          | Chave inválida ou revogada                              |
+| 402  | `BUDGET_EXCEEDED`          | Orçamento da organização esgotado                       |
+| 422  | `SCHEMA_VALIDATION_FAILED` | Saída do modelo não bate com o schema após 2 tentativas |
+| 429  | `RATE_LIMITED`             | Limite por produto/org                                  |
+| 503  | `ALL_PROVIDERS_FAILED`     | Primário e fallbacks falharam                           |
 
 Toda chamada, com sucesso ou não, grava `ai_usage_events`.
 
 ## 10. Webhooks e Edge Functions
 
-| Função | Gatilho | Ação |
-|---|---|---|
-| `on-auth-user-created` | Auth hook | Cria `organizations` + `memberships` + claim `org_id` |
-| `on-media-uploaded` | Storage webhook | Enfileira `media_jobs` type `analyze` |
-| `on-payment-webhook` | Provedor de pagamento | Atualiza `subscriptions` e `plan` |
-| `daily-digest` | Cron 07:00 BRT | Push: leads sem contato, tarefas do dia, novos matches |
-| `budget-alert` | Cron horário | Notifica em 80 % e corta em 100 % do orçamento de IA |
-| `lgpd-purge` | Cron diário | Expurga áudio e dado vencido conforme política de retenção |
+| Função                 | Gatilho               | Ação                                                       |
+| ---------------------- | --------------------- | ---------------------------------------------------------- |
+| `on-auth-user-created` | Auth hook             | Cria `organizations` + `memberships` + claim `org_id`      |
+| `on-media-uploaded`    | Storage webhook       | Enfileira `media_jobs` type `analyze`                      |
+| `on-payment-webhook`   | Provedor de pagamento | Atualiza `subscriptions` e `plan`                          |
+| `daily-digest`         | Cron 07:00 BRT        | Push: leads sem contato, tarefas do dia, novos matches     |
+| `budget-alert`         | Cron horário          | Notifica em 80 % e corta em 100 % do orçamento de IA       |
+| `lgpd-purge`           | Cron diário           | Expurga áudio e dado vencido conforme política de retenção |
 
 ## 11. Realtime
 
-| Canal | Uso |
-|---|---|
-| `capture_sessions:id=eq.{id}` | Progresso da transcrição/extração |
-| `property_media:property_id=eq.{id}` | Progresso do tratamento de fotos |
-| `ai_jobs:org_id=eq.{org}` | Estado geral da fila |
-| `matches:org_id=eq.{org}` | Novo match encontrado |
-| `deals:org_id=eq.{org}` | Movimentação de kanban entre dispositivos |
+| Canal                                | Uso                                       |
+| ------------------------------------ | ----------------------------------------- |
+| `capture_sessions:id=eq.{id}`        | Progresso da transcrição/extração         |
+| `property_media:property_id=eq.{id}` | Progresso do tratamento de fotos          |
+| `ai_jobs:org_id=eq.{org}`            | Estado geral da fila                      |
+| `matches:org_id=eq.{org}`            | Novo match encontrado                     |
+| `deals:org_id=eq.{org}`              | Movimentação de kanban entre dispositivos |
 
 ## 12. Limites de taxa
 
-| Rota | Limite |
-|---|---|
-| `POST /api/public/lead` | 5/min por IP, 20/h por slug |
-| `POST /api/public/event` | 60/min por IP |
-| `rpc/enqueue_ai_job` | 30/min por org, mais o teto do plano |
-| Upload de mídia | 100 arquivos/h por org |
-| AI Gateway | 120 req/min por produto; 30 req/min por org |
+| Rota                     | Limite                                      |
+| ------------------------ | ------------------------------------------- |
+| `POST /api/public/lead`  | 5/min por IP, 20/h por slug                 |
+| `POST /api/public/event` | 60/min por IP                               |
+| `rpc/enqueue_ai_job`     | 30/min por org, mais o teto do plano        |
+| Upload de mídia          | 100 arquivos/h por org                      |
+| AI Gateway               | 120 req/min por produto; 30 req/min por org |
 
 ## 13. Versionamento
 

@@ -60,7 +60,10 @@ async function main(): Promise<void> {
 }
 
 async function runOnceComDetector(
-  pool: any, storage: SupabaseStorage, gatewayUrl: string, gatewayKey: string,
+  pool: any,
+  storage: SupabaseStorage,
+  gatewayUrl: string,
+  gatewayKey: string,
 ): Promise<number> {
   const { rows } = await pool.query(
     `select * from public.claim_media_jobs($1, $2, array['analyze','process'])`,
@@ -109,7 +112,7 @@ async function signedUrl(storage: SupabaseStorage, bucket: string, path: string)
     body: JSON.stringify({ expiresIn: 600 }),
   });
   if (!res.ok) throw new Error(`não foi possível assinar a URL de ${bucket}/${path}`);
-  const body = await res.json() as { signedURL: string };
+  const body = (await res.json()) as { signedURL: string };
   return `${anyStorage.url}/storage/v1${body.signedURL}`;
 }
 

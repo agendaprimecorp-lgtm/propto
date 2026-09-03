@@ -20,7 +20,10 @@ function setup(overrides: Partial<Record<ProviderName, ReturnType<typeof mockPro
   const openrouter = overrides.openrouter ?? mockProvider({ name: 'openrouter' });
 
   const providers = new Map<ProviderName, Provider>([
-    ['anthropic', anthropic], ['openai', openai], ['google', google], ['openrouter', openrouter],
+    ['anthropic', anthropic],
+    ['openai', openai],
+    ['google', google],
+    ['openrouter', openrouter],
   ]);
 
   const app = buildServer({
@@ -43,7 +46,10 @@ function setup(overrides: Partial<Record<ProviderName, ReturnType<typeof mockPro
 }
 
 const headers = (extra: Record<string, string> = {}) => ({
-  'x-api-key': KEY, 'x-product': 'propto', 'x-org-id': ORG, ...extra,
+  'x-api-key': KEY,
+  'x-product': 'propto',
+  'x-org-id': ORG,
+  ...extra,
 });
 
 const SCHEMA = { type: 'object', properties: { bedrooms: { type: 'number' } } };
@@ -59,7 +65,8 @@ describe('autenticação', () => {
   test('recusa chave de outro produto', async () => {
     const { app } = setup();
     const res = await app.inject({
-      method: 'POST', url: '/v1/embed',
+      method: 'POST',
+      url: '/v1/embed',
       headers: { 'x-api-key': KEY, 'x-product': 'verimulta' },
       payload: { input: ['a'] },
     });
@@ -77,8 +84,14 @@ describe('roteamento e fallback', () => {
   test('usa o provedor primário da tarefa', async () => {
     const { app, anthropic, openai } = setup();
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
-      payload: { task: 'extract_property', messages: [{ role: 'user', content: 'oi' }], schema: SCHEMA },
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload: {
+        task: 'extract_property',
+        messages: [{ role: 'user', content: 'oi' }],
+        schema: SCHEMA,
+      },
     });
     assert.equal(res.statusCode, 200);
     assert.equal(res.json().meta.provider, 'anthropic');
@@ -90,8 +103,14 @@ describe('roteamento e fallback', () => {
     const anthropic = mockProvider({ name: 'anthropic', behavior: 'fail' });
     const { app, openai } = setup({ anthropic });
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
-      payload: { task: 'extract_property', messages: [{ role: 'user', content: 'oi' }], schema: SCHEMA },
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload: {
+        task: 'extract_property',
+        messages: [{ role: 'user', content: 'oi' }],
+        schema: SCHEMA,
+      },
     });
     assert.equal(res.statusCode, 200);
     const meta = res.json().meta;
@@ -104,8 +123,14 @@ describe('roteamento e fallback', () => {
     const anthropic = mockProvider({ name: 'anthropic', behavior: 'fatal' });
     const { app, openai } = setup({ anthropic });
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
-      payload: { task: 'extract_property', messages: [{ role: 'user', content: 'oi' }], schema: SCHEMA },
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload: {
+        task: 'extract_property',
+        messages: [{ role: 'user', content: 'oi' }],
+        schema: SCHEMA,
+      },
     });
     assert.equal(res.statusCode, 503);
     assert.equal(res.json().error.code, 'ALL_PROVIDERS_FAILED');
@@ -119,8 +144,14 @@ describe('roteamento e fallback', () => {
       openrouter: mockProvider({ name: 'openrouter', behavior: 'fail' }),
     });
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
-      payload: { task: 'extract_property', messages: [{ role: 'user', content: 'oi' }], schema: SCHEMA },
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload: {
+        task: 'extract_property',
+        messages: [{ role: 'user', content: 'oi' }],
+        schema: SCHEMA,
+      },
     });
     assert.equal(res.statusCode, 503);
     assert.equal(res.json().error.details.attempts, 3);
@@ -132,8 +163,14 @@ describe('schema estrito', () => {
     const anthropic = mockProvider({ name: 'anthropic', behavior: 'bad-json' });
     const { app, openai } = setup({ anthropic });
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
-      payload: { task: 'extract_property', messages: [{ role: 'user', content: 'oi' }], schema: SCHEMA },
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload: {
+        task: 'extract_property',
+        messages: [{ role: 'user', content: 'oi' }],
+        schema: SCHEMA,
+      },
     });
     assert.equal(res.statusCode, 200);
     assert.equal(res.json().meta.provider, 'openai');
@@ -143,7 +180,9 @@ describe('schema estrito', () => {
   test('sem schema, devolve texto', async () => {
     const { app } = setup();
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
       payload: { task: 'write_listing', messages: [{ role: 'user', content: 'oi' }] },
     });
     assert.equal(res.statusCode, 200);
@@ -156,20 +195,34 @@ describe('disjuntor', () => {
     const anthropic = mockProvider({ name: 'anthropic', behavior: 'fail' });
     const { app } = setup({ anthropic });
     const payload = {
-      task: 'extract_property', messages: [{ role: 'user', content: 'oi' }], schema: SCHEMA,
+      task: 'extract_property',
+      messages: [{ role: 'user', content: 'oi' }],
+      schema: SCHEMA,
     };
 
     // Duas falhas atingem o limiar configurado (breakerThreshold: 2).
     for (let i = 0; i < 2; i++) {
-      await app.inject({ method: 'POST', url: '/v1/complete', headers: headers({ 'x-idempotency-key': `k${i}` }), payload });
+      await app.inject({
+        method: 'POST',
+        url: '/v1/complete',
+        headers: headers({ 'x-idempotency-key': `k${i}` }),
+        payload,
+      });
     }
     const before = anthropic.calls;
 
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers({ 'x-idempotency-key': 'k9' }), payload,
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers({ 'x-idempotency-key': 'k9' }),
+      payload,
     });
     assert.equal(res.statusCode, 200);
-    assert.equal(anthropic.calls, before, 'com o disjuntor aberto o provedor não é chamado de novo');
+    assert.equal(
+      anthropic.calls,
+      before,
+      'com o disjuntor aberto o provedor não é chamado de novo',
+    );
     assert.equal(res.json().meta.provider, 'openai');
   });
 });
@@ -179,10 +232,14 @@ describe('timeout', () => {
     const anthropic = mockProvider({ name: 'anthropic', behavior: 'slow' });
     const { app } = setup({ anthropic });
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
       payload: {
-        task: 'extract_property', messages: [{ role: 'user', content: 'oi' }],
-        schema: SCHEMA, policy: { timeout_ms: 50 },
+        task: 'extract_property',
+        messages: [{ role: 'user', content: 'oi' }],
+        schema: SCHEMA,
+        policy: { timeout_ms: 50 },
       },
     });
     assert.equal(res.statusCode, 200);
@@ -192,10 +249,18 @@ describe('timeout', () => {
 
 describe('custo e orçamento', () => {
   test('toda chamada registra consumo, inclusive a que falhou', async () => {
-    const { app, store } = setup({ anthropic: mockProvider({ name: 'anthropic', behavior: 'fail' }) });
+    const { app, store } = setup({
+      anthropic: mockProvider({ name: 'anthropic', behavior: 'fail' }),
+    });
     await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
-      payload: { task: 'extract_property', messages: [{ role: 'user', content: 'oi' }], schema: SCHEMA },
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload: {
+        task: 'extract_property',
+        messages: [{ role: 'user', content: 'oi' }],
+        schema: SCHEMA,
+      },
     });
     assert.equal(store.usage.length, 2, 'a tentativa falha e a bem-sucedida são registradas');
     assert.equal(store.usage[0]!.success, false);
@@ -206,8 +271,14 @@ describe('custo e orçamento', () => {
   test('custo em reais bate com a tabela de preços', async () => {
     const { app, store } = setup();
     await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
-      payload: { task: 'extract_property', messages: [{ role: 'user', content: 'oi' }], schema: SCHEMA },
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload: {
+        task: 'extract_property',
+        messages: [{ role: 'user', content: 'oi' }],
+        schema: SCHEMA,
+      },
     });
     const rec = store.usage.at(-1)!;
     const esperado = costUsd('claude-sonnet-4-5', { tokensIn: 1000, tokensOut: 250 });
@@ -220,8 +291,14 @@ describe('custo e orçamento', () => {
     const { app, store, anthropic } = setup();
     store.setBudget(ORG, 10, 10);
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
-      payload: { task: 'extract_property', messages: [{ role: 'user', content: 'oi' }], schema: SCHEMA },
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload: {
+        task: 'extract_property',
+        messages: [{ role: 'user', content: 'oi' }],
+        schema: SCHEMA,
+      },
     });
     assert.equal(res.statusCode, 402);
     assert.equal(res.json().error.code, 'BUDGET_EXCEEDED');
@@ -232,8 +309,14 @@ describe('custo e orçamento', () => {
     const { app, store } = setup();
     store.setBudget(ORG, 0.05, 0.04);
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
-      payload: { task: 'extract_property', messages: [{ role: 'user', content: 'oi' }], schema: SCHEMA },
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload: {
+        task: 'extract_property',
+        messages: [{ role: 'user', content: 'oi' }],
+        schema: SCHEMA,
+      },
     });
     assert.equal(res.statusCode, 200);
     assert.equal(res.json().meta.budgetWarning, true, 'ponto flutuante não pode engolir o alerta');
@@ -243,8 +326,14 @@ describe('custo e orçamento', () => {
     const { app, store } = setup();
     store.setBudget(ORG, 10, 8.5);
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
-      payload: { task: 'extract_property', messages: [{ role: 'user', content: 'oi' }], schema: SCHEMA },
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload: {
+        task: 'extract_property',
+        messages: [{ role: 'user', content: 'oi' }],
+        schema: SCHEMA,
+      },
     });
     assert.equal(res.statusCode, 200);
     assert.equal(res.json().meta.budgetWarning ?? res.json().meta.budget_warning, true);
@@ -253,13 +342,29 @@ describe('custo e orçamento', () => {
   test('teto diário do produto corta o serviço', async () => {
     const { app, store } = setup();
     await store.recordUsage({
-      orgId: null, product: 'propto', task: 'embed', provider: 'openai', model: 'x',
-      tokensIn: 0, tokensOut: 0, images: 0, costUsd: 60, costBrl: 324,
-      latencyMs: 1, cached: false, success: true,
+      orgId: null,
+      product: 'propto',
+      task: 'embed',
+      provider: 'openai',
+      model: 'x',
+      tokensIn: 0,
+      tokensOut: 0,
+      images: 0,
+      costUsd: 60,
+      costBrl: 324,
+      latencyMs: 1,
+      cached: false,
+      success: true,
     });
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
-      payload: { task: 'extract_property', messages: [{ role: 'user', content: 'oi' }], schema: SCHEMA },
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload: {
+        task: 'extract_property',
+        messages: [{ role: 'user', content: 'oi' }],
+        schema: SCHEMA,
+      },
     });
     assert.equal(res.statusCode, 402);
     assert.equal(res.json().error.code, 'DAILY_CAP_EXCEEDED');
@@ -270,10 +375,22 @@ describe('cache e idempotência', () => {
   test('requisição idêntica é servida do cache, sem custo', async () => {
     const { app, anthropic } = setup();
     const payload = {
-      task: 'write_listing', messages: [{ role: 'user', content: 'mesmo imóvel' }], schema: SCHEMA,
+      task: 'write_listing',
+      messages: [{ role: 'user', content: 'mesmo imóvel' }],
+      schema: SCHEMA,
     };
-    const a = await app.inject({ method: 'POST', url: '/v1/complete', headers: headers(), payload });
-    const b = await app.inject({ method: 'POST', url: '/v1/complete', headers: headers(), payload });
+    const a = await app.inject({
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload,
+    });
+    const b = await app.inject({
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload,
+    });
 
     assert.equal(a.json().meta.cached, false);
     assert.equal(b.json().meta.cached, true);
@@ -285,8 +402,16 @@ describe('cache e idempotência', () => {
   test('a mesma chave de idempotência nunca paga duas vezes', async () => {
     const { app, anthropic } = setup();
     const h = headers({ 'x-idempotency-key': 'sessao:1:extract' });
-    const p1 = { task: 'extract_property', messages: [{ role: 'user', content: 'a' }], schema: SCHEMA };
-    const p2 = { task: 'extract_property', messages: [{ role: 'user', content: 'DIFERENTE' }], schema: SCHEMA };
+    const p1 = {
+      task: 'extract_property',
+      messages: [{ role: 'user', content: 'a' }],
+      schema: SCHEMA,
+    };
+    const p2 = {
+      task: 'extract_property',
+      messages: [{ role: 'user', content: 'DIFERENTE' }],
+      schema: SCHEMA,
+    };
 
     const a = await app.inject({ method: 'POST', url: '/v1/complete', headers: h, payload: p1 });
     const b = await app.inject({ method: 'POST', url: '/v1/complete', headers: h, payload: p2 });
@@ -300,18 +425,28 @@ describe('transcrição e embeddings', () => {
   test('transcreve devolvendo texto e segmentos', async () => {
     const { app } = setup({ openai: mockProvider({ name: 'openai' }) });
     const res = await app.inject({
-      method: 'POST', url: '/v1/transcribe', headers: headers(),
+      method: 'POST',
+      url: '/v1/transcribe',
+      headers: headers(),
       payload: { audio_url: 'https://exemplo/audio.m4a', language: 'pt-BR' },
     });
     assert.equal(res.statusCode, 200);
     const out = res.json().output;
     assert.match(out.text, /dormitórios/);
-    assert.ok(Array.isArray(out.segments) && out.segments.length > 0, 'segmentos são a base da âncora de áudio');
+    assert.ok(
+      Array.isArray(out.segments) && out.segments.length > 0,
+      'segmentos são a base da âncora de áudio',
+    );
   });
 
   test('transcrição sem URL de áudio é recusada', async () => {
     const { app } = setup();
-    const res = await app.inject({ method: 'POST', url: '/v1/transcribe', headers: headers(), payload: {} });
+    const res = await app.inject({
+      method: 'POST',
+      url: '/v1/transcribe',
+      headers: headers(),
+      payload: {},
+    });
     assert.equal(res.statusCode, 400);
     assert.equal(res.json().error.code, 'INVALID_REQUEST');
   });
@@ -319,7 +454,9 @@ describe('transcrição e embeddings', () => {
   test('gera um vetor por texto', async () => {
     const { app } = setup();
     const res = await app.inject({
-      method: 'POST', url: '/v1/embed', headers: headers(),
+      method: 'POST',
+      url: '/v1/embed',
+      headers: headers(),
       payload: { input: ['apartamento no cambuí', 'casa em sumaré'] },
     });
     assert.equal(res.statusCode, 200);
@@ -331,7 +468,9 @@ describe('contrato', () => {
   test('tarefa desconhecida é recusada com a lista de tarefas aceitas', async () => {
     const { app } = setup();
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
       payload: { task: 'fazer_cafe', messages: [{ role: 'user', content: 'oi' }] },
     });
     assert.equal(res.statusCode, 400);
@@ -348,8 +487,14 @@ describe('contrato', () => {
   test('/v1/usage devolve o consumo do produto e o orçamento da organização', async () => {
     const { app } = setup();
     await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
-      payload: { task: 'extract_property', messages: [{ role: 'user', content: 'oi' }], schema: SCHEMA },
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
+      payload: {
+        task: 'extract_property',
+        messages: [{ role: 'user', content: 'oi' }],
+        schema: SCHEMA,
+      },
     });
     const res = await app.inject({ method: 'GET', url: '/v1/usage', headers: headers() });
     assert.equal(res.statusCode, 200);

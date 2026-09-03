@@ -33,7 +33,10 @@ function setup(overrides: Partial<Record<ProviderName, ReturnType<typeof mockPro
   const app = buildServer({
     store,
     providers: new Map<ProviderName, Provider>([
-      ['anthropic', anthropic], ['openai', openai], ['google', google], ['openrouter', openrouter],
+      ['anthropic', anthropic],
+      ['openai', openai],
+      ['google', google],
+      ['openrouter', openrouter],
     ]),
     config: {
       apiKeys: new Map([[KEY, 'propto']]),
@@ -54,7 +57,10 @@ function setup(overrides: Partial<Record<ProviderName, ReturnType<typeof mockPro
 }
 
 const headers = (extra: Record<string, string> = {}) => ({
-  'x-api-key': KEY, 'x-product': 'propto', 'x-org-id': ORG_A, ...extra,
+  'x-api-key': KEY,
+  'x-product': 'propto',
+  'x-org-id': ORG_A,
+  ...extra,
 });
 
 /** Recorte do schema real de análise de foto (services/media-worker/src/detect.ts). */
@@ -72,8 +78,10 @@ const SCHEMA_FOTO = {
         type: 'object',
         required: ['x', 'y', 'w', 'h'],
         properties: {
-          x: { type: 'number' }, y: { type: 'number' },
-          w: { type: 'number' }, h: { type: 'number' },
+          x: { type: 'number' },
+          y: { type: 'number' },
+          w: { type: 'number' },
+          h: { type: 'number' },
         },
       },
     },
@@ -86,7 +94,9 @@ const SCHEMA_FOTO = {
 
 describe('visão: a imagem chega ao provedor', () => {
   const fetchOriginal = globalThis.fetch;
-  afterEach(() => { globalThis.fetch = fetchOriginal; });
+  afterEach(() => {
+    globalThis.fetch = fetchOriginal;
+  });
 
   test('o adaptador do Google envia a imagem, não só o texto', async () => {
     let corpoEnviado: any;
@@ -127,15 +137,19 @@ describe('visão: a imagem chega ao provedor', () => {
 
   test('imagem em endereço interno é recusada antes de virar requisição', async () => {
     let buscou = false;
-    globalThis.fetch = (async () => { buscou = true; return new Response('', { status: 200 }); }) as typeof fetch;
+    globalThis.fetch = (async () => {
+      buscou = true;
+      return new Response('', { status: 200 });
+    }) as typeof fetch;
 
     const google = googleProvider('chave-falsa', { allowedHosts: [], maxBytes: 1024 });
     await assert.rejects(
-      () => google.complete!({
-        model: 'gemini-2.0-flash',
-        messages: [{ role: 'user', content: 'oi' }],
-        imageUrls: ['https://169.254.169.254/latest/meta-data/'],
-      }),
+      () =>
+        google.complete!({
+          model: 'gemini-2.0-flash',
+          messages: [{ role: 'user', content: 'oi' }],
+          imageUrls: ['https://169.254.169.254/latest/meta-data/'],
+        }),
       /interno/i,
     );
     assert.equal(buscou, false, 'nem chegou a abrir a conexão');
@@ -149,7 +163,10 @@ describe('visão: a imagem chega ao provedor', () => {
 describe('schema conferido de verdade', () => {
   test('JSON parseável mas fora do schema não passa', () => {
     const problemas = validateAgainstSchema({ a: 1 }, SCHEMA_FOTO);
-    assert.ok(problemas.length >= 4, `esperava faltas obrigatórias, veio: ${problemas.join(' | ')}`);
+    assert.ok(
+      problemas.length >= 4,
+      `esperava faltas obrigatórias, veio: ${problemas.join(' | ')}`,
+    );
     assert.ok(problemas.some((p) => p.includes('room_type')));
     assert.ok(problemas.some((p) => p.includes('has_face')));
   });
@@ -174,7 +191,10 @@ describe('schema conferido de verdade', () => {
   test('resposta completa e correta passa', () => {
     const problemas = validateAgainstSchema(
       {
-        room_type: 'sala', quality_score: 0.8, has_face: true, has_plate: false,
+        room_type: 'sala',
+        quality_score: 0.8,
+        has_face: true,
+        has_plate: false,
         faces: [{ x: 0.1, y: 0.2, w: 0.1, h: 0.15 }],
       },
       SCHEMA_FOTO,
@@ -191,7 +211,9 @@ describe('schema conferido de verdade', () => {
     const { app } = setup({ anthropic, openai });
 
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
       payload: {
         task: 'extract_property',
         messages: [{ role: 'user', content: 'oi' }],
@@ -212,7 +234,9 @@ describe('schema conferido de verdade', () => {
     });
 
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
       payload: {
         task: 'extract_property',
         messages: [{ role: 'user', content: 'oi' }],
@@ -231,7 +255,9 @@ describe('schema conferido de verdade', () => {
 
 describe('isolamento entre organizações', () => {
   test('a mesma chave de idempotência em outra organização não devolve a resposta alheia', async () => {
-    const { app } = setup({ anthropic: mockProvider({ name: 'anthropic', payload: { dono: 'org-a' } }) });
+    const { app } = setup({
+      anthropic: mockProvider({ name: 'anthropic', payload: { dono: 'org-a' } }),
+    });
 
     const pedido = (org: string) => ({
       method: 'POST' as const,
@@ -249,8 +275,11 @@ describe('isolamento entre organizações', () => {
 
     assert.equal(a.statusCode, 200);
     assert.equal(b.statusCode, 200);
-    assert.equal(b.json().meta.cached, false,
-      'a organização B não pode receber o resultado guardado pela A');
+    assert.equal(
+      b.json().meta.cached,
+      false,
+      'a organização B não pode receber o resultado guardado pela A',
+    );
   });
 });
 
@@ -267,7 +296,8 @@ describe('organização obrigatória', () => {
     test(`${rota} sem x-org-id é recusada`, async () => {
       const { app } = setup();
       const res = await app.inject({
-        method: 'POST', url: rota,
+        method: 'POST',
+        url: rota,
         headers: { 'x-api-key': KEY, 'x-product': 'propto' },
         payload: corpo,
       });
@@ -318,7 +348,9 @@ describe('URL de mídia', () => {
   test('a rota de transcrição recusa endereço interno com 400', async () => {
     const { app } = setup();
     const res = await app.inject({
-      method: 'POST', url: '/v1/transcribe', headers: headers(),
+      method: 'POST',
+      url: '/v1/transcribe',
+      headers: headers(),
       payload: { audio_url: 'https://169.254.169.254/latest/meta-data/' },
     });
     assert.equal(res.statusCode, 400);
@@ -339,7 +371,9 @@ describe('erro de provedor não vaza', () => {
     });
 
     const res = await app.inject({
-      method: 'POST', url: '/v1/complete', headers: headers(),
+      method: 'POST',
+      url: '/v1/complete',
+      headers: headers(),
       payload: { task: 'extract_property', messages: [{ role: 'user', content: 'oi' }] },
     });
 
@@ -351,7 +385,10 @@ describe('erro de provedor não vaza', () => {
       assert.deepEqual(Object.keys(f).sort(), ['provider', 'reason']);
       assert.ok(typeof f.reason === 'string');
     }
-    assert.doesNotMatch(JSON.stringify(res.json()), /falha simulada/,
-      'a mensagem crua do provedor não pode sair na resposta');
+    assert.doesNotMatch(
+      JSON.stringify(res.json()),
+      /falha simulada/,
+      'a mensagem crua do provedor não pode sair na resposta',
+    );
   });
 });

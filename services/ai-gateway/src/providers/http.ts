@@ -2,8 +2,13 @@ import { ProviderError } from '../errors.js';
 import { assertAllowedAssetUrl, fetchAsset, toBase64 } from '../assets.js';
 import type { ProviderName } from '../config.js';
 import type {
-  CompleteInput, CompleteOutput, EmbedInput, EmbedOutput,
-  Provider, TranscribeInput, TranscribeOutput,
+  CompleteInput,
+  CompleteOutput,
+  EmbedInput,
+  EmbedOutput,
+  Provider,
+  TranscribeInput,
+  TranscribeOutput,
 } from './types.js';
 
 /** De onde o gateway pode baixar mídia, e até que tamanho. Ver src/assets.ts. */
@@ -86,8 +91,13 @@ export function openaiProvider(apiKey?: string, assets: AssetPolicy = ASSET_PADR
           json_schema: { name: 'resposta', schema: input.schema, strict: false },
         };
       }
-      const json = await postJson('openai', 'https://api.openai.com/v1/chat/completions',
-        auth(), body, input.signal);
+      const json = await postJson(
+        'openai',
+        'https://api.openai.com/v1/chat/completions',
+        auth(),
+        body,
+        input.signal,
+      );
       const text = json?.choices?.[0]?.message?.content ?? '';
       return {
         text,
@@ -104,7 +114,12 @@ export function openaiProvider(apiKey?: string, assets: AssetPolicy = ASSET_PADR
       // host e pelo teto de tamanho antes de virar uma requisição de rede.
       let audio;
       try {
-        audio = await fetchAsset(input.audioUrl, assets.allowedHosts, assets.maxBytes, input.signal);
+        audio = await fetchAsset(
+          input.audioUrl,
+          assets.allowedHosts,
+          assets.maxBytes,
+          input.signal,
+        );
       } catch (err) {
         // URL recusada não melhora no próximo provedor.
         throw new ProviderError('openai', (err as Error).message, false);
@@ -117,7 +132,10 @@ export function openaiProvider(apiKey?: string, assets: AssetPolicy = ASSET_PADR
       if (input.prompt) form.append('prompt', input.prompt);
 
       const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-        method: 'POST', headers: auth(), body: form, signal: input.signal ?? null,
+        method: 'POST',
+        headers: auth(),
+        body: form,
+        signal: input.signal ?? null,
       });
       const text = await res.text();
       if (!res.ok) throw classify('openai', res.status, text);
@@ -125,15 +143,22 @@ export function openaiProvider(apiKey?: string, assets: AssetPolicy = ASSET_PADR
       return {
         text: json.text ?? '',
         segments: (json.segments ?? []).map((s: any) => ({
-          start: s.start, end: s.end, text: s.text,
+          start: s.start,
+          end: s.end,
+          text: s.text,
         })),
         usage: { tokensIn: 0, tokensOut: 0, audioSeconds: json.duration ?? 0 },
       };
     },
 
     async embed(input: EmbedInput): Promise<EmbedOutput> {
-      const json = await postJson('openai', 'https://api.openai.com/v1/embeddings',
-        auth(), { model: input.model, input: input.input }, input.signal);
+      const json = await postJson(
+        'openai',
+        'https://api.openai.com/v1/embeddings',
+        auth(),
+        { model: input.model, input: input.input },
+        input.signal,
+      );
       return {
         vectors: (json?.data ?? []).map((d: any) => d.embedding),
         usage: { tokensIn: json?.usage?.prompt_tokens ?? 0, tokensOut: 0 },
@@ -152,7 +177,10 @@ export function anthropicProvider(apiKey?: string, assets: AssetPolicy = ASSET_P
     isConfigured: () => Boolean(apiKey),
 
     async complete(input: CompleteInput): Promise<CompleteOutput> {
-      const system = input.messages.filter((m) => m.role === 'system').map((m) => m.content).join('\n\n');
+      const system = input.messages
+        .filter((m) => m.role === 'system')
+        .map((m) => m.content)
+        .join('\n\n');
       const rest = input.messages.filter((m) => m.role !== 'system');
 
       const content: unknown[] = [];
@@ -176,20 +204,30 @@ export function anthropicProvider(apiKey?: string, assets: AssetPolicy = ASSET_P
       };
       if (system) body.system = system;
       if (input.schema) {
-        body.tools = [{
-          name: 'responder',
-          description: 'Devolve a resposta estruturada.',
-          input_schema: input.schema,
-        }];
+        body.tools = [
+          {
+            name: 'responder',
+            description: 'Devolve a resposta estruturada.',
+            input_schema: input.schema,
+          },
+        ];
         body.tool_choice = { type: 'tool', name: 'responder' };
       }
 
-      const json = await postJson('anthropic', 'https://api.anthropic.com/v1/messages',
-        { 'x-api-key': apiKey!, 'anthropic-version': '2023-06-01' }, body, input.signal);
+      const json = await postJson(
+        'anthropic',
+        'https://api.anthropic.com/v1/messages',
+        { 'x-api-key': apiKey!, 'anthropic-version': '2023-06-01' },
+        body,
+        input.signal,
+      );
 
       const blocks: any[] = json?.content ?? [];
       const toolUse = blocks.find((b) => b.type === 'tool_use');
-      const text = blocks.filter((b) => b.type === 'text').map((b) => b.text).join('');
+      const text = blocks
+        .filter((b) => b.type === 'text')
+        .map((b) => b.text)
+        .join('');
 
       return {
         text: toolUse ? JSON.stringify(toolUse.input) : text,
@@ -226,7 +264,9 @@ export function googleProvider(apiKey?: string, assets: AssetPolicy = ASSET_PADR
         } catch (err) {
           throw new ProviderError('google', (err as Error).message, false);
         }
-        parts.push({ inline_data: { mime_type: imagem.contentType, data: toBase64(imagem.bytes) } });
+        parts.push({
+          inline_data: { mime_type: imagem.contentType, data: toBase64(imagem.bytes) },
+        });
       }
       parts.push({ text: input.messages.map((m) => m.content).join('\n\n') });
 
@@ -239,12 +279,17 @@ export function googleProvider(apiKey?: string, assets: AssetPolicy = ASSET_PADR
           ...(input.schema ? { responseMimeType: 'application/json' } : {}),
         },
       };
-      const json = await postJson('google',
+      const json = await postJson(
+        'google',
         `https://generativelanguage.googleapis.com/v1beta/models/${input.model}:generateContent?key=${apiKey}`,
-        {}, body, input.signal);
+        {},
+        body,
+        input.signal,
+      );
 
       const text = (json?.candidates?.[0]?.content?.parts ?? [])
-        .map((p: any) => p.text ?? '').join('');
+        .map((p: any) => p.text ?? '')
+        .join('');
       return {
         text,
         json: input.schema ? extractJson(text) : undefined,
@@ -259,13 +304,18 @@ export function googleProvider(apiKey?: string, assets: AssetPolicy = ASSET_PADR
     },
 
     async embed(input: EmbedInput): Promise<EmbedOutput> {
-      const json = await postJson('google',
+      const json = await postJson(
+        'google',
         `https://generativelanguage.googleapis.com/v1beta/models/${input.model}:batchEmbedContents?key=${apiKey}`,
-        {}, {
+        {},
+        {
           requests: input.input.map((t) => ({
-            model: `models/${input.model}`, content: { parts: [{ text: t }] },
+            model: `models/${input.model}`,
+            content: { parts: [{ text: t }] },
           })),
-        }, input.signal);
+        },
+        input.signal,
+      );
       return {
         vectors: (json?.embeddings ?? []).map((e: any) => e.values),
         usage: { tokensIn: 0, tokensOut: 0 },
@@ -284,7 +334,9 @@ export function openrouterProvider(apiKey?: string): Provider {
     isConfigured: () => Boolean(apiKey),
 
     async complete(input: CompleteInput): Promise<CompleteOutput> {
-      const json = await postJson('openrouter', 'https://openrouter.ai/api/v1/chat/completions',
+      const json = await postJson(
+        'openrouter',
+        'https://openrouter.ai/api/v1/chat/completions',
         { authorization: `Bearer ${apiKey}`, 'x-title': 'Propto' },
         {
           model: input.model,
@@ -292,7 +344,9 @@ export function openrouterProvider(apiKey?: string): Provider {
           max_tokens: input.maxTokens ?? 4096,
           temperature: input.temperature ?? 0.2,
           ...(input.schema ? { response_format: { type: 'json_object' } } : {}),
-        }, input.signal);
+        },
+        input.signal,
+      );
 
       const text = json?.choices?.[0]?.message?.content ?? '';
       return {

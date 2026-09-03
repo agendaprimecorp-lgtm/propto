@@ -108,7 +108,9 @@ export async function getCovers(propertyIds: string[]): Promise<Map<string, Publ
 }
 
 export async function listSlugs(): Promise<Array<{ slug: string; published_at: string }>> {
-  return query(`select slug, published_at from public.public_properties order by published_at desc`);
+  return query(
+    `select slug, published_at from public.public_properties order by published_at desc`,
+  );
 }
 
 /**
@@ -120,9 +122,7 @@ export async function listSlugs(): Promise<Array<{ slug: string; published_at: s
  */
 function fallbackSalt(): string {
   if (process.env.NODE_ENV === 'production') {
-    throw new Error(
-      'SESSION_HASH_SALT não configurado. Sem ele o hash de sessão é reversível.',
-    );
+    throw new Error('SESSION_HASH_SALT não configurado. Sem ele o hash de sessão é reversível.');
   }
   return 'propto-dev';
 }
@@ -166,8 +166,13 @@ export async function submitLead(opts: {
   const rows = await query<{ submit_lead: string }>(
     'select public.submit_lead($1,$2,$3,$4,$5,$6,$7,$8) as submit_lead',
     [
-      opts.slug, opts.name, opts.phone ?? null, opts.email ?? null,
-      opts.message ?? null, opts.consent, opts.consentText,
+      opts.slug,
+      opts.name,
+      opts.phone ?? null,
+      opts.email ?? null,
+      opts.message ?? null,
+      opts.consent,
+      opts.consentText,
       JSON.stringify(opts.utm ?? {}),
     ],
   );
@@ -179,7 +184,9 @@ export async function submitLead(opts: {
 // ------------------------------------------------------------
 
 const BRL = new Intl.NumberFormat('pt-BR', {
-  style: 'currency', currency: 'BRL', maximumFractionDigits: 0,
+  style: 'currency',
+  currency: 'BRL',
+  maximumFractionDigits: 0,
 });
 
 export function money(v: string | number | null): string | null {
@@ -194,22 +201,46 @@ export function area(v: string | number | null): string | null {
 }
 
 export const TYPE_LABEL: Record<string, string> = {
-  apartamento: 'Apartamento', casa: 'Casa', casa_condominio: 'Casa em condomínio',
-  terreno: 'Terreno', chacara: 'Chácara', sitio: 'Sítio', fazenda: 'Fazenda',
-  sala_comercial: 'Sala comercial', loja: 'Loja', galpao: 'Galpão', predio: 'Prédio',
-  cobertura: 'Cobertura', flat: 'Flat', outro: 'Imóvel',
+  apartamento: 'Apartamento',
+  casa: 'Casa',
+  casa_condominio: 'Casa em condomínio',
+  terreno: 'Terreno',
+  chacara: 'Chácara',
+  sitio: 'Sítio',
+  fazenda: 'Fazenda',
+  sala_comercial: 'Sala comercial',
+  loja: 'Loja',
+  galpao: 'Galpão',
+  predio: 'Prédio',
+  cobertura: 'Cobertura',
+  flat: 'Flat',
+  outro: 'Imóvel',
 };
 
 export const ROOM_LABEL: Record<string, string> = {
-  fachada: 'Fachada', sala: 'Sala', cozinha: 'Cozinha', quarto: 'Dormitório',
-  suite: 'Suíte', banheiro: 'Banheiro', area_servico: 'Área de serviço',
-  varanda: 'Varanda', quintal: 'Quintal', piscina: 'Piscina', garagem: 'Garagem',
-  area_comum: 'Área comum', vista: 'Vista', planta: 'Planta', outro: 'Ambiente',
+  fachada: 'Fachada',
+  sala: 'Sala',
+  cozinha: 'Cozinha',
+  quarto: 'Dormitório',
+  suite: 'Suíte',
+  banheiro: 'Banheiro',
+  area_servico: 'Área de serviço',
+  varanda: 'Varanda',
+  quintal: 'Quintal',
+  piscina: 'Piscina',
+  garagem: 'Garagem',
+  area_comum: 'Área comum',
+  vista: 'Vista',
+  planta: 'Planta',
+  outro: 'Ambiente',
 };
 
 export const DEED_LABEL: Record<string, string> = {
-  escritura: 'Escritura', matricula: 'Matrícula', contrato: 'Contrato',
-  inventario: 'Em inventário', outro: 'Outra',
+  escritura: 'Escritura',
+  matricula: 'Matrícula',
+  contrato: 'Contrato',
+  inventario: 'Em inventário',
+  outro: 'Outra',
 };
 
 /**
@@ -226,11 +257,16 @@ export function mediaUrl(path: string | null): string | null {
 /** Cor estável a partir do ambiente, para o espaço reservado não piscar. */
 export function placeholderGradient(roomType: string | null, seed: string): string {
   const paletas: Record<string, [string, string]> = {
-    fachada: ['#8FA3B8', '#42586D'], sala: ['#D8C9B4', '#A48F73'],
-    cozinha: ['#C9D4D8', '#8FA5AD'], quarto: ['#CFC6D8', '#9C8EAE'],
-    suite: ['#C8BFD4', '#8E80A6'], banheiro: ['#CFDAD9', '#8FA6A4'],
-    varanda: ['#D3D8C4', '#98A17F'], piscina: ['#A9CBD8', '#5E8FA3'],
-    garagem: ['#C6C6C6', '#8A8A8A'], planta: ['#E3E0DA', '#B4AFA5'],
+    fachada: ['#8FA3B8', '#42586D'],
+    sala: ['#D8C9B4', '#A48F73'],
+    cozinha: ['#C9D4D8', '#8FA5AD'],
+    quarto: ['#CFC6D8', '#9C8EAE'],
+    suite: ['#C8BFD4', '#8E80A6'],
+    banheiro: ['#CFDAD9', '#8FA6A4'],
+    varanda: ['#D3D8C4', '#98A17F'],
+    piscina: ['#A9CBD8', '#5E8FA3'],
+    garagem: ['#C6C6C6', '#8A8A8A'],
+    planta: ['#E3E0DA', '#B4AFA5'],
   };
   const par = paletas[roomType ?? ''] ?? ['#C7C2BE', '#8C8580'];
   const ang = 110 + (seed.charCodeAt(0) % 60);

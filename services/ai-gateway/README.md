@@ -6,12 +6,12 @@ O gateway não conhece imóveis, multas nem municípios. Recebe uma tarefa, esco
 
 ## Por que existe
 
-| Sem gateway | Com gateway |
-|---|---|
-| Chave de provedor em 3 aplicações | Chave em 1 serviço |
-| Trocar de modelo = mudar código do produto | Trocar de modelo = mudar configuração |
-| Custo espalhado, sem visão consolidada | `ai_usage_events` com custo por produto, org, tarefa e modelo |
-| Cada produto reimplementa fallback | Cadeia de tentativa e disjuntor em um lugar |
+| Sem gateway                                | Com gateway                                                   |
+| ------------------------------------------ | ------------------------------------------------------------- |
+| Chave de provedor em 3 aplicações          | Chave em 1 serviço                                            |
+| Trocar de modelo = mudar código do produto | Trocar de modelo = mudar configuração                         |
+| Custo espalhado, sem visão consolidada     | `ai_usage_events` com custo por produto, org, tarefa e modelo |
+| Cada produto reimplementa fallback         | Cadeia de tentativa e disjuntor em um lugar                   |
 
 ## Subir
 
@@ -35,14 +35,14 @@ Sem `AI_GATEWAY_API_KEYS` o serviço recusa a subir — um gateway que aceita qu
 
 ## Endpoints
 
-| Rota | Uso |
-|---|---|
-| `POST /v1/complete` | Texto ou JSON estruturado (extração, redação, compliance) |
-| `POST /v1/vision` | Análise de imagem (classificação de foto) |
-| `POST /v1/transcribe` | Áudio → texto com segmentos |
-| `POST /v1/embed` | Vetores para matching |
-| `GET /v1/usage` | Consumo do produto e orçamento da organização |
-| `GET /health` · `GET /ready` | Sonda |
+| Rota                         | Uso                                                       |
+| ---------------------------- | --------------------------------------------------------- |
+| `POST /v1/complete`          | Texto ou JSON estruturado (extração, redação, compliance) |
+| `POST /v1/vision`            | Análise de imagem (classificação de foto)                 |
+| `POST /v1/transcribe`        | Áudio → texto com segmentos                               |
+| `POST /v1/embed`             | Vetores para matching                                     |
+| `GET /v1/usage`              | Consumo do produto e orçamento da organização             |
+| `GET /health` · `GET /ready` | Sonda                                                     |
 
 Cabeçalhos: `X-Api-Key` (obrigatório), `X-Product`, `X-Org-Id`, `X-Idempotency-Key`, `X-Job-Id`.
 

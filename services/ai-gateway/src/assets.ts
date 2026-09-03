@@ -31,7 +31,8 @@ const IPV4_INTERNO = [
 ];
 
 function ehHostInterno(host: string): boolean {
-  if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.internal')) return true;
+  if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.internal'))
+    return true;
   if (host === '::1' || host === '::') return true;
   // ULA (fc00::/7) e link-local (fe80::/10) em forma literal
   if (/^f[cd][0-9a-f]{2}:/i.test(host) || /^fe[89ab][0-9a-f]:/i.test(host)) return true;
@@ -108,7 +109,9 @@ export async function fetchAsset(
 
   return {
     bytes,
-    contentType: (res.headers.get('content-type') ?? 'application/octet-stream').split(';')[0]!.trim(),
+    contentType: (res.headers.get('content-type') ?? 'application/octet-stream')
+      .split(';')[0]!
+      .trim(),
   };
 }
 

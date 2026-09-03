@@ -15,7 +15,8 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const p = await getProperty(slug).catch(() => null);
 
   const titulo =
-    p?.title?.trim() || (p ? `${TYPE_LABEL[p.type] ?? 'Imóvel'} em ${p.neighborhood ?? p.city}` : 'Propto');
+    p?.title?.trim() ||
+    (p ? `${TYPE_LABEL[p.type] ?? 'Imóvel'} em ${p.neighborhood ?? p.city}` : 'Propto');
   const preco = p ? (money(p.price) ?? money(p.rent_price) ?? 'Sob consulta') : '';
   const local = p ? [p.neighborhood, p.city].filter(Boolean).join(', ') + ` — ${p.state}` : '';
   const specs = p
@@ -76,10 +77,19 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           <div style={{ fontSize: 28, color: '#A79C95' }}>{local}</div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 26, color: '#A79C95' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontSize: 26,
+            color: '#A79C95',
+          }}
+        >
           <div>{specs}</div>
           <div>
-            {p?.broker_creci ? `CRECI ${p.broker_creci}${p.broker_creci_state ? `/${p.broker_creci_state}` : ''}` : ''}
+            {p?.broker_creci
+              ? `CRECI ${p.broker_creci}${p.broker_creci_state ? `/${p.broker_creci_state}` : ''}`
+              : ''}
           </div>
         </div>
       </div>

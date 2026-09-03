@@ -6,17 +6,17 @@ Guia de 15 minutos, do zero até o sistema rodando na sua máquina.
 
 ## 1. O que você tem em mãos
 
-| Pasta | O que é | Estado |
-|---|---|---|
-| `apps/demo/index.html` | **Demonstração** — abre com dois cliques, sem instalar nada | ✅ pronta |
-| `supabase/migrations/` | Banco completo: organizações, imóveis, captura por voz, fila, mídia, página pública | ✅ 7 migrations |
-| `services/ai-gateway/` | Roteamento de IA, fallback, controle de custo | ✅ 25 testes |
-| `services/media-worker/` | Blur de rosto e placa, EXIF, derivadas | ✅ 22 testes |
-| `apps/web/` | **A página pública do imóvel**, lendo do banco de verdade | ✅ verificada no navegador |
-| `tests/` | 195 assertivas de banco e fila | ✅ verdes |
-| `docs/` | 12 documentos: produto, arquitetura, segurança, roadmap | ✅ |
-| `MASTER_PROMPT.md` | Instrução para o ambiente de desenvolvimento por IA | ✅ |
-| `apps/mobile`, `apps/admin` | App de captura do corretor, back-office | ⬜ a construir |
+| Pasta                       | O que é                                                                             | Estado                     |
+| --------------------------- | ----------------------------------------------------------------------------------- | -------------------------- |
+| `apps/demo/index.html`      | **Demonstração** — abre com dois cliques, sem instalar nada                         | ✅ pronta                  |
+| `supabase/migrations/`      | Banco completo: organizações, imóveis, captura por voz, fila, mídia, página pública | ✅ 7 migrations            |
+| `services/ai-gateway/`      | Roteamento de IA, fallback, controle de custo                                       | ✅ 25 testes               |
+| `services/media-worker/`    | Blur de rosto e placa, EXIF, derivadas                                              | ✅ 22 testes               |
+| `apps/web/`                 | **A página pública do imóvel**, lendo do banco de verdade                           | ✅ verificada no navegador |
+| `tests/`                    | 195 assertivas de banco e fila                                                      | ✅ verdes                  |
+| `docs/`                     | 12 documentos: produto, arquitetura, segurança, roadmap                             | ✅                         |
+| `MASTER_PROMPT.md`          | Instrução para o ambiente de desenvolvimento por IA                                 | ✅                         |
+| `apps/mobile`, `apps/admin` | App de captura do corretor, back-office                                             | ⬜ a construir             |
 
 **242 verificações automáticas, todas verdes**, mais 7 checagens da página pública no navegador. Nenhuma delas é promessa: todas foram executadas.
 
@@ -60,12 +60,12 @@ O WhatsApp `+55 19 99805-1985` já está nos botões. O domínio `propto.com.br`
 
 ### O que instalar antes
 
-| Ferramenta | Como conferir |
-|---|---|
-| Node.js 22 ou superior | `node -v` |
-| pnpm 9 ou superior | `npm i -g pnpm` e depois `pnpm -v` |
-| Docker Desktop | precisa estar **aberto** |
-| Supabase CLI | `npm i -g supabase` |
+| Ferramenta             | Como conferir                      |
+| ---------------------- | ---------------------------------- |
+| Node.js 22 ou superior | `node -v`                          |
+| pnpm 9 ou superior     | `npm i -g pnpm` e depois `pnpm -v` |
+| Docker Desktop         | precisa estar **aberto**           |
+| Supabase CLI           | `npm i -g supabase`                |
 
 ### Os comandos
 
@@ -149,16 +149,16 @@ A resposta lista os provedores configurados.
 
 ## 5. O que só você pode providenciar
 
-| Item | Por quê | Urgência |
-|---|---|---|
-| **Conta Apple Developer** (US$ 99/ano) | Publicar o app na App Store | **Alta** — a aprovação leva semanas |
-| **Conta Google Play** (US$ 25, uma vez) | Publicar no Android | **Alta** — mesmo motivo |
-| **Projeto Supabase** (plano Pro, ~US$ 25/mês) | Banco de produção com backup | Média |
-| **Chaves de API** (OpenAI, Anthropic, Google) | Fazer a IA funcionar | Média |
-| ~~**Domínio `propto.com.br`**~~ | ✅ comprado em 02/09/2026 | — |
-| **Marca "Propto" no INPI** | Proteger o nome | **Alta** — quanto antes, melhor |
-| **30 áudios reais** da sua carteira | Medir se a extração erra | Antes do piloto |
-| **100 fotos reais** com pessoas e carros | Medir se o blur deixa passar rosto | Antes do piloto |
+| Item                                          | Por quê                            | Urgência                            |
+| --------------------------------------------- | ---------------------------------- | ----------------------------------- |
+| **Conta Apple Developer** (US$ 99/ano)        | Publicar o app na App Store        | **Alta** — a aprovação leva semanas |
+| **Conta Google Play** (US$ 25, uma vez)       | Publicar no Android                | **Alta** — mesmo motivo             |
+| **Projeto Supabase** (plano Pro, ~US$ 25/mês) | Banco de produção com backup       | Média                               |
+| **Chaves de API** (OpenAI, Anthropic, Google) | Fazer a IA funcionar               | Média                               |
+| ~~**Domínio `propto.com.br`**~~               | ✅ comprado em 02/09/2026          | —                                   |
+| **Marca "Propto" no INPI**                    | Proteger o nome                    | **Alta** — quanto antes, melhor     |
+| **30 áudios reais** da sua carteira           | Medir se a extração erra           | Antes do piloto                     |
+| **100 fotos reais** com pessoas e carros      | Medir se o blur deixa passar rosto | Antes do piloto                     |
 
 As duas últimas linhas são as que eu não consigo substituir. O sistema está construído; a qualidade da IA só se mede com o seu material.
 
@@ -194,12 +194,12 @@ Esse último item é o mais importante e não é técnico. No plano Corretor a R
 
 ## 8. Quando algo der errado
 
-| Sintoma | Causa provável |
-|---|---|
-| `pnpm db:start` trava | Docker Desktop não está aberto |
-| `pnpm test:db` falha em tudo | O banco não subiu — rode `supabase status` |
-| Gateway responde `INVALID_API_KEY` | Falta `AI_GATEWAY_API_KEYS` no `.env.local` |
-| Gateway responde `BUDGET_EXCEEDED` | O orçamento de IA da organização acabou (`organizations.ai_budget_brl`) |
-| `pnpm test:media` falha ao instalar | O `sharp` precisa compilar — confira se o Node é 22+ |
+| Sintoma                             | Causa provável                                                          |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| `pnpm db:start` trava               | Docker Desktop não está aberto                                          |
+| `pnpm test:db` falha em tudo        | O banco não subiu — rode `supabase status`                              |
+| Gateway responde `INVALID_API_KEY`  | Falta `AI_GATEWAY_API_KEYS` no `.env.local`                             |
+| Gateway responde `BUDGET_EXCEEDED`  | O orçamento de IA da organização acabou (`organizations.ai_budget_brl`) |
+| `pnpm test:media` falha ao instalar | O `sharp` precisa compilar — confira se o Node é 22+                    |
 
 Se travar, me mande o comando e a saída completa. Não tente contornar mexendo no banco pelo Studio: toda mudança de estrutura é uma migration versionada, e alterar por fora quebra a próxima aplicação.

@@ -11,24 +11,24 @@ Sistema operacional do corretor de imóveis brasileiro. Captura inteligente de i
 
 ## Documentação
 
-| Documento | Conteúdo |
-|---|---|
-| [`COMECE_AQUI.md`](./COMECE_AQUI.md) | **Guia de 15 minutos: da demonstração ao sistema rodando** |
-| [`site/`](./site/) | **Site pronto para o Netlify** — vendas, demonstração, exemplo de anúncio, marca |
-| [`brand/MARCA.md`](./brand/MARCA.md) | Identidade visual: símbolo, cores, tipografia, voz |
-| [`MASTER_PROMPT.md`](./MASTER_PROMPT.md) | Instrução operacional para o ambiente de desenvolvimento por IA |
-| [`docs/PRD.md`](./docs/PRD.md) | Problema, escopo, requisitos, critérios de sucesso |
-| [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) | Stack, estrutura, fluxos, escalabilidade |
-| [`docs/DATABASE.md`](./docs/DATABASE.md) | Schema completo, RLS, migrations |
-| [`docs/API.md`](./docs/API.md) | Contratos REST, RPC, Realtime, AI Gateway |
-| [`docs/AI_AGENTS.md`](./docs/AI_AGENTS.md) | Os 9 agentes, prompts, schemas, avaliação |
-| [`docs/SECURITY.md`](./docs/SECURITY.md) | Ameaças, LGPD, isolamento, compliance |
-| [`docs/DESIGN_SYSTEM.md`](./docs/DESIGN_SYSTEM.md) | Tokens, componentes, padrões de UI |
-| [`docs/PRODUCT_METRICS.md`](./docs/PRODUCT_METRICS.md) | Métricas, painéis, portões de decisão |
-| [`docs/ROADMAP.md`](./docs/ROADMAP.md) | Sprints 0–10 com DoD |
-| [`docs/BACKLOG.md`](./docs/BACKLOG.md) | Épicos e histórias com critérios de aceite |
-| [`docs/DECISIONS.md`](./docs/DECISIONS.md) | ADRs — decisões de arquitetura |
-| [`docs/incident-template.md`](./docs/incident-template.md) | Modelo de resposta a incidente (LGPD) |
+| Documento                                                  | Conteúdo                                                                         |
+| ---------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [`COMECE_AQUI.md`](./COMECE_AQUI.md)                       | **Guia de 15 minutos: da demonstração ao sistema rodando**                       |
+| [`site/`](./site/)                                         | **Site pronto para o Netlify** — vendas, demonstração, exemplo de anúncio, marca |
+| [`brand/MARCA.md`](./brand/MARCA.md)                       | Identidade visual: símbolo, cores, tipografia, voz                               |
+| [`MASTER_PROMPT.md`](./MASTER_PROMPT.md)                   | Instrução operacional para o ambiente de desenvolvimento por IA                  |
+| [`docs/PRD.md`](./docs/PRD.md)                             | Problema, escopo, requisitos, critérios de sucesso                               |
+| [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)           | Stack, estrutura, fluxos, escalabilidade                                         |
+| [`docs/DATABASE.md`](./docs/DATABASE.md)                   | Schema completo, RLS, migrations                                                 |
+| [`docs/API.md`](./docs/API.md)                             | Contratos REST, RPC, Realtime, AI Gateway                                        |
+| [`docs/AI_AGENTS.md`](./docs/AI_AGENTS.md)                 | Os 9 agentes, prompts, schemas, avaliação                                        |
+| [`docs/SECURITY.md`](./docs/SECURITY.md)                   | Ameaças, LGPD, isolamento, compliance                                            |
+| [`docs/DESIGN_SYSTEM.md`](./docs/DESIGN_SYSTEM.md)         | Tokens, componentes, padrões de UI                                               |
+| [`docs/PRODUCT_METRICS.md`](./docs/PRODUCT_METRICS.md)     | Métricas, painéis, portões de decisão                                            |
+| [`docs/ROADMAP.md`](./docs/ROADMAP.md)                     | Sprints 0–10 com DoD                                                             |
+| [`docs/BACKLOG.md`](./docs/BACKLOG.md)                     | Épicos e histórias com critérios de aceite                                       |
+| [`docs/DECISIONS.md`](./docs/DECISIONS.md)                 | ADRs — decisões de arquitetura                                                   |
+| [`docs/incident-template.md`](./docs/incident-template.md) | Modelo de resposta a incidente (LGPD)                                            |
 
 ## Estrutura
 
@@ -93,23 +93,23 @@ Alvo: um desenvolvedor novo sobe tudo em menos de 10 minutos. Se demorar mais, o
 
 ## Variáveis de ambiente
 
-| Variável | Onde | Descrição |
-|---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | web, admin | URL do projeto |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | web, admin | Chave pública (protegida por RLS) |
-| `EXPO_PUBLIC_SUPABASE_URL` | mobile | idem |
-| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | mobile | idem |
-| `SUPABASE_SERVICE_ROLE_KEY` | workers, functions | **Nunca no cliente** |
-| `AI_GATEWAY_URL` | workers | URL do gateway |
-| `AI_GATEWAY_API_KEY` | workers | Chave do produto Propto |
-| `OPENAI_API_KEY` | **só o gateway** | Whisper + GPT |
-| `ANTHROPIC_API_KEY` | **só o gateway** | Claude |
-| `GOOGLE_AI_API_KEY` | **só o gateway** | Gemini |
-| `OPENROUTER_API_KEY` | **só o gateway** | Fallback |
-| `ENCRYPTION_KEY` | workers, web | AES-256 para CPF/CNPJ de proprietário |
-| `SESSION_HASH_SALT` | web | Salt de `property_views`, rotação mensal |
-| `SENTRY_DSN` | todos | Observabilidade |
-| `TURNSTILE_SECRET_KEY` | web | CAPTCHA do formulário público |
+| Variável                        | Onde               | Descrição                                |
+| ------------------------------- | ------------------ | ---------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | web, admin         | URL do projeto                           |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | web, admin         | Chave pública (protegida por RLS)        |
+| `EXPO_PUBLIC_SUPABASE_URL`      | mobile             | idem                                     |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | mobile             | idem                                     |
+| `SUPABASE_SERVICE_ROLE_KEY`     | workers, functions | **Nunca no cliente**                     |
+| `AI_GATEWAY_URL`                | workers            | URL do gateway                           |
+| `AI_GATEWAY_API_KEY`            | workers            | Chave do produto Propto                  |
+| `OPENAI_API_KEY`                | **só o gateway**   | Whisper + GPT                            |
+| `ANTHROPIC_API_KEY`             | **só o gateway**   | Claude                                   |
+| `GOOGLE_AI_API_KEY`             | **só o gateway**   | Gemini                                   |
+| `OPENROUTER_API_KEY`            | **só o gateway**   | Fallback                                 |
+| `ENCRYPTION_KEY`                | workers, web       | AES-256 para CPF/CNPJ de proprietário    |
+| `SESSION_HASH_SALT`             | web                | Salt de `property_views`, rotação mensal |
+| `SENTRY_DSN`                    | todos              | Observabilidade                          |
+| `TURNSTILE_SECRET_KEY`          | web                | CAPTCHA do formulário público            |
 
 > Nenhuma chave de provedor de IA existe fora de `services/ai-gateway`. Ver [SECURITY §7](./docs/SECURITY.md).
 
@@ -133,15 +133,15 @@ pnpm db:start | db:migrate | db:reset | db:types
 
 ## O que já está pronto e verificado
 
-| Camada | Estado | Verificação |
-|---|---|---|
-| Banco (migrations 0001–0007) | ✅ organizações, perfis, imóveis, fila, captura por voz, mídia, página pública | 165 assertivas de RLS e comportamento |
-| Fila assíncrona | ✅ `SKIP LOCKED`, backoff, `dead_letter`, orçamento | 30 assertivas, 8 workers concorrentes reais |
-| AI Gateway | ✅ roteamento, fallback, disjuntor, custo, cache, idempotência | 25 testes; servidor validado por HTTP contra Postgres |
-| media-worker | ✅ blur de rosto/placa, EXIF, derivadas, duplicadas | 22 testes; blur conferido pixel a pixel |
-| `apps/web` | ✅ página pública do imóvel lendo do banco, lead com LGPD, métricas sem IP | 7 checagens no navegador; lead gravado de ponta a ponta |
-| Schemas Zod | ✅ organização, perfil, imóvel | `tsc --noEmit` em modo estrito |
-| Seed de desenvolvimento | ✅ 3 usuários, 2 organizações, 4 imóveis | idempotente |
+| Camada                       | Estado                                                                         | Verificação                                             |
+| ---------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| Banco (migrations 0001–0007) | ✅ organizações, perfis, imóveis, fila, captura por voz, mídia, página pública | 165 assertivas de RLS e comportamento                   |
+| Fila assíncrona              | ✅ `SKIP LOCKED`, backoff, `dead_letter`, orçamento                            | 30 assertivas, 8 workers concorrentes reais             |
+| AI Gateway                   | ✅ roteamento, fallback, disjuntor, custo, cache, idempotência                 | 25 testes; servidor validado por HTTP contra Postgres   |
+| media-worker                 | ✅ blur de rosto/placa, EXIF, derivadas, duplicadas                            | 22 testes; blur conferido pixel a pixel                 |
+| `apps/web`                   | ✅ página pública do imóvel lendo do banco, lead com LGPD, métricas sem IP     | 7 checagens no navegador; lead gravado de ponta a ponta |
+| Schemas Zod                  | ✅ organização, perfil, imóvel                                                 | `tsc --noEmit` em modo estrito                          |
+| Seed de desenvolvimento      | ✅ 3 usuários, 2 organizações, 4 imóveis                                       | idempotente                                             |
 
 **Ainda não construído:** `apps/mobile` (captura por voz e foto), `apps/admin` (back-office), o painel do corretor dentro de `apps/web`, `services/matching-worker`, `services/video-worker`, migrations 0008–0010. Ver [ROADMAP](./docs/ROADMAP.md).
 
@@ -154,13 +154,13 @@ pnpm verify      # formatação, lint, tipos, testes, gateway e banco
 
 ### Material de apresentação
 
-| Arquivo | O que é |
-|---|---|
-| `apresentacao/Propto-apresentacao.pdf` | Apresentação institucional, 18 telas — para mandar no WhatsApp |
-| `apresentacao/Propto-apresentacao.pptx` | A mesma, editável, para apresentar em reunião |
-| `apresentacao/Propto-o-que-falta.pdf` | O que falta para o produto ser vendável em escala |
+| Arquivo                                           | O que é                                                           |
+| ------------------------------------------------- | ----------------------------------------------------------------- |
+| `apresentacao/Propto-apresentacao.pdf`            | Apresentação institucional, 18 telas — para mandar no WhatsApp    |
+| `apresentacao/Propto-apresentacao.pptx`           | A mesma, editável, para apresentar em reunião                     |
+| `apresentacao/Propto-o-que-falta.pdf`             | O que falta para o produto ser vendável em escala                 |
 | `apresentacao/deck-body.html` · `plano-body.html` | As fontes das duas peças, para atualizar quando o produto evoluir |
-| `apresentacao/gerar-pptx.mjs` | Regera o PowerPoint a partir do mesmo conteúdo |
+| `apresentacao/gerar-pptx.mjs`                     | Regera o PowerPoint a partir do mesmo conteúdo                    |
 
 > As fontes Sora, Inter e JetBrains Mono são gratuitas (Google Fonts). Instale-as
 > antes de abrir o `.pptx`, senão o PowerPoint substitui por outra fonte.

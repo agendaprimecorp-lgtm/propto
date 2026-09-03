@@ -15,14 +15,14 @@
 
 O corretor autônomo brasileiro perde a maior parte do seu tempo produtivo em trabalho administrativo, não em venda.
 
-| Etapa hoje | Tempo médio | Qualidade |
-|---|---|---|
-| Visita e anotação do imóvel | 30–60 min | Caderno, WhatsApp, memória |
-| Digitação do cadastro | 20–40 min | Campos faltando, dados inconsistentes |
-| Tratamento das fotos | 30–90 min | Foto escura, torta, com placa/rosto |
-| Escrita do anúncio | 20–45 min | Texto genérico, copiado, com erro |
-| Publicação em canais | 15–30 min | Retrabalho manual por canal |
-| Follow-up com interessados | Disperso | Lead esfria, nada é registrado |
+| Etapa hoje                  | Tempo médio | Qualidade                             |
+| --------------------------- | ----------- | ------------------------------------- |
+| Visita e anotação do imóvel | 30–60 min   | Caderno, WhatsApp, memória            |
+| Digitação do cadastro       | 20–40 min   | Campos faltando, dados inconsistentes |
+| Tratamento das fotos        | 30–90 min   | Foto escura, torta, com placa/rosto   |
+| Escrita do anúncio          | 20–45 min   | Texto genérico, copiado, com erro     |
+| Publicação em canais        | 15–30 min   | Retrabalho manual por canal           |
+| Follow-up com interessados  | Disperso    | Lead esfria, nada é registrado        |
 
 **Total: 2 a 5 horas por imóvel.** Resultado prático: carteira pequena, anúncio ruim, lead perdido.
 
@@ -39,6 +39,7 @@ Isso também define o fosso competitivo: quem tem a captura tem o dado; quem tem
 ## 4. Usuário-alvo
 
 ### ICP do MVP — Corretor autônomo
+
 - CRECI ativo, atua sozinho ou com 1 assistente
 - 5 a 60 imóveis em carteira
 - Ticket R$ 250 mil a R$ 50 milhões (foco alto padrão na região de Campinas/Sumaré)
@@ -47,12 +48,14 @@ Isso também define o fosso competitivo: quem tem a captura tem o dado; quem tem
 - Não tem equipe de marketing e não vai contratar uma
 
 ### Fora do escopo do MVP
+
 - Imobiliária com equipe, split de comissão, carteira compartilhada (v2 — o modelo de dados já nasce preparado, ver ADR-004)
 - Incorporadora / lançamento / tabela de vendas
 - Locação com gestão de contrato e boleto
 - Marketplace público de compradores
 
 ### Usuário-zero
+
 Rodrigo (CRECI-SP) opera o produto na própria carteira durante todo o desenvolvimento. Nenhum sprint é aceito sem uso real.
 
 ## 5. Jornada-alvo
@@ -93,6 +96,7 @@ Rodrigo (CRECI-SP) opera o produto na própria carteira durante todo o desenvolv
 ## 6. Escopo do MVP (Sprints 0–10)
 
 ### Dentro
+
 1. Autenticação, perfil do corretor, validação de CRECI (declaratória com upload)
 2. Cadastro de imóvel — manual completo e assistido por voz
 3. Captura por voz com transcrição pt-BR e extração estruturada revisável
@@ -105,6 +109,7 @@ Rodrigo (CRECI-SP) opera o produto na própria carteira durante todo o desenvolv
 10. Piloto com 5 a 10 corretores reais
 
 ### Fora (declarado — não negociar durante os sprints)
+
 - Integração automática com portais (VivaReal/ZAP/OLX) — **v2**, exige contrato comercial
 - Tour virtual 360° — **v2**
 - Assinatura eletrônica de contratos — **v2**
@@ -115,6 +120,7 @@ Rodrigo (CRECI-SP) opera o produto na própria carteira durante todo o desenvolv
 ## 7. Requisitos funcionais por módulo
 
 ### 7.1 Autenticação e conta (Sprint 1)
+
 - RF-01 Login por e-mail com magic link e por telefone com OTP
 - RF-02 Perfil: nome, CRECI, foto, telefone/WhatsApp, cidade de atuação, bio
 - RF-03 Toda conta nasce dentro de uma `organization` (org individual por padrão)
@@ -122,6 +128,7 @@ Rodrigo (CRECI-SP) opera o produto na própria carteira durante todo o desenvolv
 - RF-05 Página pública só publica imóvel de corretor com CRECI informado
 
 ### 7.2 Imóvel (Sprint 2)
+
 - RF-10 CRUD de imóvel com estados: `rascunho → em_processamento → revisao → publicado → pausado → vendido | arquivado`
 - RF-11 Campos: finalidade (venda/locação), tipo, endereço completo + geolocalização, áreas (total/útil/terreno), quartos, suítes, banheiros, vagas, andar, ano, condomínio, IPTU, preço, aceita permuta, aceita financiamento, mobiliado, características (multi-select), restrições
 - RF-12 Endereço com privacidade: exibição pública configurável (`exato | rua | bairro`)
@@ -129,6 +136,7 @@ Rodrigo (CRECI-SP) opera o produto na própria carteira durante todo o desenvolv
 - RF-14 Toda alteração relevante gera registro em `audit_log`
 
 ### 7.3 Captura por voz (Sprint 3)
+
 - RF-20 Gravação com o app em background e com tela bloqueada
 - RF-21 Áudio gravado offline entra em fila e sobe quando houver rede
 - RF-22 Transcrição pt-BR com timestamps
@@ -138,6 +146,7 @@ Rodrigo (CRECI-SP) opera o produto na própria carteira durante todo o desenvolv
 - RF-26 Corretor pode gravar complementos e reprocessar sem perder as edições manuais
 
 ### 7.4 Fotos e mídia (Sprint 4)
+
 - RF-30 Captura múltipla e seleção da galeria, até 40 fotos por imóvel
 - RF-31 Upload resiliente: chunk, retomada, fila offline, feedback de progresso
 - RF-32 Classificação automática de ambiente (sala, cozinha, quarto, banheiro, área externa, fachada, planta)
@@ -149,6 +158,7 @@ Rodrigo (CRECI-SP) opera o produto na própria carteira durante todo o desenvolv
 - RF-38 Original preservado; tratamento é sempre não destrutivo
 
 ### 7.5 Conteúdo por IA (Sprint 5)
+
 - RF-40 Geração de título (até 70 caracteres), descrição longa e de 3 a 6 bullets de destaque
 - RF-41 Variações por canal: portal, Instagram (legenda + hashtags), WhatsApp (mensagem curta)
 - RF-42 Todo texto passa pelo agente de compliance antes de ficar disponível
@@ -157,6 +167,7 @@ Rodrigo (CRECI-SP) opera o produto na própria carteira durante todo o desenvolv
 - RF-45 Nenhum texto é publicado sem confirmação humana no MVP
 
 ### 7.6 Página pública (Sprint 6)
+
 - RF-50 URL `propto.com.br/i/{slug}` com SSR, meta tags e Open Graph dinâmico
 - RF-51 Galeria, ficha técnica, mapa, descrição, dados do corretor com CRECI
 - RF-52 CTA primário WhatsApp com mensagem pré-preenchida; CTA secundário formulário
@@ -165,6 +176,7 @@ Rodrigo (CRECI-SP) opera o produto na própria carteira durante todo o desenvolv
 - RF-55 Rodapé com aviso LGPD e política de privacidade
 
 ### 7.7 CRM (Sprint 7)
+
 - RF-60 Contatos com origem, tags, consentimento LGPD e histórico
 - RF-61 Negócios em kanban: `novo → contato_feito → visita_agendada → visita_feita → proposta → negociacao → fechado_ganho | fechado_perdido`
 - RF-62 Atividades: ligação, WhatsApp, e-mail, visita, nota — com data e resultado
@@ -173,6 +185,7 @@ Rodrigo (CRECI-SP) opera o produto na própria carteira durante todo o desenvolv
 - RF-65 Alerta de lead sem contato há mais de 24h
 
 ### 7.8 Matching (Sprint 8)
+
 - RF-70 Score de compatibilidade comprador × imóvel (0–100)
 - RF-71 Combina regras rígidas (preço, cidade, quartos, vagas) com similaridade semântica (pgvector)
 - RF-72 Cada match traz justificativa em texto: por que casa e o que não casa
@@ -181,6 +194,7 @@ Rodrigo (CRECI-SP) opera o produto na própria carteira durante todo o desenvolv
 - RF-75 Corretor marca match como útil / não útil (feedback supervisionado)
 
 ### 7.9 AI Gateway (Sprint 9)
+
 - RF-80 Serviço independente, autenticado por API key, multi-produto (Propto, VeriMulta, PrimeGov IA)
 - RF-81 Roteamento por tarefa e por política de custo/qualidade
 - RF-82 Fallback automático entre provedores em erro, timeout ou rate limit
@@ -191,27 +205,27 @@ Rodrigo (CRECI-SP) opera o produto na própria carteira durante todo o desenvolv
 
 ## 8. Requisitos não funcionais
 
-| ID | Requisito | Alvo |
-|---|---|---|
-| RNF-01 | Página pública LCP (4G) | < 2,5 s |
-| RNF-02 | Transcrição de áudio de 5 min | < 60 s p95 |
-| RNF-03 | Pipeline completo de 20 fotos | < 5 min p95 |
-| RNF-04 | Disponibilidade da página pública | 99,5 % |
-| RNF-05 | Custo de IA por imóvel processado | < R$ 3,00 |
-| RNF-06 | App funciona sem rede para captura | 100 % da captura |
-| RNF-07 | Cobertura de teste em regras de negócio | ≥ 70 % |
-| RNF-08 | Toda tabela com dado de cliente tem RLS ativa | 100 % |
-| RNF-09 | Tempo de resposta PostgREST p95 | < 300 ms |
-| RNF-10 | Acessibilidade da página pública | WCAG 2.1 AA |
+| ID     | Requisito                                     | Alvo             |
+| ------ | --------------------------------------------- | ---------------- |
+| RNF-01 | Página pública LCP (4G)                       | < 2,5 s          |
+| RNF-02 | Transcrição de áudio de 5 min                 | < 60 s p95       |
+| RNF-03 | Pipeline completo de 20 fotos                 | < 5 min p95      |
+| RNF-04 | Disponibilidade da página pública             | 99,5 %           |
+| RNF-05 | Custo de IA por imóvel processado             | < R$ 3,00        |
+| RNF-06 | App funciona sem rede para captura            | 100 % da captura |
+| RNF-07 | Cobertura de teste em regras de negócio       | ≥ 70 %           |
+| RNF-08 | Toda tabela com dado de cliente tem RLS ativa | 100 %            |
+| RNF-09 | Tempo de resposta PostgREST p95               | < 300 ms         |
+| RNF-10 | Acessibilidade da página pública              | WCAG 2.1 AA      |
 
 ## 9. Modelo de negócio (hipótese a validar no piloto)
 
-| Plano | Preço/mês | Imóveis ativos | Capturas IA/mês |
-|---|---|---|---|
-| Free | R$ 0 | 3 | 3 |
-| Corretor | R$ 97 | 30 | 40 |
-| Corretor Pro | R$ 197 | 100 | 150 |
-| Imobiliária (v2) | R$ 497+ | ilimitado | 500 + usuários |
+| Plano            | Preço/mês | Imóveis ativos | Capturas IA/mês |
+| ---------------- | --------- | -------------- | --------------- |
+| Free             | R$ 0      | 3              | 3               |
+| Corretor         | R$ 97     | 30             | 40              |
+| Corretor Pro     | R$ 197    | 100            | 150             |
+| Imobiliária (v2) | R$ 497+   | ilimitado      | 500 + usuários  |
 
 Créditos de IA excedentes cobrados à parte.
 
@@ -223,15 +237,15 @@ teto do plano, o preço sobe ou o limite cai — decisão do Portão 2.
 
 ## 10. Riscos e mitigação
 
-| Risco | Impacto | Mitigação |
-|---|---|---|
-| Transcrição erra jargão imobiliário e números | Alto | Prompt com glossário pt-BR imobiliário + revisão obrigatória com áudio-âncora (RF-24) |
-| Custo de IA estoura a margem | Alto | AI Gateway com orçamento rígido, cache semântico e roteamento por custo desde o Sprint 3 (não esperar o 9) |
-| IA inventa característica que o imóvel não tem | **Crítico — risco jurídico** | Agente de compliance + regra "só afirma o que está no dado" + confirmação humana antes de publicar |
-| Direito de imagem e placa de veículo em foto | Alto | Blur automático obrigatório, não opcional |
-| Corretor não confia no texto gerado | Alto | Edição livre, regeneração com instrução, nunca publicação automática |
-| 10 sprints antes de qualquer receita | **Alto** | Ver §11 |
-| Dependência de um único provedor de IA | Médio | Multi-provedor desde o início (ADR-007) |
+| Risco                                          | Impacto                      | Mitigação                                                                                                  |
+| ---------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Transcrição erra jargão imobiliário e números  | Alto                         | Prompt com glossário pt-BR imobiliário + revisão obrigatória com áudio-âncora (RF-24)                      |
+| Custo de IA estoura a margem                   | Alto                         | AI Gateway com orçamento rígido, cache semântico e roteamento por custo desde o Sprint 3 (não esperar o 9) |
+| IA inventa característica que o imóvel não tem | **Crítico — risco jurídico** | Agente de compliance + regra "só afirma o que está no dado" + confirmação humana antes de publicar         |
+| Direito de imagem e placa de veículo em foto   | Alto                         | Blur automático obrigatório, não opcional                                                                  |
+| Corretor não confia no texto gerado            | Alto                         | Edição livre, regeneração com instrução, nunca publicação automática                                       |
+| 10 sprints antes de qualquer receita           | **Alto**                     | Ver §11                                                                                                    |
+| Dependência de um único provedor de IA         | Médio                        | Multi-provedor desde o início (ADR-007)                                                                    |
 
 ## 11. Correção de rota recomendada (leia antes do Sprint 0)
 

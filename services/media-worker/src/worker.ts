@@ -46,7 +46,10 @@ export interface WorkerDeps {
 
 export const DUPLICATE_THRESHOLD = 8;
 
-export async function processMediaJob(deps: WorkerDeps, job: MediaJob): Promise<{
+export async function processMediaJob(
+  deps: WorkerDeps,
+  job: MediaJob,
+): Promise<{
   status: 'pronta' | 'descartada';
   blurredRegions: number;
   duplicateOf?: string;
@@ -65,9 +68,9 @@ export async function processMediaJob(deps: WorkerDeps, job: MediaJob): Promise<
     return { status: 'descartada', blurredRegions: 0 };
   }
 
-  await deps.sql.query(
-    `update public.property_media set status = 'processando' where id = $1`, [mediaId],
-  );
+  await deps.sql.query(`update public.property_media set status = 'processando' where id = $1`, [
+    mediaId,
+  ]);
 
   const original = await deps.storage.get('raw', media.storage_path_raw);
 
@@ -158,7 +161,10 @@ export async function processMediaJob(deps: WorkerDeps, job: MediaJob): Promise<
 }
 
 async function findDuplicate(
-  sql: SqlClient, propertyId: string, selfId: string, phash: string,
+  sql: SqlClient,
+  propertyId: string,
+  selfId: string,
+  phash: string,
 ): Promise<string | undefined> {
   const { rows } = await sql.query(
     `select id, phash from public.property_media
@@ -181,8 +187,10 @@ export async function runOnce(deps: WorkerDeps, batch = 3): Promise<number> {
   for (const job of rows as MediaJob[]) {
     try {
       const out = await processMediaJob(deps, job);
-      await deps.sql.query(`select public.complete_media_job($1, $2)`,
-        [job.id, JSON.stringify(out)]);
+      await deps.sql.query(`select public.complete_media_job($1, $2)`, [
+        job.id,
+        JSON.stringify(out),
+      ]);
     } catch (err) {
       const message = (err as Error).message;
       await deps.sql.query(

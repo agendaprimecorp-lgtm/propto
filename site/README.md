@@ -27,15 +27,15 @@ registros de DNS para apontar no seu registrador. O certificado HTTPS é emitido
 
 ## O que tem aqui
 
-| Arquivo | O que é |
-|---|---|
-| `index.html` | Página de vendas — corretor e proprietário |
-| `demo.html` | Demonstração interativa das quatro etapas |
-| `imovel.html` | Exemplo de anúncio, como o comprador vê |
-| `marca.html` | Guia da identidade visual |
-| `assets/propto.css` | Tokens e componentes — mude a cor aqui e muda tudo |
-| `brand/` | Logos, ícones e imagem de compartilhamento |
-| `netlify.toml` · `_headers` · `_redirects` | Configuração |
+| Arquivo                                    | O que é                                            |
+| ------------------------------------------ | -------------------------------------------------- |
+| `index.html`                               | Página de vendas — corretor e proprietário         |
+| `demo.html`                                | Demonstração interativa das quatro etapas          |
+| `imovel.html`                              | Exemplo de anúncio, como o comprador vê            |
+| `marca.html`                               | Guia da identidade visual                          |
+| `assets/propto.css`                        | Tokens e componentes — mude a cor aqui e muda tudo |
+| `brand/`                                   | Logos, ícones e imagem de compartilhamento         |
+| `netlify.toml` · `_headers` · `_redirects` | Configuração                                       |
 
 ## Antes de divulgar
 
