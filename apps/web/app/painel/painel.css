@@ -435,3 +435,150 @@
 .btn.line:hover {
   background: var(--surface-2);
 }
+
+/* ---------- imóvel ---------- */
+
+.migalha {
+  font-size: 13px;
+  color: var(--faint);
+  margin: 0 0 14px;
+}
+.migalha a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.migalha a:hover {
+  text-decoration: underline;
+}
+
+/* O card inteiro da carteira leva ao imóvel. */
+a.li-principal {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+a.li-principal:hover .li-titulo {
+  text-decoration: underline;
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 0 0 26px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+}
+.acao {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 260px;
+}
+.acao-explica {
+  font-size: 12.5px;
+  color: var(--faint);
+  line-height: 1.45;
+}
+.btn.cuidado {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+}
+
+.painel-colunas {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 34px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .painel-colunas {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+.sec {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 26px 0 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--line);
+}
+.painel-colunas section > .sec:first-child,
+.painel-colunas aside > .sec:first-child {
+  margin-top: 0;
+}
+
+.nada {
+  font-size: 13.5px;
+  color: var(--faint);
+  margin: 0 0 12px;
+}
+
+.lista-fotos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.lista-fotos li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+}
+.lista-fotos li:last-child {
+  border-bottom: none;
+}
+.foto-legenda {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.foto-legenda b {
+  color: var(--muted);
+  font-weight: 500;
+}
+.foto-nota {
+  font-size: 12.5px;
+  color: var(--faint);
+  flex: none;
+}
+
+.numeros {
+  display: flex;
+  gap: 26px;
+  flex-wrap: wrap;
+}
+.numeros div {
+  display: flex;
+  flex-direction: column;
+}
+.numeros b {
+  font-family: var(--display);
+  font-size: 26px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.numeros span {
+  font-size: 12.5px;
+  color: var(--faint);
+}
+
+.lista-leads.compacta .linha-lead {
+  padding: 12px 14px;
+}
+.lista-leads.compacta .lead-nome {
+  font-size: 15px;
+}

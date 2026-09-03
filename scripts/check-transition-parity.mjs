@@ -13,6 +13,7 @@ import { readFileSync } from 'node:fs';
 
 const SQL = 'supabase/migrations/0003_properties_features_owners.sql';
 const TS = 'packages/validation/src/property.ts';
+const PAINEL = 'apps/web/lib/acoes-imovel.ts';
 
 /** `when 'rascunho' then p_to in ('a','b')` → { rascunho: ['a','b'] } */
 function parseSql(text) {
@@ -42,8 +43,25 @@ function parseTs(text) {
   return out;
 }
 
+/**
+ * `{ de: 'revisao', para: 'publicado', ... }` → [['revisao','publicado'], ...]
+ *
+ * O painel oferece um SUBCONJUNTO do que o banco permite: nem toda
+ * transição válida vira botão. O que não pode acontecer é o contrário —
+ * botão que o banco recusa é promessa quebrada na cara do corretor.
+ */
+function parsePainel(text) {
+  const bloco = text.match(/ACOES_DE_STATUS[\s\S]*?=\s*\[([\s\S]*?)\n\];/);
+  if (!bloco) throw new Error(`ACOES_DE_STATUS não encontrado em ${PAINEL}`);
+  return [...bloco[1].matchAll(/de:\s*'([a-z_]+)',\s*para:\s*'([a-z_]+)'/gs)].map((m) => [
+    m[1],
+    m[2],
+  ]);
+}
+
 const sql = parseSql(readFileSync(SQL, 'utf8'));
 const ts = parseTs(readFileSync(TS, 'utf8'));
+const painel = parsePainel(readFileSync(PAINEL, 'utf8'));
 
 const states = [...new Set([...Object.keys(sql), ...Object.keys(ts)])].sort();
 const problems = [];
@@ -57,14 +75,26 @@ for (const s of states) {
     problems.push(`"${s}": SQL permite [${a}] · TypeScript permite [${b}]`);
 }
 
+// O painel pode oferecer menos que o banco permite, nunca mais.
+for (const [de, para] of painel) {
+  if (!sql[de]) {
+    problems.push(`painel oferece ação a partir de "${de}", estado que o SQL não conhece`);
+  } else if (!sql[de].includes(para)) {
+    problems.push(
+      `painel oferece "${de}" → "${para}", que o banco recusa (permitidos: ${sql[de]})`,
+    );
+  }
+}
+
 if (problems.length > 0) {
   console.error('\n❌ Máquina de estados divergente entre banco e TypeScript:\n');
   for (const p of problems) console.error(`   • ${p}`);
-  console.error(`\nO banco (${SQL}) é a autoridade. Ajuste ${TS}.\n`);
+  console.error(`\nO banco (${SQL}) é a autoridade. Ajuste ${TS} ou ${PAINEL}.\n`);
   process.exit(1);
 }
 
 console.log(
   `✅ Máquina de estados coerente entre banco e TypeScript (${states.length} estados, ` +
-    `${Object.values(sql).reduce((n, v) => n + v.length, 0)} transições).`,
+    `${Object.values(sql).reduce((n, v) => n + v.length, 0)} transições) e o painel ` +
+    `oferece ${painel.length} ação(ões), todas permitidas pelo banco.`,
 );

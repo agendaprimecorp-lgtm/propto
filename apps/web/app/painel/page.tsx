@@ -64,7 +64,7 @@ export default async function Carteira() {
 
             return (
               <li key={im.id} className="linha-imovel">
-                <div className="li-principal">
+                <Link href={`/painel/imoveis/${im.id}`} className="li-principal">
                   <div className="li-topo">
                     <span className="ref">{im.reference_code}</span>
                     {status && (
@@ -91,7 +91,7 @@ export default async function Carteira() {
                       .filter(Boolean)
                       .join('  ·  ') || 'Ficha ainda incompleta'}
                   </p>
-                </div>
+                </Link>
 
                 <div className="li-lado">
                   <div className="li-preco">{preco ?? 'Sob consulta'}</div>
