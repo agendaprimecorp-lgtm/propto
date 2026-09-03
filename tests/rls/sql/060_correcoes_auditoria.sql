@@ -207,6 +207,14 @@ select rls_test.assert(
 
 set local role postgres;
 
+-- Trocar de papel NAO limpa o claim: `set_config` e da transacao, e o
+-- gatilho olha auth.uid(), nao o papel do banco. Sem zerar aqui, este
+-- insert herdaria o claim de Bruno, deixado pelo bloco do aceite acima, e
+-- a guarda barraria — corretamente, alias. O caminho do sistema
+-- (handle_new_user, seed, suporte com service_role) roda sem JWT nenhum,
+-- e e isso que se reproduz zerando o claim.
+select set_config('request.jwt.claims', '{}', true);
+
 -- Caio entra na equipe de Ana pelo caminho do sistema (sem JWT).
 insert into memberships (org_id, user_id, role, status)
 values (current_setting('rls_test.org_a')::uuid,
@@ -231,6 +239,35 @@ select rls_test.assert(
   (raw_app_meta_data ->> 'org_role') = 'admin',
   'a promocao chega ao JWT do promovido — auth_role() nao pode mentir')
   from auth.users where id = 'cccc0000-0000-4000-8000-00000000cccc';
+
+-- ============================================================
+-- B3 — o historico de mensagens do contato tem teto
+-- ============================================================
+
+\echo '── B3: historico do contato ──'
+
+set local role postgres;
+
+do $$
+declare
+  v_id uuid;
+  i    int;
+begin
+  for i in 1..12 loop
+    v_id := submit_lead(current_setting('rls_test.slug_a'), 'Insistente', '+5519955554444',
+                        null, repeat('mensagem longa. ', 125), true,
+                        'Aceito o uso dos meus dados.');
+  end loop;
+
+  perform rls_test.assert(
+    (select length(notes) from contacts where id = v_id) <= 8000,
+    'o historico do contato nao cresce sem limite');
+
+  perform rls_test.assert(
+    (select notes like '%mensagem longa.%' from contacts where id = v_id),
+    'a mensagem que acabou de chegar continua no historico');
+end;
+$$;
 
 rollback;
 
