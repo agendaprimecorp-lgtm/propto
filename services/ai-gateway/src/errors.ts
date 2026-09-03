@@ -52,12 +52,7 @@ export class GatewayError extends Error {
  * é que nada disso atravessa a fronteira do gateway.
  */
 export type ProviderFailureKind =
-  | 'rate_limit'
-  | 'upstream_5xx'
-  | 'contrato'
-  | 'rede'
-  | 'schema'
-  | 'nao_suportado';
+  'rate_limit' | 'upstream_5xx' | 'contrato' | 'rede' | 'schema' | 'nao_suportado';
 
 /** Erro de provedor: recuperável (tenta o próximo) ou não. */
 export class ProviderError extends Error {

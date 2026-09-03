@@ -31,69 +31,65 @@ export default async function Image({ params }: { params: Promise<{ slug: string
     : '';
 
   return new ImageResponse(
-    (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        background: '#17120F',
+        color: '#FAF8F5',
+        padding: 72,
+        fontFamily: 'sans-serif',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <svg width="52" height="52" viewBox="0 0 64 64">
+          <path
+            d="M9 31.5 32 11l23 20.5"
+            fill="none"
+            stroke="#E8443F"
+            strokeWidth="6.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="#E8443F" />
+          <rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="#E8443F" />
+          <rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="#E8443F" />
+        </svg>
+        <div style={{ fontSize: 34, fontWeight: 700, letterSpacing: -1 }}>Propto</div>
+        {p && (
+          <div style={{ marginLeft: 'auto', fontSize: 24, color: '#A79C95' }}>
+            {p.reference_code}
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ fontSize: 68, fontWeight: 700, letterSpacing: -2, color: '#E8443F' }}>
+          {preco}
+        </div>
+        <div style={{ fontSize: 42, fontWeight: 600, lineHeight: 1.15 }}>{titulo.slice(0, 80)}</div>
+        <div style={{ fontSize: 28, color: '#A79C95' }}>{local}</div>
+      </div>
+
       <div
         style={{
-          width: '100%',
-          height: '100%',
           display: 'flex',
-          flexDirection: 'column',
           justifyContent: 'space-between',
-          background: '#17120F',
-          color: '#FAF8F5',
-          padding: 72,
-          fontFamily: 'sans-serif',
+          fontSize: 26,
+          color: '#A79C95',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <svg width="52" height="52" viewBox="0 0 64 64">
-            <path
-              d="M9 31.5 32 11l23 20.5"
-              fill="none"
-              stroke="#E8443F"
-              strokeWidth="6.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <rect x="18.5" y="40" width="6.5" height="13" rx="3.25" fill="#E8443F" />
-            <rect x="28.75" y="33.5" width="6.5" height="19.5" rx="3.25" fill="#E8443F" />
-            <rect x="39" y="37" width="6.5" height="16" rx="3.25" fill="#E8443F" />
-          </svg>
-          <div style={{ fontSize: 34, fontWeight: 700, letterSpacing: -1 }}>Propto</div>
-          {p && (
-            <div style={{ marginLeft: 'auto', fontSize: 24, color: '#A79C95' }}>
-              {p.reference_code}
-            </div>
-          )}
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div style={{ fontSize: 68, fontWeight: 700, letterSpacing: -2, color: '#E8443F' }}>
-            {preco}
-          </div>
-          <div style={{ fontSize: 42, fontWeight: 600, lineHeight: 1.15 }}>
-            {titulo.slice(0, 80)}
-          </div>
-          <div style={{ fontSize: 28, color: '#A79C95' }}>{local}</div>
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontSize: 26,
-            color: '#A79C95',
-          }}
-        >
-          <div>{specs}</div>
-          <div>
-            {p?.broker_creci
-              ? `CRECI ${p.broker_creci}${p.broker_creci_state ? `/${p.broker_creci_state}` : ''}`
-              : ''}
-          </div>
+        <div>{specs}</div>
+        <div>
+          {p?.broker_creci
+            ? `CRECI ${p.broker_creci}${p.broker_creci_state ? `/${p.broker_creci_state}` : ''}`
+            : ''}
         </div>
       </div>
-    ),
+    </div>,
     size,
   );
 }

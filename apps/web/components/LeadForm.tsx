@@ -10,10 +10,7 @@ interface Props {
 }
 
 type Estado =
-  | { tipo: 'parado' }
-  | { tipo: 'enviando' }
-  | { tipo: 'ok' }
-  | { tipo: 'erro'; msg: string };
+  { tipo: 'parado' } | { tipo: 'enviando' } | { tipo: 'ok' } | { tipo: 'erro'; msg: string };
 
 /** Máscara leve: o visitante digita como quiser, o servidor recebe E.164. */
 function telefoneE164(entrada: string): string | null {

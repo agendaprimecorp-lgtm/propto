@@ -62,16 +62,20 @@ describe('orgScoped', () => {
       from(tabela: string) {
         return {
           select: (...args: unknown[]) => (
-            chamadas.push({ tabela, op: 'select', args }), construtor(tabela, 'select')
+            chamadas.push({ tabela, op: 'select', args }),
+            construtor(tabela, 'select')
           ),
           insert: (...args: unknown[]) => (
-            chamadas.push({ tabela, op: 'insert', args }), construtor(tabela, 'insert')
+            chamadas.push({ tabela, op: 'insert', args }),
+            construtor(tabela, 'insert')
           ),
           update: (...args: unknown[]) => (
-            chamadas.push({ tabela, op: 'update', args }), construtor(tabela, 'update')
+            chamadas.push({ tabela, op: 'update', args }),
+            construtor(tabela, 'update')
           ),
           delete: (...args: unknown[]) => (
-            chamadas.push({ tabela, op: 'delete', args }), construtor(tabela, 'delete')
+            chamadas.push({ tabela, op: 'delete', args }),
+            construtor(tabela, 'delete')
           ),
         };
       },
