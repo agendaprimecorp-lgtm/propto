@@ -150,7 +150,7 @@ describe('worker no banco', { skip: temBanco ? false : 'SUPABASE_DB_URL não def
   }
 
   function deps(storage: MemoryStorage, detector: Detector): WorkerDeps {
-    return { sql: pool, storage, detector, workerId: 'worker-teste' };
+    return { sql: pool, storage, detectorFor: () => detector, workerId: 'worker-teste' };
   }
 
   test('foto sem rosto é tratada e promovida a pronta', async () => {
@@ -455,7 +455,7 @@ describe('anonimização bloqueante', () => {
     const deps: WorkerDeps = {
       sql,
       storage,
-      detector: new DetectorFalso(analise),
+      detectorFor: () => new DetectorFalso(analise),
       workerId: 'teste',
     };
     return { deps, sql };

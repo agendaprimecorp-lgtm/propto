@@ -1,6 +1,6 @@
 import { GatewayDetector } from './detect.js';
 import { SupabaseStorage } from './storage.js';
-import { processMediaJob, type WorkerDeps } from './worker.js';
+import { runOnce, type WorkerDeps } from './worker.js';
 
 /**
  * Ponto de entrada do media-worker.
@@ -47,7 +47,16 @@ async function main(): Promise<void> {
     try {
       // O detector é montado por job porque carrega o org_id da chamada:
       // o custo de IA precisa ser cobrado da organização certa.
-      const feitos = await runOnceComDetector(pool, storage, gatewayUrl, gatewayKey);
+      const deps: WorkerDeps = {
+        sql: pool,
+        storage,
+        // O detector carrega o org_id do job: o custo de IA e cobrado da
+        // organizacao certa.
+        detectorFor: (orgId) => new GatewayDetector(gatewayUrl, gatewayKey, orgId),
+        workerId: WORKER_ID,
+        signedUrlFor: (bucket, path) => signedUrl(storage, bucket, path),
+      };
+      const feitos = await runOnce(deps, BATCH);
       if (feitos === 0) await esperar(POLL_MS);
     } catch (err) {
       console.error('falha na rodada:', (err as Error).message);
@@ -57,46 +66,6 @@ async function main(): Promise<void> {
 
   await pool.end();
   process.exit(0);
-}
-
-async function runOnceComDetector(
-  pool: any,
-  storage: SupabaseStorage,
-  gatewayUrl: string,
-  gatewayKey: string,
-): Promise<number> {
-  const { rows } = await pool.query(
-    `select * from public.claim_media_jobs($1, $2, array['analyze','process'])`,
-    [WORKER_ID, BATCH],
-  );
-
-  for (const job of rows) {
-    const deps: WorkerDeps = {
-      sql: pool,
-      storage,
-      detector: new GatewayDetector(gatewayUrl, gatewayKey, job.org_id),
-      workerId: WORKER_ID,
-      signedUrlFor: async (bucket, path) => signedUrl(storage, bucket, path),
-    };
-    await processarUm(deps, job);
-  }
-  return rows.length;
-}
-
-async function processarUm(deps: WorkerDeps, job: any): Promise<void> {
-  try {
-    const out = await processMediaJob(deps, job);
-    await deps.sql.query(`select public.complete_media_job($1, $2)`, [job.id, JSON.stringify(out)]);
-  } catch (err) {
-    const message = (err as Error).message;
-    await deps.sql.query(
-      `update public.property_media set status = 'erro', error_message = $2
-        where id = $1 and status = 'processando'`,
-      [job.payload?.media_id ?? null, message.slice(0, 500)],
-    );
-    await deps.sql.query(`select public.fail_media_job($1, $2)`, [job.id, message]);
-    console.error(`job ${job.id} falhou: ${message}`);
-  }
 }
 
 /** URL assinada para o gateway conseguir ver a imagem original. */

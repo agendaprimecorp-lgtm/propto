@@ -37,7 +37,12 @@ export interface MediaRow {
 export interface WorkerDeps {
   sql: SqlClient;
   storage: Storage;
-  detector: Detector;
+  /**
+   * Detector da organizacao do job. E funcao, e nao instancia, porque o
+   * custo de IA precisa ser cobrado da organizacao certa: um detector fixo
+   * cobraria todos os jobs do lote na conta de quem apareceu primeiro.
+   */
+  detectorFor: (orgId: string) => Detector;
   workerId: string;
   /** URL assinada do original, para o gateway conseguir ver a imagem. */
   signedUrlFor?: (bucket: string, path: string) => Promise<string>;
@@ -78,7 +83,7 @@ export async function processMediaJob(
   const imageUrl = deps.signedUrlFor
     ? await deps.signedUrlFor('raw', media.storage_path_raw)
     : `raw://${media.storage_path_raw}`;
-  const analysis = await deps.detector.analyze(imageUrl);
+  const analysis = await deps.detectorFor(media.org_id).analyze(imageUrl);
 
   // 2. Pipeline.
   const result = await processImage(original, {
@@ -209,6 +214,7 @@ export async function runOnce(deps: WorkerDeps, batch = 3): Promise<number> {
         [job.payload?.media_id ?? null, message.slice(0, 500)],
       );
       await deps.sql.query(`select public.fail_media_job($1, $2)`, [job.id, message]);
+      console.error(`job ${job.id} falhou: ${message}`);
     }
   }
 
