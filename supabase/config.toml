@@ -1,0 +1,73 @@
+# ============================================================
+# Propto — configuração do Supabase local
+#
+# Este arquivo é o que `supabase init` gera, e faltava no repositório:
+# `supabase start` funciona sem ele, com defaults implícitos, mas
+# `supabase migration up` recusa — foi o que quebrou o job `db` do CI.
+#
+# Versionar isto também torna o ambiente local determinístico: as portas
+# aqui são as mesmas que tests/rls/run.mjs e tests/queue/run.mjs esperam
+# em postgresql://postgres:postgres@127.0.0.1:54322/postgres.
+# ============================================================
+
+project_id = "propto"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+# Precisa acompanhar a imagem que o `supabase start` sobe.
+major_version = 17
+
+[db.pooler]
+enabled = false
+port = 54329
+pool_mode = "transaction"
+default_pool_size = 20
+max_client_conn = 100
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://127.0.0.1"
+
+# Caixa de e-mail local: nenhum e-mail de teste sai para a internet.
+[inbucket]
+enabled = true
+port = 54324
+
+[storage]
+enabled = true
+# Os buckets e as políticas nascem na migration 0006, não aqui.
+file_size_limit = "100MiB"
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["https://127.0.0.1:3000"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+enable_anonymous_sign_ins = false
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+# Em desenvolvimento o link chega no Inbucket; confirmar por e-mail
+# atrasaria todo teste manual sem provar nada.
+enable_confirmations = false
+
+[analytics]
+enabled = false
+
+[edge_runtime]
+enabled = true
+policy = "oneshot"
+inspector_port = 8083
