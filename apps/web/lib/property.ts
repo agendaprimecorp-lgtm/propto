@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { createHash } from 'node:crypto';
 import { query } from './db';
 
@@ -67,13 +68,22 @@ const PROPERTY_COLUMNS = `
   cover_media_id, broker_avatar,
   broker_name, broker_creci, broker_creci_state, broker_whatsapp, org_name, org_color`;
 
-export async function getProperty(slug: string): Promise<PublicProperty | null> {
+/**
+ * O anúncio pelo endereço público.
+ *
+ * Memoizado por requisição: `generateMetadata` e o componente da página
+ * pedem o mesmo imóvel, e a rota de imagem do cartão pede de novo. Sem o
+ * `cache`, era uma consulta ao banco por chamada — três por visita que
+ * escapasse da revalidação, num papel de banco que existe justamente para
+ * ser barato.
+ */
+export const getProperty = cache(async (slug: string): Promise<PublicProperty | null> => {
   const rows = await query<PublicProperty>(
     `select ${PROPERTY_COLUMNS} from public.public_properties where slug = $1`,
     [slug],
   );
   return rows[0] ?? null;
-}
+});
 
 export async function getMedia(propertyId: string): Promise<PublicMedia[]> {
   return query<PublicMedia>(
