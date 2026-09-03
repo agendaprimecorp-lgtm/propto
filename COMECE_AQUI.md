@@ -9,16 +9,20 @@ Guia de 15 minutos, do zero até o sistema rodando na sua máquina.
 | Pasta                       | O que é                                                                             | Estado                     |
 | --------------------------- | ----------------------------------------------------------------------------------- | -------------------------- |
 | `apps/demo/index.html`      | **Demonstração** — abre com dois cliques, sem instalar nada                         | ✅ pronta                  |
-| `supabase/migrations/`      | Banco completo: organizações, imóveis, captura por voz, fila, mídia, página pública | ✅ 7 migrations            |
-| `services/ai-gateway/`      | Roteamento de IA, fallback, controle de custo                                       | ✅ 25 testes               |
-| `services/media-worker/`    | Blur de rosto e placa, EXIF, derivadas                                              | ✅ 22 testes               |
+| `supabase/migrations/`      | Banco completo: organizações, imóveis, captura por voz, fila, mídia, página pública | ✅ 8 migrations            |
+| `services/ai-gateway/`      | Roteamento de IA, fallback, controle de custo                                       | ✅ 51 testes               |
+| `services/media-worker/`    | Blur de rosto e placa, EXIF, derivadas                                              | ✅ 26 testes               |
 | `apps/web/`                 | **A página pública do imóvel**, lendo do banco de verdade                           | ✅ verificada no navegador |
-| `tests/`                    | 195 assertivas de banco e fila                                                      | ✅ verdes                  |
+| `tests/`                    | Assertivas de banco e fila (exigem Docker)                                          | ✅ rodam no CI             |
 | `docs/`                     | 12 documentos: produto, arquitetura, segurança, roadmap                             | ✅                         |
 | `MASTER_PROMPT.md`          | Instrução para o ambiente de desenvolvimento por IA                                 | ✅                         |
 | `apps/mobile`, `apps/admin` | App de captura do corretor, back-office                                             | ⬜ a construir             |
 
-**242 verificações automáticas, todas verdes**, mais 7 checagens da página pública no navegador. Nenhuma delas é promessa: todas foram executadas.
+**93 testes de código verdes** — 51 no AI Gateway, 26 no media-worker, 16 na
+guarda de `service_role` — mais as suítes de banco e fila, que precisam de
+Docker e rodam no CI a cada push. Nenhum número aqui é promessa: são
+execuções. Quando um deles depender de algo que você ainda não tem
+instalado, o texto diz.
 
 ---
 
@@ -81,9 +85,9 @@ Ao final você tem: 3 usuários, 2 organizações, 4 imóveis — um deles publi
 ### Conferir que está tudo de pé
 
 ```bash
-pnpm test:db          # 195 assertivas de banco e fila
-pnpm test:gateway     # 25 testes do AI Gateway
-pnpm test:media       # 22 testes do pipeline de imagem
+pnpm test:db          # assertivas de banco e fila (precisa do Docker de pé)
+pnpm test:gateway     # 51 testes do AI Gateway
+pnpm test:media       # 26 testes do pipeline de imagem
 ```
 
 Os três precisam terminar em verde. Se algum falhar, **pare** e me mande a saída — falhar aqui significa que algo do ambiente está diferente, não que o código está errado.
