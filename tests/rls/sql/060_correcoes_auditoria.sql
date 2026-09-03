@@ -18,7 +18,8 @@ set local role postgres;
 insert into auth.users (id, email, raw_user_meta_data)
 values
   ('aaaa0000-0000-4000-8000-00000000aaaa', 'ana.aud@teste.dev',   '{"full_name":"Ana Auditoria"}'),
-  ('bbbb0000-0000-4000-8000-00000000bbbb', 'bruno.aud@teste.dev', '{"full_name":"Bruno Auditoria"}');
+  ('bbbb0000-0000-4000-8000-00000000bbbb', 'bruno.aud@teste.dev', '{"full_name":"Bruno Auditoria"}'),
+  ('cccc0000-0000-4000-8000-00000000cccc', 'caio.aud@teste.dev',  '{"full_name":"Caio Auditoria"}');
 
 select org_id as org_a from memberships
   where user_id = 'aaaa0000-0000-4000-8000-00000000aaaa' and role = 'owner' \gset
@@ -179,6 +180,44 @@ select rls_test.assert(
   (raw_app_meta_data ->> 'org_id') = current_setting('rls_test.org_a'),
   'depois do aceite, o claim de Bruno aponta para a organização convidante')
   from auth.users where id = 'bbbb0000-0000-4000-8000-00000000bbbb';
+
+-- ============================================================
+-- A guarda do A3 nao pode atrapalhar a administracao normal da equipe
+--
+-- A primeira versao (migration 0008) barrava qualquer escrita numa linha
+-- ativa que nao fosse a do proprio usuario — inclusive a promocao de quem
+-- ja era da equipe. A 0010 estreita a condicao para a TRANSICAO para
+-- `ativo`. Estas assertivas prendem as duas pontas.
+-- ============================================================
+
+\echo '── A3: promocao continua funcionando ──'
+
+set local role postgres;
+
+-- Caio entra na equipe de Ana pelo caminho do sistema (sem JWT).
+insert into memberships (org_id, user_id, role, status)
+values (current_setting('rls_test.org_a')::uuid,
+        'cccc0000-0000-4000-8000-00000000cccc', 'corretor', 'ativo');
+
+set local role authenticated;
+select set_config('request.jwt.claims',
+  rls_test.claims('aaaa0000-0000-4000-8000-00000000aaaa', current_setting('rls_test.org_a')::uuid, 'owner'),
+  true);
+
+with t as (
+  update memberships set role = 'admin'
+   where user_id = 'cccc0000-0000-4000-8000-00000000cccc'
+     and org_id = current_setting('rls_test.org_a')::uuid
+  returning 1
+)
+select rls_test.assert_count(count(*), 1,
+  'owner promove membro que JA estava ativo na propria organizacao') from t;
+
+set local role postgres;
+select rls_test.assert(
+  (raw_app_meta_data ->> 'org_role') = 'admin',
+  'a promocao chega ao JWT do promovido — auth_role() nao pode mentir')
+  from auth.users where id = 'cccc0000-0000-4000-8000-00000000cccc';
 
 rollback;
 
