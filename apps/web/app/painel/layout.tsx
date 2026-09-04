@@ -28,6 +28,7 @@ export default async function PainelLayout({ children }: { children: React.React
           <nav className="painel-nav">
             <Link href="/painel">Carteira</Link>
             <Link href="/painel/leads">Mensagens</Link>
+            <Link href="/painel/plano">Plano</Link>
           </nav>
 
           <div className="painel-eu">
