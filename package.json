@@ -20,7 +20,7 @@
     "test": "turbo run test",
     "test:watch": "turbo run test -- --watch",
     "test:rls": "node tests/rls/run.mjs",
-    "test:ai": "vitest run --config tests/ai/vitest.config.ts",
+    "test:ai": "pnpm --filter @propto/ai test",
     "test:e2e": "playwright test",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
