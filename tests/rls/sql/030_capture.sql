@@ -37,6 +37,9 @@ set local role authenticated;
 select set_config('request.jwt.claims',
   rls_test.claims('f0000000-0000-4000-8000-00000000000f', :'org_a', 'owner'), true);
 
+-- As assertivas abaixo são sobre isolamento, não sobre cota de plano.
+select rls_test.sem_limite_de_plano();
+
 insert into capture_sessions (org_id, audio_path, duration_sec, bytes)
 values (:'org_a', :'org_a' || '/sessao-1.m4a', 187, 2400000)
 returning id as sess \gset
