@@ -110,7 +110,8 @@ select rls_test.assert(bloqueado, 'a conta fica bloqueada para novidades')
 do $$
 begin
   insert into capture_sessions (org_id, audio_path)
-  values (current_setting('rls_test.org_e')::uuid, 'org/teste/audio.m4a');
+  values (current_setting('rls_test.org_e')::uuid,
+          current_setting('rls_test.org_e') || '/teste/audio.m4a');
   raise exception 'FALHOU: gravou captura com assinatura pendente';
 exception when check_violation then
   raise notice '  ok  captura nova é bloqueada com pagamento pendente';
@@ -124,7 +125,8 @@ select rls_test.assert(public.imoveis_ativos(:'org_e') = 4,
 select atualizar_assinatura_por_provedor(
   'sub_teste', 'ativa', null, null, null, 'invoice.paid');
 
-insert into capture_sessions (org_id, audio_path) values (:'org_e', 'org/teste/audio2.m4a');
+insert into capture_sessions (org_id, audio_path)
+values (:'org_e', :'org_e' || '/teste/audio2.m4a');
 select rls_test.assert(public.capturas_no_mes(:'org_e') = 1,
   'regularizado, a captura volta a ser aceita');
 
