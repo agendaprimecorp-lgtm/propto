@@ -72,6 +72,12 @@ delete from public.organizations o
 -- Imóveis de desenvolvimento na carteira do Rodrigo (Sprint 2)
 -- ------------------------------------------------------------
 
+-- O ambiente de demonstração nasce num plano pago: três imóveis é
+-- exatamente o teto do gratuito (migration 0013), e quem acrescentar o
+-- quarto para experimentar tomaria um erro de cota sem ter pedido nada
+-- disso. Além do mais, é assim que a conta de um corretor real se parece.
+update public.organizations set plan = 'corretor_pro';
+
 with org as (
   select m.org_id as id, m.user_id as owner_id
     from public.memberships m

@@ -27,6 +27,12 @@ const ORG_ID_OPTIONAL = new Map([
   ['property_features', 'herda isolamento de properties por FK; política usa exists(...)'],
   ['ai_usage_events', 'org_id anulável — o registro de custo sobrevive à exclusão da organização'],
   ['audit_log', 'org_id anulável — o log de auditoria sobrevive à exclusão da organização'],
+  [
+    'plans',
+    'catálogo do produto, não dado de cliente: os mesmos quatro planos valem para todas as ' +
+      'organizações. Tem RLS e política de leitura assim mesmo, porque preço e limite são ' +
+      'informação de negócio e a escrita é só do dono do produto',
+  ],
 ]);
 
 const sql = readdirSync(MIGRATIONS_DIR)

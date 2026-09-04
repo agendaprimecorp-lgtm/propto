@@ -147,4 +147,25 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm audit --audit-level=high
+      # `pnpm audit` sai com 1 tanto para vulnerabilidade encontrada quanto
+      # para falha de rede ao falar com o registry — e a segunda acontece.
+      # Job que fica vermelho por instabilidade ensina o time a ignorar
+      # vermelho, que e pior que nao ter o job. Aqui se separa uma coisa da
+      # outra: achado reprova sempre; queda de rede vira aviso depois de tres
+      # tentativas.
+      - name: Vulnerabilidades de severidade alta ou acima
+        run: |
+          for tentativa in 1 2 3; do
+            if saida=$(pnpm audit --audit-level=high 2>&1); then
+              echo "$saida"
+              exit 0
+            fi
+            echo "$saida"
+            if echo "$saida" | grep -qi "vulnerabilit"; then
+              echo "::error::Vulnerabilidade de severidade alta ou acima encontrada."
+              exit 1
+            fi
+            echo "::warning::Tentativa $tentativa nao alcancou o registry. Repetindo em 10s."
+            sleep 10
+          done
+          echo "::warning::pnpm audit nao alcancou o registry em 3 tentativas. Nao ha achado, mas tambem nao houve verificacao."
