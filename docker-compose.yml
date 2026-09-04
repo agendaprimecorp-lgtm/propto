@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  capture-worker:
+    build: .
+    container_name: propto-worker
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
+      DATABASE_URL: ${DATABASE_URL}
+      WORKER_ID: ${WORKER_ID:-default}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - propto-logs:/app/logs
+    networks:
+      - propto-net
+
+volumes:
+  propto-logs:
+
+networks:
+  propto-net:
+    driver: bridge
