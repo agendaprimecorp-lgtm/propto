@@ -84,6 +84,18 @@ importers:
         specifier: ^5.6.3
         version: 5.9.3
 
+  packages/ai:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.7.0
+        version: 22.20.1
+      tsx:
+        specifier: ^4.19.2
+        version: 4.23.13
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+
   packages/database:
     devDependencies:
       '@types/node':
@@ -120,6 +132,26 @@ importers:
     optionalDependencies:
       pg:
         specifier: ^8.23.0
+        version: 8.23.0
+    devDependencies:
+      '@types/node':
+        specifier: ^22.7.0
+        version: 22.20.1
+      tsx:
+        specifier: ^4.19.2
+        version: 4.23.13
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+
+  services/capture-worker:
+    dependencies:
+      '@propto/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
+    optionalDependencies:
+      pg:
+        specifier: ^8.13.1
         version: 8.23.0
     devDependencies:
       '@types/node':
