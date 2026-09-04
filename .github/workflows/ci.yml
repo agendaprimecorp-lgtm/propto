@@ -57,8 +57,19 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Versão fixa, e não `latest`, por dois motivos. Determinismo: com
+      # `latest`, um lançamento do CLI muda o comportamento do CI sem que
+      # ninguém tenha feito commit. E disponibilidade: resolver `latest`
+      # custa uma chamada à API do GitHub, que já reprovou este job com
+      # "rate limit exceeded" — build vermelho por motivo que não é o
+      # código ensina o time a ignorar vermelho.
+      #
+      # 2.116.0 é a mesma versão que o pnpm-lock.yaml fixa na
+      # devDependency `supabase`, usada por `pnpm db:migrate`. As duas
+      # precisam andar juntas: foi a divergência entre elas que quebrou
+      # este job quando o CI voltou a rodar.
       - uses: supabase/setup-cli@v1
-        with: { version: latest }
+        with: { version: 2.116.0 }
       - run: supabase start
       - run: pnpm db:migrate
       - name: Testes de isolamento entre organizações
@@ -105,8 +116,19 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Versão fixa, e não `latest`, por dois motivos. Determinismo: com
+      # `latest`, um lançamento do CLI muda o comportamento do CI sem que
+      # ninguém tenha feito commit. E disponibilidade: resolver `latest`
+      # custa uma chamada à API do GitHub, que já reprovou este job com
+      # "rate limit exceeded" — build vermelho por motivo que não é o
+      # código ensina o time a ignorar vermelho.
+      #
+      # 2.116.0 é a mesma versão que o pnpm-lock.yaml fixa na
+      # devDependency `supabase`, usada por `pnpm db:migrate`. As duas
+      # precisam andar juntas: foi a divergência entre elas que quebrou
+      # este job quando o CI voltou a rodar.
       - uses: supabase/setup-cli@v1
-        with: { version: latest }
+        with: { version: 2.116.0 }
       - run: supabase start
       - run: pnpm db:migrate
       - run: pnpm --filter @propto/media-worker typecheck
