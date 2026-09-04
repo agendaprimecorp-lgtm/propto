@@ -32,6 +32,9 @@ delete from memberships where user_id = 'cccc3333-0000-4000-8000-00000000000c';
 insert into memberships (org_id, user_id, role, status)
 values (:'org_a', 'cccc3333-0000-4000-8000-00000000000c', 'assistente', 'ativo');
 
+-- As assertivas abaixo são sobre isolamento, não sobre cota de plano.
+select rls_test.sem_limite_de_plano();
+
 -- Um imóvel de cada organização, criados fora do contexto de RLS.
 insert into properties (org_id, created_by, type, city, state, neighborhood, title, description, price)
 values (:'org_a', 'aaaa1111-0000-4000-8000-00000000000a', 'apartamento', 'Campinas', 'SP', 'Cambuí',

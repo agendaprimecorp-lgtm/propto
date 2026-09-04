@@ -25,6 +25,9 @@ select org_id as org_b from memberships
 update profiles set creci = '999888-F', creci_state = 'SP', whatsapp = '+5519988887777'
  where id = '11110000-0000-4000-8000-000000001111';
 
+-- As assertivas abaixo são sobre isolamento, não sobre cota de plano.
+select rls_test.sem_limite_de_plano();
+
 -- Imóvel publicado, endereço no nível "bairro".
 insert into properties (org_id, created_by, type, city, state, neighborhood, street, number,
                         title, description, price, address_privacy)
