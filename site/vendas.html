@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Grave tres minutos no imovel e receba o anuncio pronto: texto, ficha, fotos tratadas e pagina publica que captura o contato.">
+<link rel="icon" href="../brand/favicon.svg">
+<meta property="og:title" content="Propto">
+<meta property="og:description" content="Grave tres minutos no imovel. Receba o anuncio pronto.">
+<meta property="og:image" content="../brand/og-image.png">
+<title>Propto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --areia:#FAF8F5;
+  --grafite:#12100F;
+  --vermelho:#CC1B1B;
+  --vermelho-claro:#E8443F;
+  --vermelho-escuro:#A81616;
+  --linha:#DFDCDD;
+  --secundario:#6E6867;
+  --sucesso:#0F9D63;
+  --whatsapp:#12A150;
+
+  --ground:var(--areia);
+  --surface:#FFFFFF;
+  --surface-alt:#F3EFEA;
+  --ink:var(--grafite);
+  --ink-2:var(--secundario);
+  --rule:var(--linha);
+  --acao:var(--vermelho);
+  --acao-hover:var(--vermelho-escuro);
+  --sombra:0 1px 2px rgba(18,16,15,.05);
+
+  --display:"Sora",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --corpo:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --dados:"JetBrains Mono",ui-monospace,"Cascadia Code",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C0B0A;
+    --surface:#181615;
+    --surface-alt:#211E1D;
+    --ink:#F5F2EF;
+    --ink-2:#A29B99;
+    --rule:#2E2A29;
+    --acao:var(--vermelho-claro);
+    --acao-hover:#F26A66;
+    --sombra:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C0B0A;
+  --surface:#181615;
+  --surface-alt:#211E1D;
+  --ink:#F5F2EF;
+  --ink-2:#A29B99;
+  --rule:#2E2A29;
+  --acao:var(--vermelho-claro);
+  --acao-hover:#F26A66;
+  --sombra:0 1px 2px rgba(0,0,0,.4);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--corpo);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.03em;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.1rem,5.2vw,3.5rem);font-weight:700;line-height:1.08}
+h2{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:600;line-height:1.15}
+h3{font-size:1.05rem;font-weight:600;letter-spacing:-.02em}
+p{margin:0}
+a{color:inherit}
+
+.rotulo{
+  font-family:var(--corpo);font-size:.72rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);
+}
+.mono{font-family:var(--dados);font-variant-numeric:tabular-nums}
+
+/* ---------- topo ---------- */
+.topo{border-bottom:1px solid var(--rule);background:var(--ground)}
+.topo-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0}
+.marca{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:1.15rem;letter-spacing:-.03em}
+.simbolo{width:26px;height:26px;flex:none}
+
+/* ---------- botoes ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--corpo);font-weight:600;font-size:.95rem;
+  padding:13px 22px;border-radius:8px;border:1px solid transparent;
+  text-decoration:none;cursor:pointer;transition:background .15s,border-color .15s;
+}
+.btn-primario{background:var(--acao);color:#fff}
+.btn-primario:hover{background:var(--acao-hover)}
+.btn-linha{border-color:var(--rule);color:var(--ink);background:transparent}
+.btn-linha:hover{border-color:var(--ink-2)}
+.btn-zap{background:var(--whatsapp);color:#fff}
+.btn-zap:hover{background:#0E8843}
+.btn:focus-visible{outline:2px solid var(--acao);outline-offset:3px}
+
+/* ---------- hero ---------- */
+.hero{padding:72px 0 64px;border-bottom:1px solid var(--rule)}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:start}
+.hero p.lead{font-size:1.13rem;color:var(--ink-2);max-width:56ch;margin-top:20px}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.selo{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:28px}
+.selo span{font-size:.85rem;color:var(--ink-2);display:flex;align-items:center;gap:7px}
+.tick{width:15px;height:15px;flex:none;color:var(--sucesso)}
+
+/* ---------- razao (o cartao do hero) ---------- */
+.razao{
+  background:var(--surface);border:1px solid var(--rule);border-radius:12px;
+  padding:26px;box-shadow:var(--sombra);
+}
+.razao h3{margin-bottom:4px}
+.razao .fonte{font-size:.78rem;color:var(--ink-2);margin-top:18px;padding-top:16px;border-top:1px solid var(--rule)}
+.barra{margin-top:18px;display:flex;flex-direction:column;gap:14px}
+.barra-item{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:baseline}
+.barra-nome{font-size:.88rem}
+.barra-num{font-family:var(--dados);font-variant-numeric:tabular-nums;font-size:.88rem;font-weight:500}
+.barra-track{grid-column:1/-1;height:7px;border-radius:4px;background:var(--surface-alt);overflow:hidden}
+.barra-fill{height:100%;border-radius:4px}
+
+/* ---------- secoes ---------- */
+section{padding:64px 0;border-bottom:1px solid var(--rule)}
+.sec-cab{max-width:60ch;margin-bottom:40px}
+.sec-cab p{color:var(--ink-2);margin-top:12px}
+
+/* ---------- linha do tempo ---------- */
+.tempo{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--rule);border-radius:12px;overflow:hidden;background:var(--surface)}
+.etapa{padding:24px;border-right:1px solid var(--rule)}
+.etapa:last-child{border-right:none}
+.etapa .quando{font-family:var(--dados);font-size:.8rem;color:var(--acao);font-weight:500}
+.etapa h3{margin:10px 0 8px}
+.etapa p{font-size:.9rem;color:var(--ink-2)}
+
+/* ---------- entregaveis ---------- */
+.entregas{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+.entrega{background:var(--surface);padding:26px}
+.entrega h3{margin-bottom:8px}
+.entrega p{font-size:.92rem;color:var(--ink-2)}
+
+/* ---------- precos ---------- */
+.planos{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;align-items:stretch}
+.plano{
+  background:var(--surface);border:1px solid var(--rule);border-radius:12px;
+  padding:28px;display:flex;flex-direction:column;gap:16px;
+}
+.plano.destaque{border-color:var(--acao);border-width:2px}
+.plano .fita{
+  font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--acao);
+}
+.preco{display:flex;align-items:baseline;gap:6px;font-family:var(--display)}
+.preco .valor{font-size:2.3rem;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.preco .por{font-size:.9rem;color:var(--ink-2);font-family:var(--corpo);font-weight:400}
+.plano ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;flex:1}
+.plano li{font-size:.9rem;display:flex;gap:9px;align-items:flex-start;color:var(--ink-2)}
+.plano li b{color:var(--ink);font-weight:600}
+
+/* ---------- limites ---------- */
+.limites{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+.limite{border-left:2px solid var(--rule);padding-left:18px}
+.limite h3{margin-bottom:6px}
+.limite p{font-size:.92rem;color:var(--ink-2)}
+
+/* ---------- fechamento ---------- */
+.fechar{padding:72px 0;text-align:center}
+.fechar p{color:var(--ink-2);max-width:52ch;margin:16px auto 0}
+.fechar .hero-ctas{justify-content:center}
+
+/* ---------- rodape ---------- */
+footer{padding:36px 0;color:var(--ink-2);font-size:.85rem}
+.foot-in{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+
+@media (max-width:840px){
+  .hero-grid{grid-template-columns:1fr;gap:36px}
+  .etapa{border-right:none;border-bottom:1px solid var(--rule)}
+  .etapa:last-child{border-bottom:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+
+</head>
+<body>
+<header class="topo">
+  <div class="wrap topo-in">
+    <div class="marca">
+      <svg class="simbolo" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="7" fill="var(--acao)"></rect>
+        <path d="M11 23V9h6.2a4.4 4.4 0 0 1 0 8.8H14" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="square"></path>
+      </svg>
+      Propto
+    </div>
+    <a class="btn btn-primario" href="#planos">Ver preços</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="rotulo">Para corretor e imobiliária</p>
+      <h1 style="margin-top:14px">Grave três minutos no imóvel. Receba o anúncio pronto.</h1>
+      <p class="lead">
+        Mande o áudio e as fotos pelo WhatsApp, do jeito que você já fala com um cliente.
+        Em 24 horas você recebe o texto do anúncio, a ficha preenchida, as fotos tratadas
+        e uma página pública que captura o contato de quem se interessou.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-zap" href="#planos">Enviar o primeiro imóvel</a>
+        <a class="btn btn-linha" href="#entrega">Ver o que você recebe</a>
+      </div>
+      <div class="selo">
+        <span><svg class="tick" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Sem instalar aplicativo</span>
+        <span><svg class="tick" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Sem contrato de fidelidade</span>
+        <span><svg class="tick" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Primeiro imóvel sem custo</span>
+      </div>
+    </div>
+
+    <aside class="razao" aria-label="Tempo por imóvel">
+      <p class="rotulo">Tempo até o anúncio no ar</p>
+      <h3 style="margin-top:10px">Um imóvel, do zero à publicação</h3>
+      <div class="barra">
+        <div class="barra-item">
+          <span class="barra-nome">Do seu jeito hoje</span>
+          <span class="barra-num">3 h 20 min</span>
+          <span class="barra-track"><span class="barra-fill" style="width:100%;background:var(--ink-2)"></span></span>
+        </div>
+        <div class="barra-item">
+          <span class="barra-nome">Com o Propto</span>
+          <span class="barra-num">15 min</span>
+          <span class="barra-track"><span class="barra-fill" style="width:7.5%;background:var(--acao)"></span></span>
+        </div>
+      </div>
+      <p class="fonte">
+        Os 15 minutos são o seu tempo: gravar no imóvel, fotografar e conferir o rascunho.
+        O resto corre fora do seu dia.
+      </p>
+    </aside>
+  </div>
+</div>
+
+<section id="como">
+  <div class="wrap">
+    <div class="sec-cab">
+      <p class="rotulo">Como funciona</p>
+      <h2 style="margin-top:12px">Quatro etapas, uma conversa de WhatsApp</h2>
+      <p>Você não aprende ferramenta nova. Fala, fotografa, confere e publica.</p>
+    </div>
+    <div class="tempo">
+      <div class="etapa">
+        <span class="quando mono">00:00</span>
+        <h3>Você grava</h3>
+        <p>Andando pelo imóvel, descreve como descreveria para um comprador. Três minutos bastam.</p>
+      </div>
+      <div class="etapa">
+        <span class="quando mono">00:03</span>
+        <h3>Você fotografa</h3>
+        <p>Fotos do celular, sem enquadramento especial. Rosto e placa saem borrados antes de ir ao ar.</p>
+      </div>
+      <div class="etapa">
+        <span class="quando mono">+24 h</span>
+        <h3>Você recebe</h3>
+        <p>Texto do anúncio, ficha preenchida, fotos tratadas e o link da página pública.</p>
+      </div>
+      <div class="etapa">
+        <span class="quando mono">+24 h</span>
+        <h3>Você confere e envia</h3>
+        <p>Corrige o que quiser, manda o link no grupo e nos portais. O contato de quem clicar chega para você.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="entrega">
+  <div class="wrap">
+    <div class="sec-cab">
+      <p class="rotulo">O que você recebe</p>
+      <h2 style="margin-top:12px">Quatro entregas por imóvel</h2>
+    </div>
+    <div class="entregas">
+      <div class="entrega">
+        <h3>Texto do anúncio</h3>
+        <p>Descrição escrita do zero para este imóvel. Os portais penalizam texto repetido, e cada anúncio sai diferente do anterior.</p>
+      </div>
+      <div class="entrega">
+        <h3>Ficha estruturada</h3>
+        <p>Área útil e total, dormitórios, suítes, banheiros, vagas, andar, ano, condomínio, IPTU e valor. Cada campo mostra de onde veio.</p>
+      </div>
+      <div class="entrega">
+        <h3>Fotos tratadas</h3>
+        <p>Enquadramento e luz corrigidos. Rosto de pessoa e placa de carro borrados antes da publicação.</p>
+      </div>
+      <div class="entrega">
+        <h3>Página pública</h3>
+        <p>Um link só desse imóvel, com as fotos e um formulário curto. Nome e telefone de quem se interessou chegam para você.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="planos">
+  <div class="wrap">
+    <div class="sec-cab">
+      <p class="rotulo">Preços</p>
+      <h2 style="margin-top:12px">Pague por imóvel ou por mês</h2>
+      <p>O primeiro imóvel sai sem custo, para você ver o resultado antes de decidir. Cancela quando quiser.</p>
+    </div>
+    <div class="planos">
+      <div class="plano">
+        <div>
+          <p class="rotulo">Avulso</p>
+          <div class="preco" style="margin-top:10px"><span class="valor">R$&nbsp;49</span><span class="por">por imóvel</span></div>
+        </div>
+        <ul>
+          <li><b>1 imóvel</b> completo</li>
+          <li>Texto, ficha, fotos e página</li>
+          <li>Sem mensalidade</li>
+          <li>Pagamento por Pix</li>
+        </ul>
+        <a class="btn btn-linha" href="#contato">Enviar um imóvel</a>
+      </div>
+
+      <div class="plano destaque">
+        <div>
+          <span class="fita">Mais escolhido</span>
+          <p class="rotulo" style="margin-top:6px">Corretor</p>
+          <div class="preco" style="margin-top:10px"><span class="valor">R$&nbsp;97</span><span class="por">por mês</span></div>
+        </div>
+        <ul>
+          <li><b>10 imóveis</b> por mês</li>
+          <li>Texto, ficha, fotos e página</li>
+          <li>Retorno em <b>24 horas</b></li>
+          <li>Revisão de um ajuste por imóvel</li>
+          <li>Imóvel extra por R$ 29</li>
+        </ul>
+        <a class="btn btn-primario" href="#contato">Assinar</a>
+      </div>
+
+      <div class="plano">
+        <div>
+          <p class="rotulo">Imobiliária</p>
+          <div class="preco" style="margin-top:10px"><span class="valor">R$&nbsp;697</span><span class="por">por mês</span></div>
+        </div>
+        <ul>
+          <li><b>120 imóveis</b> por mês</li>
+          <li>Até <b>10 corretores</b> na mesma conta</li>
+          <li>Retorno em <b>12 horas</b></li>
+          <li>Padrão de texto da sua marca</li>
+          <li>Relatório mensal de captura</li>
+        </ul>
+        <a class="btn btn-linha" href="#contato">Falar sobre a equipe</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="limites">
+  <div class="wrap">
+    <div class="sec-cab">
+      <p class="rotulo">Antes de você assinar</p>
+      <h2 style="margin-top:12px">O que o Propto não faz</h2>
+      <p>Preferimos dizer agora do que você descobrir depois.</p>
+    </div>
+    <div class="limites">
+      <div class="limite">
+        <h3>Não inventa dado</h3>
+        <p>O que você não falou no áudio fica em branco na ficha, sinalizado para você preencher. Nenhum número é estimado.</p>
+      </div>
+      <div class="limite">
+        <h3>Não avalia o imóvel</h3>
+        <p>O valor que entra no anúncio é o que você informou. Parecer técnico de avaliação é outro documento e outro serviço.</p>
+      </div>
+      <div class="limite">
+        <h3>Não publica nos portais por você</h3>
+        <p>Você recebe o texto e as fotos prontos para colar. A publicação no ZAP, no OLX ou no seu CRM continua sendo sua.</p>
+      </div>
+      <div class="limite">
+        <h3>Não substitui o corretor</h3>
+        <p>Escreve o anúncio e organiza o dado. Visita, negociação e fechamento continuam com você.</p>
+      </div>
+      <div class="limite">
+        <h3>Não é aplicativo, por enquanto</h3>
+        <p>Hoje a entrega é por WhatsApp, com pessoa conferindo cada imóvel antes de devolver. O aplicativo está em construção.</p>
+      </div>
+      <div class="limite">
+        <h3>Não guarda dado de quem não autorizou</h3>
+        <p>O formulário da página pública pede consentimento e registra a origem. Você pode pedir a exclusão a qualquer momento.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="fechar" id="contato">
+  <div class="wrap">
+    <h2>Mande um imóvel e veja o resultado</h2>
+    <p>O primeiro sai sem custo. Se o anúncio não ficar melhor do que o seu, você não paga e não assina nada.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-zap" href="https://wa.me/5500000000000?text=Quero%20enviar%20o%20primeiro%20im%C3%B3vel%20para%20o%20Propto">Enviar pelo WhatsApp</a>
+      <a class="btn btn-linha" href="mailto:contato@primecorpconsultoria.com.br">Escrever por e-mail</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <span>Propto — um produto PrimeCorp Brokers Consultoria e Intermediação de Negócios Ltda.</span>
+    <span>contato@primecorpconsultoria.com.br</span>
+  </div>
+</footer>
+</body>
+</html>
