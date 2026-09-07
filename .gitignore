@@ -68,3 +68,9 @@ uploads/
 # Artefatos locais do gateway
 services/ai-gateway/dist/
 smoke.ts
+
+# Workspace de execucao do superpowers (scratch, nao versionar)
+.superpowers/
+
+# Rascunhos de teste manual
+scratch-*.ts
