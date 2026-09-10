@@ -20,11 +20,18 @@ const storage = process.env.NEXT_PUBLIC_STORAGE_URL
   ? new URL(process.env.NEXT_PUBLIC_STORAGE_URL).origin
   : 'https:';
 
+// O painel autentica inteiramente no servidor — o navegador nunca abre
+// conexao com o Supabase. Por isso `connect-src` continua sendo so 'self':
+// a origem do projeto entra apenas em img-src, para o avatar do corretor.
+const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL
+  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
+  : '';
+
 const csp = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob: ${storage}`,
+  `img-src 'self' data: blob: ${storage}${supabase ? ` ${supabase}` : ''}`,
   "font-src 'self' data:",
   "connect-src 'self'",
   "form-action 'self'",

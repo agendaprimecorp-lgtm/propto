@@ -20,7 +20,7 @@
 
   /* Funcionais — não são cores de marca. */
   --ai:#8B5CF6; --ai-50:#F5F3FF; --ai-200:#DDD6FE;
-  --ok:#0F9D63; --ok-50:#ECFDF5; --warn:#C77700; --danger:#D93025;
+  --ok:#0F9D63; --ok-50:#ECFDF5; --warn:#C77700; --warn-50:#FDF6E7; --danger:#D93025;
   --wa:#12A150;
 
   --bg:var(--sand-50); --surface:#FFFFFF; --surface-2:var(--ink-100);
@@ -46,7 +46,7 @@
     --text:var(--ink-50); --muted:var(--ink-400); --faint:var(--ink-500);
     --primary:var(--red-500); --red-50:#2C1616; --red-100:#3A1B1B;
     --sand-50:var(--ink-900); --sand-100:#221E1F; --sand-200:#302B2C;
-    --ai-50:#221C3A; --ai-200:#4C3D8A; --ok-50:#0F2A21;
+    --ai-50:#221C3A; --ai-200:#4C3D8A; --ok-50:#0F2A21; --warn-50:#2A2110;
     --shadow:0 4px 18px rgba(0,0,0,.45); --shadow-lg:0 18px 46px rgba(0,0,0,.6);
     --focus:0 0 0 3px rgba(232,68,63,.42);
   }
@@ -57,7 +57,7 @@
   --text:var(--ink-50); --muted:var(--ink-400); --faint:var(--ink-500);
   --primary:var(--red-500); --red-50:#2C1616; --red-100:#3A1B1B;
   --sand-50:var(--ink-900); --sand-100:#221E1F; --sand-200:#302B2C;
-  --ai-50:#221C3A; --ai-200:#4C3D8A; --ok-50:#0F2A21;
+  --ai-50:#221C3A; --ai-200:#4C3D8A; --ok-50:#0F2A21; --warn-50:#2A2110;
   --shadow:0 4px 18px rgba(0,0,0,.45); --shadow-lg:0 18px 46px rgba(0,0,0,.6);
   --focus:0 0 0 3px rgba(232,68,63,.42);
 }

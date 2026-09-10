@@ -24,6 +24,9 @@ select id as org_b from organizations
   where id = (select org_id from memberships
                where user_id = 'b0000000-0000-4000-8000-0000000000bb' and role = 'owner') \gset
 
+-- As assertivas abaixo são sobre isolamento, não sobre cota de plano.
+select rls_test.sem_limite_de_plano();
+
 insert into properties (org_id, created_by, type, city, state, neighborhood, title, description, price)
 values (:'org_a', 'a0000000-0000-4000-8000-0000000000aa', 'apartamento', 'Campinas', 'SP', 'Taquaral',
         'Apartamento 2 dormitórios no Taquaral', 'Apartamento com varanda e vista para a lagoa.', 620000)

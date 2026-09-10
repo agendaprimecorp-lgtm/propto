@@ -44,6 +44,24 @@ as $$
   )::text;
 $$;
 
+/**
+ * Tira o teto de plano das organizações do teste.
+ *
+ * A migration 0013 passou a limitar imóveis ativos por plano, e o padrão é
+ * `free`, com três. As suítes de isolamento criam mais que isso e não são
+ * sobre cota: deixá-las esbarrar no limite faria um teste de RLS falhar —
+ * ou, pior, passar pelo motivo errado, porque a cota levanta o mesmo
+ * `check_violation` que as constraints de conteúdo.
+ *
+ * A cota tem suíte própria, em 070_planos_e_cotas.sql.
+ */
+create or replace function rls_test.sem_limite_de_plano()
+returns void
+language sql
+as $$
+  update public.organizations set plan = 'imobiliaria';
+$$;
+
 -- Os utilitários são chamados enquanto a sessão está com o papel do usuário
 -- final; sem estes grants o próprio teste falha antes de testar qualquer coisa.
 grant usage on schema rls_test to authenticated, anon;
